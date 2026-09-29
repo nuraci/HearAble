@@ -1,0 +1,13 @@
+{
+  "type": "enigma2",
+  "options": {
+    "host": "10.77.0.1",
+    "port": 8770,
+    "path": "/hearable",
+    "scheme": "ws",
+    "source_id": "sf8008_private_link",
+    "heartbeat_ms": 2000,
+    "reconnect_initial_ms": 250,
+    "reconnect_max_ms": 5000
+  }
+}

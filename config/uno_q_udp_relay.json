@@ -1,0 +1,15 @@
+{
+  "listen_address": "0.0.0.0",
+  "listen_port": 18079,
+  "forward_address": "127.0.0.1",
+  "forward_port": 18080,
+  "console_mode": "stats",
+  "stats_interval_ms": 1000,
+  "console_samples": 16,
+  "console_bytes": 32,
+  "audio_format": "pcm_s16le",
+  "sample_rate": 16000,
+  "channels": 1,
+  "rx_buffer_bytes": 1048576,
+  "tx_buffer_bytes": 1048576
+}

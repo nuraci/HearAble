@@ -1,0 +1,909 @@
+<title>HearAble in italiano</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+
+<style>
+:root{
+  --ground:#eef1f5;
+  --surface:#ffffff;
+  --surface-2:#e4e9ef;
+  --ink:#141d2b;
+  --ink-2:#3e4d60;
+  --ink-3:#6a7a8d;
+  --rule:#cbd4de;
+  --rule-strong:#9fadbd;
+  --accent:#a65e06;
+  --accent-fill:#e79a32;
+  --accent-wash:#fbeeda;
+  --measure:#1a666f;
+  --measure-wash:#dcecee;
+  --pass:#2a6d47;
+  --nogo:#a5382b;
+  --band:#0a0d12;
+  --band-ink:#ffffff;
+  --shadow:0 1px 2px rgba(20,29,43,.06),0 8px 24px -12px rgba(20,29,43,.22);
+
+  --sans:"Archivo",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --serif:"Source Serif 4",Georgia,"Times New Roman",serif;
+  --mono:"IBM Plex Mono",ui-monospace,"SF Mono",Menlo,monospace;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --ground:#0d1218;
+    --surface:#141b23;
+    --surface-2:#1b242e;
+    --ink:#e7edf3;
+    --ink-2:#b4c1cf;
+    --ink-3:#8496a8;
+    --rule:#28323d;
+    --rule-strong:#3d4b59;
+    --accent:#eaa751;
+    --accent-fill:#e79a32;
+    --accent-wash:#2a2115;
+    --measure:#5cb9c4;
+    --measure-wash:#12272a;
+    --pass:#5cb381;
+    --nogo:#dd7a6b;
+    --band:#04060a;
+    --band-ink:#ffffff;
+    --shadow:0 1px 2px rgba(0,0,0,.4),0 10px 28px -14px rgba(0,0,0,.7);
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#0d1218;
+  --surface:#141b23;
+  --surface-2:#1b242e;
+  --ink:#e7edf3;
+  --ink-2:#b4c1cf;
+  --ink-3:#8496a8;
+  --rule:#28323d;
+  --rule-strong:#3d4b59;
+  --accent:#eaa751;
+  --accent-fill:#e79a32;
+  --accent-wash:#2a2115;
+  --measure:#5cb9c4;
+  --measure-wash:#12272a;
+  --pass:#5cb381;
+  --nogo:#dd7a6b;
+  --band:#04060a;
+  --band-ink:#ffffff;
+  --shadow:0 1px 2px rgba(0,0,0,.4),0 10px 28px -14px rgba(0,0,0,.7);
+}
+
+*{box-sizing:border-box}
+body{
+  background:var(--ground);
+  color:var(--ink);
+  font-family:var(--serif);
+  font-size:17px;
+  line-height:1.62;
+  -webkit-font-smoothing:antialiased;
+}
+
+/* ---------- masthead ---------- */
+.masthead{
+  position:sticky;
+  top:env(safe-area-inset-top,0px);
+  z-index:40;
+  background:color-mix(in srgb,var(--ground) 88%,transparent);
+  backdrop-filter:blur(10px);
+  border-bottom:1px solid var(--rule);
+}
+.masthead-inner{
+  max-width:1180px;margin:0 auto;
+  padding-block:10px;padding-inline:20px;
+  display:flex;align-items:center;gap:20px;flex-wrap:wrap;
+}
+.wordmark{
+  font-family:var(--sans);font-weight:700;font-size:15px;
+  letter-spacing:.14em;text-transform:uppercase;color:var(--ink);
+  display:flex;align-items:center;gap:9px;white-space:nowrap;
+}
+.wordmark .dot{width:9px;height:9px;border-radius:50%;background:var(--accent-fill);flex:none}
+.masthead nav{display:flex;gap:2px;flex-wrap:wrap;margin-left:auto}
+.masthead nav a{
+  font-family:var(--sans);font-size:12.5px;font-weight:500;
+  letter-spacing:.04em;color:var(--ink-3);text-decoration:none;
+  padding:5px 9px;border-radius:5px;
+}
+.masthead nav a:hover{color:var(--ink);background:var(--surface-2)}
+.masthead nav a:focus-visible,a:focus-visible,button:focus-visible{
+  outline:2px solid var(--accent-fill);outline-offset:2px;
+}
+
+/* ---------- shell ---------- */
+.wrap{max-width:1180px;margin:0 auto;padding-inline:20px}
+main{max-width:760px;margin:0 auto;padding-inline:20px;padding-block:0 96px}
+
+/* ---------- hero ---------- */
+.hero{padding-block:56px 40px;border-bottom:1px solid var(--rule)}
+.eyebrow{
+  font-family:var(--sans);font-size:11.5px;font-weight:600;
+  letter-spacing:.2em;text-transform:uppercase;color:var(--accent);
+  margin:0 0 18px;
+}
+h1{
+  font-family:var(--sans);font-weight:700;
+  font-size:clamp(2.3rem,7vw,3.6rem);line-height:1.04;
+  letter-spacing:-.022em;margin:0 0 20px;text-wrap:balance;
+}
+.standfirst{
+  font-size:clamp(1.08rem,2.6vw,1.32rem);line-height:1.5;
+  color:var(--ink-2);margin:0 0 30px;max-width:34em;
+}
+.standfirst strong{color:var(--ink);font-weight:600}
+.byline{
+  font-family:var(--sans);font-size:12.5px;color:var(--ink-3);
+  letter-spacing:.03em;margin:0;
+}
+.byline b{color:var(--ink-2);font-weight:600}
+
+/* ---------- instrument strip ---------- */
+.strip{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));
+  gap:1px;background:var(--rule);border:1px solid var(--rule);
+  border-radius:8px;overflow:hidden;margin:34px 0 0;
+}
+.strip div{background:var(--surface);padding:15px 16px}
+.strip dt{
+  font-family:var(--sans);font-size:10.5px;font-weight:600;
+  letter-spacing:.13em;text-transform:uppercase;color:var(--ink-3);
+  margin:0 0 7px;
+}
+.strip dd{
+  margin:0;font-family:var(--mono);font-size:1.32rem;font-weight:500;
+  font-variant-numeric:tabular-nums;color:var(--ink);line-height:1.15;
+}
+.strip dd span{font-size:.74em;color:var(--ink-3);font-weight:400}
+
+/* ---------- sections ---------- */
+section{padding-block:56px 0;scroll-margin-top:72px}
+h2{
+  font-family:var(--sans);font-weight:700;
+  font-size:clamp(1.55rem,4.2vw,2.05rem);line-height:1.14;
+  letter-spacing:-.016em;margin:0 0 6px;text-wrap:balance;
+}
+.section-num{
+  font-family:var(--mono);font-size:12px;font-weight:500;
+  color:var(--accent);letter-spacing:.1em;display:block;margin:0 0 10px;
+}
+.kicker{
+  color:var(--ink-3);font-size:1.02rem;margin:0 0 26px;
+  padding-bottom:18px;border-bottom:1px solid var(--rule);
+}
+h3{
+  font-family:var(--sans);font-weight:600;font-size:1.16rem;
+  letter-spacing:-.008em;margin:38px 0 12px;color:var(--ink);
+}
+h4{
+  font-family:var(--sans);font-weight:600;font-size:.86rem;
+  letter-spacing:.09em;text-transform:uppercase;color:var(--ink-3);
+  margin:28px 0 10px;
+}
+p{margin:0 0 17px}
+a{color:var(--accent);text-decoration-thickness:1px;text-underline-offset:2px}
+strong{font-weight:600}
+ul,ol{margin:0 0 17px;padding-left:1.3em}
+li{margin-bottom:7px}
+li::marker{color:var(--ink-3)}
+
+/* ---------- the subtitle band: the product's own artefact ---------- */
+.band{
+  background:var(--band);border-radius:6px;
+  padding:18px 22px;margin:30px 0;
+  box-shadow:var(--shadow);
+}
+.band p{
+  margin:0;color:var(--band-ink);text-align:center;
+  font-family:var(--sans);font-weight:500;
+  font-size:clamp(.98rem,2.5vw,1.16rem);line-height:1.5;
+  text-wrap:balance;
+}
+.band p+p{margin-top:2px}
+.band .dim{color:#9aa6b4;font-size:.8em;font-weight:500}
+.band-caption{
+  font-family:var(--sans);font-size:11.5px;color:var(--ink-3);
+  text-align:center;margin:-20px 0 30px;letter-spacing:.03em;
+}
+
+/* ---------- tables ---------- */
+.tscroll{overflow-x:auto;margin:0 0 22px;border:1px solid var(--rule);border-radius:8px;background:var(--surface)}
+table{border-collapse:collapse;width:100%;font-size:.9rem}
+caption{
+  font-family:var(--sans);font-size:11px;font-weight:600;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--ink-3);text-align:left;
+  padding:13px 16px 0;
+}
+th,td{padding:9px 16px;text-align:left;border-bottom:1px solid var(--rule);vertical-align:top}
+thead th{
+  font-family:var(--sans);font-size:11px;font-weight:600;letter-spacing:.09em;
+  text-transform:uppercase;color:var(--ink-3);
+  border-bottom:1px solid var(--rule-strong);white-space:nowrap;
+}
+tbody tr:last-child th,tbody tr:last-child td{border-bottom:none}
+td.n,th.n{text-align:right;font-family:var(--mono);font-variant-numeric:tabular-nums;white-space:nowrap}
+tbody th{font-family:var(--serif);font-weight:600;font-size:.92rem}
+code{
+  font-family:var(--mono);font-size:.855em;
+  background:var(--surface-2);padding:1px 5px;border-radius:4px;
+  color:var(--ink);white-space:nowrap;
+}
+th code,td code{background:transparent;padding:0}
+
+/* ---------- verdict chips ---------- */
+.chip{
+  font-family:var(--sans);font-size:10.5px;font-weight:700;letter-spacing:.09em;
+  text-transform:uppercase;padding:2px 7px;border-radius:4px;white-space:nowrap;
+  display:inline-block;
+}
+.chip.pass{background:color-mix(in srgb,var(--pass) 16%,transparent);color:var(--pass)}
+.chip.nogo{background:color-mix(in srgb,var(--nogo) 16%,transparent);color:var(--nogo)}
+.chip.open{background:var(--accent-wash);color:var(--accent)}
+
+/* ---------- callout ---------- */
+.note{
+  border-left:3px solid var(--accent-fill);
+  background:var(--surface);
+  padding:17px 20px;margin:26px 0;border-radius:0 7px 7px 0;
+  box-shadow:var(--shadow);
+}
+.note p:last-child{margin-bottom:0}
+.note h4{margin-top:0}
+.note.measure{border-left-color:var(--measure)}
+.note.measure h4{color:var(--measure)}
+
+/* ---------- code block ---------- */
+pre{
+  font-family:var(--mono);font-size:.8rem;line-height:1.62;
+  background:var(--surface);color:var(--ink-2);
+  border:1px solid var(--rule);border-radius:8px;
+  padding:15px 17px;overflow-x:auto;margin:0 0 22px;
+}
+pre b{color:var(--ink);font-weight:600}
+pre .c{color:var(--ink-3)}
+
+/* ---------- diagram ---------- */
+figure{margin:30px 0}
+.dscroll{overflow-x:auto;border:1px solid var(--rule);border-radius:8px;background:var(--surface);padding:18px 14px}
+svg{display:block;max-width:100%;height:auto;margin:0 auto}
+figcaption{
+  font-family:var(--sans);font-size:12px;color:var(--ink-3);
+  margin-top:11px;line-height:1.5;
+}
+
+/* ---------- spec list ---------- */
+.spec{
+  display:grid;grid-template-columns:minmax(140px,auto) 1fr;
+  gap:0;border:1px solid var(--rule);border-radius:8px;
+  background:var(--surface);overflow:hidden;margin:0 0 22px;font-size:.9rem;
+}
+.spec dt{
+  font-family:var(--sans);font-size:11px;font-weight:600;letter-spacing:.07em;
+  text-transform:uppercase;color:var(--ink-3);
+  padding:10px 16px;border-bottom:1px solid var(--rule);
+}
+.spec dd{margin:0;padding:10px 16px;border-bottom:1px solid var(--rule)}
+.spec dt:last-of-type,.spec dd:last-of-type{border-bottom:none}
+
+/* ---------- timeline ---------- */
+.tl{list-style:none;padding:0;margin:26px 0 0}
+.tl li{
+  position:relative;padding:0 0 26px 30px;
+  border-left:1px solid var(--rule);margin:0;
+}
+.tl li:last-child{border-left-color:transparent;padding-bottom:0}
+.tl li::before{
+  content:"";position:absolute;left:-5px;top:7px;
+  width:9px;height:9px;border-radius:50%;
+  background:var(--accent-fill);border:2px solid var(--ground);
+}
+.tl li.dead::before{background:var(--nogo)}
+.tl h3{margin:0 0 6px;font-size:1.03rem}
+.tl p{margin:0 0 8px;font-size:.96rem;color:var(--ink-2)}
+.tl .when{
+  font-family:var(--mono);font-size:11px;color:var(--ink-3);
+  letter-spacing:.04em;display:block;margin-bottom:3px;
+}
+
+/* ---------- two-up ---------- */
+.two{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin:0 0 22px}
+.two>div{
+  background:var(--surface);border:1px solid var(--rule);
+  border-radius:8px;padding:16px 18px;
+}
+.two h4{margin-top:0}
+.two p:last-child{margin-bottom:0}
+.two p{font-size:.93rem}
+
+footer{
+  border-top:1px solid var(--rule);margin-top:70px;
+  padding-block:30px 10px;
+  font-family:var(--sans);font-size:12.5px;color:var(--ink-3);
+}
+footer p{margin:0 0 7px}
+
+@media (max-width:640px){
+  body{font-size:16px}
+  .masthead nav{display:none}
+  .two{grid-template-columns:1fr}
+  .spec{grid-template-columns:1fr}
+  .spec dt{padding-bottom:0;border-bottom:none}
+  .spec dd{padding-top:4px}
+  section{padding-block:44px 0}
+}
+@media (prefers-reduced-motion:reduce){
+  *{animation:none!important;transition:none!important;scroll-behavior:auto!important}
+}
+html{scroll-behavior:smooth}
+</style>
+
+<header class="masthead">
+  <div class="masthead-inner">
+    <span class="wordmark"><span class="dot"></span>HearAble</span>
+    <nav>
+      <a href="#scopo">Scopo</a>
+      <a href="#indagine">Indagine</a>
+      <a href="#percorso">Percorso</a>
+      <a href="#decoder">Decoder</a>
+      <a href="#minipc">Mini PC</a>
+      <a href="#file">File</a>
+      <a href="#protocolli">Protocolli</a>
+      <a href="#aperto">Aperto</a>
+      <a href="#costruito">Come</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+
+<div class="hero">
+  <p class="eyebrow">Sottotitolazione italiana in diretta · DVB-T2 · tutto in casa</p>
+  <h1>Sottotitoli per il televisore che hai già</h1>
+  <p class="standfirst">HearAble mette <strong>i sottotitoli in italiano sulla televisione in diretta</strong>, circa un secondo dopo la voce, per uno spettatore che ci sente poco. Gira su un ricevitore terrestre di consumo e su un mini PC senza ventola, collegati da un cavo privato. Niente esce di casa, non c'è niente da sottoscrivere, e <strong>il telecomando continua a funzionare</strong>.</p>
+  <p class="byline">Orchestrato da <b>Nunzio Raciti</b>, scritto da <b>Claude</b> (Opus) sotto la sua direzione · versione <b>1.5.1</b> · 246 test verdi · settembre 2026</p>
+
+  <dl class="strip">
+    <div><dt>Ritardo del sottotitolo</dt><dd>~1,0<span> s</span></dd></div>
+    <div><dt>Fattore di tempo reale</dt><dd>0,4848</dd></div>
+    <div><dt>Audio sul filo</dt><dd>26<span> kB/s</span></dd></div>
+    <div><dt>Sintonizzatori consumati</dt><dd>0</dd></div>
+  </dl>
+</div>
+
+<!-- ============================================================ -->
+<section id="scopo">
+  <span class="section-num">01</span>
+  <h2>A che cosa serve</h2>
+  <p class="kicker">Uno spettatore, un televisore, e un buco che la sottotitolazione televisiva non copre.</p>
+
+  <p>Le emittenti italiane sottotitolano alcuni programmi e altri no. Il telegiornale in diretta, le finestre regionali, lo sport, i talk show, quasi tutto il pomeriggio: arrivano senza sottotitoli, oppure con sottotitoli così in ritardo da descrivere una frase diversa da quella sullo schermo. Per chi ci sente poco è la differenza fra guardare la televisione e guardare delle persone che muovono la bocca.</p>
+
+  <p>HearAble nasce esattamente per quel caso: <strong>sottotitolare quello che c'è adesso, in italiano, sul televisore stesso</strong> — non su un telefono, non su un tablet appoggiato allo schermo, e senza chiedere allo spettatore di imparare niente oltre a un tasto.</p>
+
+  <p>Tre vincoli hanno deciso tutto quello che viene dopo.</p>
+
+  <ul>
+    <li><strong>Non deve rompere il televisore.</strong> Il decoder ha un solo sintonizzatore terrestre. Se sottotitolare costa un sintonizzatore, o si prende un tasto del telecomando, o fa sparire l'immagine, lo spettatore ci perde più di quanto ci guadagni.</li>
+    <li><strong>Deve girare in casa.</strong> Nessun servizio di riconoscimento nel cloud, nessun account, nessun caricamento di quello che una persona guarda nel suo salotto.</li>
+    <li><strong>Si deve poter usare premendo un tasto.</strong> Lo spettatore preme <code>F4</code>. Tutto il resto — svegliare il riconoscitore, collegarsi, smontare tutto, spegnere dopo — è un problema del sistema.</li>
+  </ul>
+
+  <div class="band">
+    <p class="dim">By Nunzio Raciti</p>
+    <p>HearAble · Avvio...</p>
+  </div>
+  <p class="band-caption">Il saluto, come appare sul televisore. Quattro secondi, poi il primo sottotitolo vero lo sostituisce.</p>
+</section>
+
+<!-- ============================================================ -->
+<section id="indagine">
+  <span class="section-num">02</span>
+  <h2>La prima domanda: da dove viene l'audio?</h2>
+  <p class="kicker">Tutto quello che sta a valle è ordinario. Tirare fuori l'audio pulito del programma da un decoder chiuso, senza pagare pegno, è la parte che è stata inventata.</p>
+
+  <p>Un riconoscitore ha bisogno dell'audio del programma. Le strade ovvie sono state provate, e ciascuna chiedeva un prezzo che il progetto non poteva pagare.</p>
+
+  <div class="tscroll">
+    <table>
+      <caption>Sorgenti audio candidate</caption>
+      <thead><tr><th>Strada</th><th>Esito</th><th>Perché</th></tr></thead>
+      <tbody>
+        <tr><th>Microfono vicino al televisore</th><td><span class="chip nogo">Scartata</span></td><td>Rumore della stanza, e il fischio dell'apparecchio acustico dello spettatore stesso. Daremmo al riconoscitore la versione peggiore di un segnale che dentro il box esiste perfetto.</td></tr>
+        <tr><th>Estrattore audio HDMI</th><td><span class="chip nogo">Scartata</span></td><td>Hardware in più in salotto, e l'audio arriva già decodificato e ricodificato — cioè dopo il buffer di uscita del decoder, che è proprio il ritardo che stiamo cercando di non pagare.</td></tr>
+        <tr><th>Streaming Enigma2 sulla porta 8001</th><td><span class="chip nogo">Scartata</span></td><td>Funziona, e <em>trattiene il sintonizzatore</em>. Cambiando canale verso un altro multiplex il box restava senza servizio. Misurato, non supposto.</td></tr>
+        <tr><th>Filtro PID sul demux DVB</th><td><span class="chip pass">Scelta</span></td><td>Leggere il PID audio direttamente dal demux del servizio <em>già sintonizzato</em>. Non costa un sintonizzatore, non ricodifica niente, e arriva prima dell'immagine.</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>Il tap sul demux</h3>
+  <p>Il ricevitore monta uno stack DVB Hisilicon ed espone l'API DVB standard di Linux. Enigma2 tiene aperti ventiquattro filtri PID su <code>demux0</code> mentre mostra un canale; quello di HearAble è il venticinquesimo. È solo userspace — nessun modulo kernel, nessuna immagine modificata, niente di persistente.</p>
+
+<pre><span class="c"># tutto il meccanismo, in cinque chiamate</span>
+open("/dev/dvb/adapter0/demux0", O_RDWR | O_NONBLOCK)
+DMX_SET_BUFFER_SIZE   1 MiB
+DMX_SET_PES_FILTER    pid    = &lt;il PID audio scelto dallo spettatore&gt;
+                      input  = <b>DMX_IN_FRONTEND</b>
+                      output = <b>DMX_OUT_TSDEMUX_TAP</b>
+                      flags  = DMX_IMMEDIATE_START
+read()                <span class="c">pacchetti MPEG-TS da 188 byte</span></pre>
+
+  <p>Le tre modalità di uscita sono state provate sul box vero invece che dedotte dall'header, e la differenza conta: <code>DMX_OUT_TS_TAP</code> si apre senza errori e consegna <strong>zero byte</strong> — manda al device <code>dvr</code>, non a questo descrittore. <code>DMX_OUT_TAP</code> funziona a 127,3 kbit/s con il primo dato dopo 0,27 s. <code>DMX_OUT_TSDEMUX_TAP</code> funziona a 132,8 kbit/s con il primo dato dopo <strong>0,03 s</strong>, e ha vinto su quel numero.</p>
+
+  <div class="note measure">
+    <h4>Perché <code>DMX_IN_FRONTEND</code> è tutto il trucco</h4>
+    <p>Il filtro legge il flusso che <em>entra</em> nel box, non quello che il decoder sta presentando. HearAble sta quindi <strong>davanti alle orecchie dello spettatore</strong>, e ogni millisecondo di quel vantaggio è un millisecondo regalato al riconoscitore. È anche il motivo per cui immagine e sottotitoli non possono separarsi per una ragione nostra: nel percorso dell'immagine non ci siamo proprio.</p>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<section id="percorso">
+  <span class="section-num">03</span>
+  <h2>Il percorso, comprese le parti finite male</h2>
+  <p class="kicker">Cinque campagne. Due sono finite contro una porta chiusa, e sono proprio quelle due a spiegare perché il sistema che gira oggi è fatto così.</p>
+
+  <ol class="tl">
+    <li>
+      <span class="when">Baseline su PC</span>
+      <h3>Dimostrare il riconoscitore prima di costruirci intorno</h3>
+      <p>Nemotron 3.5 ASR Streaming 0.6B, quantizzato <code>q8_0</code>, su NeMo-Speech.cpp. Su uno Xeon da scrivania trascrive l'italiano a <strong>RTF 0,476</strong> con un ritmo realistico e un tasso di errore sulle parole mostrate del <strong>4,74 %</strong>. Una Radeon RX 6600 via Vulkan è più veloce in pura portata, ma sotto ritmo — l'unica modalità che conti per l'audio dal vivo, perché la GPU non può sovrapporre lavoro che non ha ancora ricevuto — il suo vantaggio crolla da 5,7× a 2,2×. È quella singola osservazione il motivo per cui l'appliance in produzione non ha nessuna GPU.</p>
+    </li>
+    <li class="dead">
+      <span class="when">Arduino UNO Q · chiusa</span>
+      <h3>Una scheda da cinquanta euro può ospitare il riconoscitore?</h3>
+      <p>No, ed è valsa la pena di misurarlo in cinque modi per esserne sicuri. Build nativa su CPU: <strong>RTF 2,3146</strong>. Vulkan sull'Adreno 702: compila 57,9 MB di shader senza un errore, poi gira a <strong>0,267 GFLOP/s</strong> prima che il driver rifiuti. La GPU misurata da sola arriva a 2,1 GFLOP/s con 3,43 GB/s di banda. Il DSP Hexagon che tutti suggeriscono <em>non esiste</em> su questo SoC: non c'è nessun dominio CDSP da usare.</p>
+      <p>Il numero di chiusura è quello onesto: per arrivare al tempo reale serve <strong>7,33×</strong>, e la fisica del bus di memoria ne concede <strong>2,79×</strong>. Amdahl non ha nemmeno avuto la sua occasione: ha chiuso prima la banda.</p>
+      <p>Due cose però sono sopravvissute, e contano: gli stessi sorgenti compilano sulla scheda con il suo gcc, e la trascrizione è <em>identica bit per bit a quella del PC</em> — le stesse 74 parole, <strong>WER 0,00 %</strong>. Architettura diversa, compilatore diverso, kernel SIMD diversi, e non si muove una lettera.</p>
+    </li>
+    <li>
+      <span class="when">La correzione dei 64 millisecondi</span>
+      <h3>Una misura sbagliata di un fattore quaranta</h3>
+      <p>La catena tratteneva i sottotitoli per 1,5 s, perché una misura fatta da uno screenshot diceva che il tap correva <strong>2,4 s</strong> davanti all'immagine. Chiedendolo al decoder direttamente — <code>AUDIO_GET_PTS</code> contro il PTS del pacchetto che il filtro PID consegna <em>nello stesso istante</em> — vengono fuori <strong>64 ms</strong>, con uno scarto di 32 ms su cento campioni.</p>
+      <p>Il ritardo di pubblicazione è andato a zero e ci è rimasto. L'orecchio dello spettatore lo aveva detto prima dello strumento.</p>
+    </li>
+    <li>
+      <span class="when">T9 Plus · Intel N95</span>
+      <h3>L'appliance che è andata in produzione</h3>
+      <p>Un mini PC senza ventola a metà del tempo reale, su un cavo privato, svegliato dal decoder e spento da sé. <span class="chip pass">T9_HEARABLE_GO</span> Mezz'ora di torture deliberate con quindici interventi: zero chunk persi, zero sottotitoli stantii. Diciannove guasti iniettati, diciannove riprese senza che nessuno toccasse una tastiera.</p>
+    </li>
+    <li class="dead">
+      <span class="when">Ritardo A/V · chiuso</span>
+      <h3>Si poteva ritardare il televisore invece di affrettare i sottotitoli?</h3>
+      <p>L'idea: trattenere l'immagine di circa un secondo perché i sottotitoli la raggiungano, mentre HearAble continua a leggere il segnale live. <strong>Il meccanismo funziona</strong> — con il timeshift attivo il tap resta a 0,072 s dal live mentre il decoder presenta un'immagine in buffer 51,36 s indietro, e il ritardo si può impostare dal plugin posizionandosi sul bordo live meno la quantità voluta.</p>
+      <p>È stato chiuso lo stesso, da una misura presa su due minuti invece che su dieci secondi: <strong>il ritardo si svuota da solo fino al live</strong> — 0,577 s → 0,225 s → 0,065 s. La tabella precedente, che lo dava «stabile a 48 ms», aveva misurato il <em>raggiungimento</em> del ritardo, non la sua <em>tenuta</em>: ogni riga era una finestra di dieci secondi.</p>
+    </li>
+  </ol>
+
+  <div class="note">
+    <h4>L'abitudine che ha prodotto quasi tutte le scoperte</h4>
+    <p>Ogni difetto che conta, in questo progetto, è stato trovato facendo la cosa vera e non la sua imitazione comoda. Staccare il cavo ha trovato un socket morto che <code>ip link down</code> non riproduceva. Premere il telecomando ha trovato due difetti che una matrice da diciannove casi aveva dichiarato verdi. Togliere la corrente ha risposto a una domanda sul Wake-on-LAN a cui mesi di spegnimenti via software non potevano rispondere. Le misure valgono quanto la cosa su cui sono prese.</p>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<section id="architettura">
+  <span class="section-num">04</span>
+  <h2>Come sta insieme</h2>
+  <p class="kicker">Due macchine, un cavo privato, due piccoli protocolli che vanno in direzioni opposte.</p>
+
+  <figure>
+    <div class="dscroll">
+      <svg viewBox="0 0 760 320" role="img" aria-label="Catena del segnale: dall'antenna al tap sul demux del decoder, audio compresso sul cavo privato verso il mini PC che riconosce, e due righe di sottotitolo che tornano sul pannello del decoder.">
+        <defs>
+          <marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+            <path d="M0,0 L10,5 L0,10 z" fill="var(--rule-strong)"/>
+          </marker>
+          <marker id="ar-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+            <path d="M0,0 L10,5 L0,10 z" fill="var(--accent-fill)"/>
+          </marker>
+          <marker id="ar-m" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+            <path d="M0,0 L10,5 L0,10 z" fill="var(--measure)"/>
+          </marker>
+        </defs>
+
+        <rect x="70" y="40" width="250" height="180" rx="9" fill="var(--surface-2)" stroke="var(--rule-strong)" stroke-width="1"/>
+        <text x="84" y="62" font-family="Archivo,sans-serif" font-size="11" font-weight="600" letter-spacing="1.4" fill="var(--ink-3)">DECODER · SF8008</text>
+
+        <path d="M30 70 l0 60 M30 70 l-14 -16 M30 70 l14 -16" fill="none" stroke="var(--ink-3)" stroke-width="1.6"/>
+        <text x="30" y="150" text-anchor="middle" font-family="Archivo,sans-serif" font-size="10" fill="var(--ink-3)">DVB-T2</text>
+        <line x1="34" y1="100" x2="64" y2="100" stroke="var(--rule-strong)" stroke-width="1.4" marker-end="url(#ar)"/>
+
+        <rect x="88" y="78" width="96" height="44" rx="6" fill="var(--surface)" stroke="var(--rule)"/>
+        <text x="136" y="97" text-anchor="middle" font-family="Archivo,sans-serif" font-size="11.5" font-weight="600" fill="var(--ink)">frontend1</text>
+        <text x="136" y="112" text-anchor="middle" font-family="IBM Plex Mono,monospace" font-size="9.5" fill="var(--ink-3)">demux0</text>
+
+        <rect x="88" y="146" width="96" height="44" rx="6" fill="var(--surface)" stroke="var(--accent-fill)" stroke-width="1.4"/>
+        <text x="136" y="165" text-anchor="middle" font-family="Archivo,sans-serif" font-size="11.5" font-weight="600" fill="var(--ink)">tap sul PID</text>
+        <text x="136" y="180" text-anchor="middle" font-family="IBM Plex Mono,monospace" font-size="9.5" fill="var(--accent)">+64 ms</text>
+        <line x1="136" y1="122" x2="136" y2="142" stroke="var(--rule-strong)" stroke-width="1.4" marker-end="url(#ar)"/>
+
+        <rect x="206" y="78" width="96" height="44" rx="6" fill="var(--surface)" stroke="var(--rule)"/>
+        <text x="254" y="97" text-anchor="middle" font-family="Archivo,sans-serif" font-size="11.5" font-weight="600" fill="var(--ink)">pannello</text>
+        <text x="254" y="112" text-anchor="middle" font-family="IBM Plex Mono,monospace" font-size="9.5" fill="var(--ink-3)">due righe</text>
+
+        <rect x="206" y="146" width="96" height="44" rx="6" fill="var(--surface)" stroke="var(--rule)"/>
+        <text x="254" y="165" text-anchor="middle" font-family="Archivo,sans-serif" font-size="11.5" font-weight="600" fill="var(--ink)">relay</text>
+        <text x="254" y="180" text-anchor="middle" font-family="IBM Plex Mono,monospace" font-size="9.5" fill="var(--ink-3)">ffmpeg</text>
+        <line x1="184" y1="168" x2="202" y2="168" stroke="var(--rule-strong)" stroke-width="1.4" marker-end="url(#ar)"/>
+
+        <rect x="470" y="40" width="240" height="180" rx="9" fill="var(--surface-2)" stroke="var(--rule-strong)" stroke-width="1"/>
+        <text x="484" y="62" font-family="Archivo,sans-serif" font-size="11" font-weight="600" letter-spacing="1.4" fill="var(--ink-3)">MINI PC · INTEL N95</text>
+
+        <rect x="490" y="78" width="200" height="40" rx="6" fill="var(--surface)" stroke="var(--rule)"/>
+        <text x="590" y="103" text-anchor="middle" font-family="Archivo,sans-serif" font-size="11.5" font-weight="600" fill="var(--ink)">decodifica AAC + resample</text>
+
+        <rect x="490" y="128" width="200" height="46" rx="6" fill="var(--surface)" stroke="var(--measure)" stroke-width="1.4"/>
+        <text x="590" y="148" text-anchor="middle" font-family="Archivo,sans-serif" font-size="11.5" font-weight="600" fill="var(--ink)">Nemotron 0.6B q8_0</text>
+        <text x="590" y="163" text-anchor="middle" font-family="IBM Plex Mono,monospace" font-size="9.5" fill="var(--measure)">RTF 0,4848</text>
+        <line x1="590" y1="118" x2="590" y2="124" stroke="var(--rule-strong)" stroke-width="1.4" marker-end="url(#ar)"/>
+
+        <rect x="490" y="182" width="200" height="30" rx="6" fill="var(--surface)" stroke="var(--rule)"/>
+        <text x="590" y="202" text-anchor="middle" font-family="Archivo,sans-serif" font-size="11.5" font-weight="600" fill="var(--ink)">stabilizzatore → due righe</text>
+        <line x1="590" y1="174" x2="590" y2="178" stroke="var(--rule-strong)" stroke-width="1.4" marker-end="url(#ar)"/>
+
+        <line x1="306" y1="168" x2="484" y2="168" stroke="var(--accent-fill)" stroke-width="1.8" marker-end="url(#ar-a)"/>
+        <text x="395" y="160" text-anchor="middle" font-family="IBM Plex Mono,monospace" font-size="10" fill="var(--accent)">26 kB/s AAC</text>
+        <text x="395" y="186" text-anchor="middle" font-family="Archivo,sans-serif" font-size="10" fill="var(--ink-3)">MPEG-TS su TCP</text>
+
+        <path d="M486 96 L400 96 L400 100 L306 100" fill="none" stroke="var(--measure)" stroke-width="1.8" marker-end="url(#ar-m)"/>
+        <text x="395" y="88" text-anchor="middle" font-family="IBM Plex Mono,monospace" font-size="10" fill="var(--measure)">subtitle_state</text>
+        <text x="395" y="119" text-anchor="middle" font-family="Archivo,sans-serif" font-size="10" fill="var(--ink-3)">WebSocket</text>
+
+        <rect x="325" y="236" width="140" height="26" rx="5" fill="var(--surface)" stroke="var(--rule)"/>
+        <text x="395" y="253" text-anchor="middle" font-family="IBM Plex Mono,monospace" font-size="10" fill="var(--ink-2)">10.77.0.0/24</text>
+        <line x1="395" y1="200" x2="395" y2="232" stroke="var(--rule)" stroke-width="1" stroke-dasharray="3 3"/>
+        <text x="395" y="282" text-anchor="middle" font-family="Archivo,sans-serif" font-size="10.5" fill="var(--ink-3)">cavo privato · niente router, niente DHCP</text>
+
+        <rect x="206" y="236" width="96" height="52" rx="6" fill="var(--band)" stroke="var(--rule-strong)"/>
+        <rect x="216" y="266" width="76" height="13" rx="2" fill="#ffffff" opacity="0.92"/>
+        <text x="254" y="256" text-anchor="middle" font-family="Archivo,sans-serif" font-size="10.5" font-weight="600" fill="#ffffff">televisore</text>
+        <line x1="254" y1="194" x2="254" y2="232" stroke="var(--rule-strong)" stroke-width="1.4" marker-end="url(#ar)"/>
+      </svg>
+    </div>
+    <figcaption>L'audio esce dal decoder compresso e non torna mai indietro; rientrano soltanto due righe di testo. Il televisore è alimentato dal decoder esattamente come è sempre stato: HearAble disegna sopra l'immagine e non sta mai nel suo percorso.</figcaption>
+  </figure>
+
+  <p>La divisione è voluta. Il decoder è un apparecchio chiuso con un kernel 4.4 e non ha spazio per un modello di riconoscimento; il mini PC ha la potenza ma non sa disegnare sul televisore. Ciascuno fa quindi l'unica cosa che può: il box preleva e dipinge, il mini PC ascolta e riconosce.</p>
+</section>
+
+<!-- ============================================================ -->
+<section id="decoder">
+  <span class="section-num">05</span>
+  <h2>Il lato decoder</h2>
+  <p class="kicker">Un plugin Enigma2, circa duemila righe, che fa quattro mestieri: preleva, rilancia l'audio, dipinge, e sveglia l'altra macchina.</p>
+
+  <dl class="spec">
+    <dt>Hardware</dt><dd>Octagon SF8008 V3 Supreme Combo (Hisilicon), un sintonizzatore DVB-T2/C su <code>frontend1</code>, un DVB-S2X su <code>frontend0</code></dd>
+    <dt>Immagine</dt><dd>openATV 7.5.1, Linux 4.4.35, Enigma2</dd>
+    <dt>Plugin</dt><dd><code>/usr/lib/enigma2/python/Plugins/Extensions/HearAbleOSD</code>, caricato a <code>WHERE_SESSIONSTART</code></dd>
+    <dt>In ascolto su</dt><dd><code>:8770</code> — <code>/hearable</code> (WebSocket, sottotitoli in ingresso) e <code>/control</code> (HTTP, controllo del relay)</dd>
+    <dt>Stato persistente</dt><dd><code>/etc/enigma2/hearable_look.json</code>, <code>hearable_sync.json</code>, <code>hearable_wol.json</code></dd>
+  </dl>
+
+  <h3>Disegnare su un televisore</h3>
+  <p>Il pannello è una skin Enigma2 costruita a runtime, e quasi ogni sua riga racchiude un difetto trovato su uno schermo vero.</p>
+
+  <div class="two">
+    <div>
+      <h4>Il byte alto è la trasparenza</h4>
+      <p>I colori di Enigma2 sono <code>#AARRGGBB</code> dove <code>AA</code> è la <em>trasparenza</em>, non l'opacità. Il bianco scritto <code>#ffffffff</code> è la definizione che la skin dà di «invisibile»: i glifi venivano disegnati trasparenti e prendevano il colore di quello che avevano dietro — verdi sopra la barra verde, blu sopra quella blu. Il bianco è <code>#00ffffff</code>.</p>
+    </div>
+    <div>
+      <h4>La finestra è la banda, non lo schermo</h4>
+      <p>Una finestra a schermo intero e trasparente sembra identica e si comporta in modo diverso: si porta via il telecomando. Il volume continuava a funzionare, perché è gestito globalmente, ma <code>MENU</code> non faceva niente — il televisore sembrava rotto. Ora la finestra è grande esattamente quanto ciò che disegna.</p>
+    </div>
+  </div>
+
+  <p>Il pannello è due righe di testo bianco centrato su una banda nera all'<strong>85 % di opacità</strong>, ciascuna alta circa il 7,5 % dello schermo, attaccate, appoggiate al 7 % dal bordo inferiore per restare dentro l'area sicura a qualsiasi dimensione. Quella geometria viene dalla pratica televisiva, non da quello che ci stava: si legge come un blocco solo dall'altra parte della stanza. La tela dell'OSD è <strong>1280 × 720</strong> anche su un servizio HD, ed è una trappola che va detta: disporre la banda in coordinate 1080p la manda sotto il bordo dello schermo.</p>
+
+  <h4>Che cosa può cambiare lo spettatore</h4>
+  <div class="tscroll">
+    <table>
+      <caption>Configurazione dell'aspetto · <code>/etc/enigma2/hearable_look.json</code></caption>
+      <thead><tr><th>Chiave</th><th class="n">Intervallo</th><th class="n">In uso</th><th>Effetto</th></tr></thead>
+      <tbody>
+        <tr><th><code>font_scale</code></th><td class="n">0,8 – 1,6</td><td class="n">1,2</td><td>Dimensione del carattere, con la scatola dimensionata dopo il testo, così le discendenti non perdono la coda</td></tr>
+        <tr><th><code>line_gap</code></th><td class="n">0,25 – 1,0</td><td class="n">0,25</td><td>Distanza fra le due righe. Dimezzata due volte su indicazione dello spettatore</td></tr>
+        <tr><th><code>background_opacity</code></th><td class="n">0,0 – 1,0</td><td class="n">0,85</td><td>Opacità della banda. Sotto ~0,8 il bianco sparisce dentro un'immagine chiara</td></tr>
+        <tr><th><code>background_enabled</code></th><td class="n">bool</td><td class="n">true</td><td>Banda accesa o spenta del tutto</td></tr>
+        <tr><th><code>padding</code></th><td class="n">0,0 – 0,5</td><td class="n">0,0</td><td>Spazio in più dentro ogni riga</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p>Una modifica si applica subito: il dialogo viene distrutto e ricreato, invece di richiedere un riavvio di Enigma2 che farebbe sparire l'immagine.</p>
+
+  <h3>Il telecomando</h3>
+  <p>Tre tasti, e nient'altro tolto a Enigma2.</p>
+  <div class="tscroll">
+    <table>
+      <thead><tr><th class="n">Codice</th><th>Tasto</th><th>Che cosa fa</th></tr></thead>
+      <tbody>
+        <tr><td class="n">62</td><th><code>F4</code></th><td>HearAble acceso / spento. All'accensione manda anche il magic packet che sveglia il mini PC.</td></tr>
+        <tr><td class="n">61</td><th><code>F3</code></th><td>Ritardo di pubblicazione in su, 100 ms per pressione</td></tr>
+        <tr><td class="n">60</td><th><code>F2</code></th><td>Ritardo di pubblicazione in giù</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p><strong>HearAble parte spento a ogni avvio.</strong> Lo stato non è persistito di proposito: i sottotitoli sono una cosa che si chiede, e un box che torna da un black-out già disegnando sullo schermo è un box che ha deciso al posto dello spettatore.</p>
+
+  <div class="band">
+    <p class="dim">HearAble 1.5.1</p>
+    <p>Arrivederci</p>
+  </div>
+  <p class="band-caption">Allo spegnimento. La versione compare qui perché è l'unico posto dove uno spettatore senza terminale può leggerla.</p>
+
+  <h3>Il relay: mandare l'audio senza mandare il programma</h3>
+  <p>Un progetto precedente mandava tutto il contenitore — video compreso — e chiedeva alla macchina ricevente di tenere una copia identica bit per bit del file, così da ricostruire la posizione del decoder confrontando un fotogramma preso dal suo schermo. È insostenibile su una macchina piccola, e inutile per la diretta.</p>
+  <p>Il relay manda invece <strong>solo la traccia audio scelta, ancora compressa</strong>: 26 kB/s di MPEG-TS prodotti da un processo <code>ffmpeg</code> fuori da Enigma2, così un ricevitore lento o assente non può mai bloccare l'interfaccia.</p>
+  <ul>
+    <li><strong>È il relay a connettersi verso di noi.</strong> Il mini PC sta in ascolto e si annuncia nel suo poll di controllo. È questo che permette al flusso di partire esattamente da dove si trova lo spettatore, ed è il motivo per cui un ricevitore assente non costa niente al decoder: nessun processo avviato, nessuna porta tenuta aperta.</li>
+    <li><strong>Il flusso dice da dove comincia.</strong> <code>-c copy</code> sa posizionarsi solo su un confine di contenitore, quindi il relay parte circa 0,65 s <em>prima</em> della posizione chiesta. I primi pacchetti di ogni epoca vengono sondati per il loro timestamp e l'eccesso viene scartato lato ricevitore: entrambe le parti conoscono un timestamp vero, quindi la differenza si butta via invece di correggerla con un anello di retroazione.</li>
+    <li><strong>Un ricevitore che smette di chiedere sparisce</strong> dopo un TTL di 8 s, e il relay si ferma da solo.</li>
+  </ul>
+
+  <h3>Svegliare l'altra macchina</h3>
+  <p>Premere <code>F4</code> manda un magic packet Wake-on-LAN sul link privato — in broadcast su <code>10.77.0.255</code>, porte 9 e 7, ripetuto fino a quindici volte ogni venti secondi, che dà una finestra di cinque minuti. Tempo di risveglio misurato da spento via software: <strong>32,0 s</strong>, tre cicli su tre.</p>
+  <div class="note">
+    <h4>Il Wake-on-LAN era misurato, e non collegato</h4>
+    <p>Per un po' il pacchetto era dimostrato in un banco di prova e il plugin non lo mandava mai. Il primo uso vero se ne è accorto subito. Ora fa parte dell'accensione di HearAble, e anche il contrario è gestito: spegnere il decoder manda un datagramma di commiato, così il mini PC non aspetta la scadenza del suo timer di inattività.</p>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<section id="minipc">
+  <span class="section-num">06</span>
+  <h2>Il lato mini PC</h2>
+  <p class="kicker">Un box N95 senza ventola in cui nessuno entra: si sveglia quando glielo si chiede, riconosce, e si spegne da solo quando il televisore smette di parlare.</p>
+
+  <dl class="spec">
+    <dt>Hardware</dt><dd>T9 Plus, Intel N95 — 4 core / 4 thread, 800 MHz – 3,40 GHz, L1d 128 KiB · L2 2 MiB · L3 6 MiB, 15 GiB di RAM</dd>
+    <dt>SIMD</dt><dd><code>sse4_2</code>, <code>avx</code>, <code>avx2</code>, <code>fma</code>, <code>f16c</code>, <code>bmi2</code>, <code>avx_vnni</code></dd>
+    <dt>Sistema</dt><dd>Debian 13 trixie, Linux 6.12.107</dd>
+    <dt>Modello</dt><dd>Nemotron 3.5 ASR Streaming 0.6B, <code>q8_0</code>, 741 548 352 byte, sha256 <code>a5c435f2…f429ae</code></dd>
+    <dt>Runtime</dt><dd>NeMo-Speech.cpp a <code>4f96762</code>, ggml, solo CPU — nella macchina non c'è GPU e non ne serve</dd>
+    <dt>Rete</dt><dd><code>enp1s0</code> = <code>10.77.0.2</code> statico, cavo privato verso il decoder. Wi-Fi solo per la manutenzione</dd>
+  </dl>
+
+  <h3>Che cosa l'ha resa davvero veloce</h3>
+  <p>Nessuna riga di codice di calcolo è stata ottimizzata per questa macchina. La velocità è venuta da una riga di sysfs.</p>
+
+  <div class="tscroll">
+    <table>
+      <caption>Fattore di tempo reale · più basso è più veloce, 1,0 è il limite</caption>
+      <thead><tr><th>Condizione</th><th class="n">RTF</th></tr></thead>
+      <tbody>
+        <tr><th>Baseline, governor <code>powersave</code></th><td class="n">0,6741</td></tr>
+        <tr><th>Governor <code>performance</code></th><td class="n">0,4896</td></tr>
+        <tr><th>Dieci minuti di televisione vera</th><td class="n">0,4962</td></tr>
+        <tr><th>Trenta minuti di torture deliberate</th><td class="n">0,4848</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="note measure">
+    <h4>Il governor vale il 27,6 % del fattore di tempo reale</h4>
+    <p>Il riconoscitore lavora a raffiche — circa 105 ms di calcolo ogni 160 — e <code>intel_pstate</code> in <code>powersave</code> non vede mai una raffica abbastanza lunga da salire di frequenza. Cambiare il governor vale più di <code>-march=native</code> e AVX-VNNI messi insieme, <em>di un fattore venti</em>. L'istruzione AVX-VNNI che la CPU dichiara ridurrebbe a una sola <code>vpdpbusd</code> il prodotto int8 che oggi costa <code>vpmaddubsw</code> + <code>vpmaddwd</code>: resta una leva non tirata, e piccola.</p>
+  </div>
+
+  <h3>Le quattro unit che ne fanno un apparecchio</h3>
+  <div class="tscroll">
+    <table>
+      <caption>systemd</caption>
+      <thead><tr><th>Unit</th><th>Mestiere</th><th>Da sapere</th></tr></thead>
+      <tbody>
+        <tr><th><code>hearable-governor</code></th><td>Mette tutti i core su <code>performance</code> all'avvio, e li rimette su <code>powersave</code> allo stop</td><td>È una dipendenza della catena, non un accessorio</td></tr>
+        <tr><th><code>hearable-t9</code></th><td>La catena di riconoscimento</td><td><code>Restart=always</code>, mai <code>on-failure</code></td></tr>
+        <tr><th><code>hearable-idle-watchdog</code></th><td>Spegne la macchina quando nessuno guarda</td><td>Gira come root, indipendente dal riconoscitore</td></tr>
+        <tr><th><code>hearable-rgb</code></th><td>L'anello di stato sul case</td><td>Se manca <code>pyserial</code> lo dice una volta e continua senza</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="note">
+    <h4>Due dettagli di systemd che sono costati inattività vera</h4>
+    <p><code>StartLimitIntervalSec</code> sotto <code>[Service]</code> viene ignorato in silenzio: il limite di riavvii semplicemente non esiste. Va in <code>[Unit]</code>.</p>
+    <p>E <code>Restart=on-failure</code> è sbagliato per un apparecchio: uno strumento di misura ha fermato la catena con <code>SIGINT</code>, systemd ha visto il codice di uscita 0, e il servizio è rimasto morto ventitré minuti senza che nessuno se ne accorgesse. Un'uscita pulita è comunque un apparecchio che ha smesso di fare sottotitoli.</p>
+  </div>
+
+  <h3>Spegnersi da solo</h3>
+  <p>Il watchdog fa due domande e per agire gli servono entrambe le risposte: c'è qualcosa attaccato alla porta audio (letto da <code>/proc/net/tcp</code> sulla porta 9010), e il decoder sta ancora guardando (il suo <code>/api/powerstate</code>, con ripiego sul ping)? Senza sessione audio fa partire un timer — venti minuti di default, tre quando il decoder è andato in standby, entrambi in <code>/etc/default/hearable</code> — e spegne la macchina. Una sessione che torna lo annulla.</p>
+  <p>La conseguenza pratica è che lo spettatore al mini PC non pensa mai. Compare quando si preme <code>F4</code> e sparisce qualche minuto dopo che il televisore è tornato silenzioso.</p>
+
+  <h3>L'anello di stato</h3>
+  <p>Il case ha un anello RGB su un ponte seriale CH340. Il protocollo è una trama da cinque byte — <code>0xFA</code>, modo, luminosità, velocità, checksum — a 10 000 baud, con luminosità e velocità invertite rispetto a quello che verrebbe da pensare.</p>
+  <div class="note">
+    <h4>La mappa dei colori ha preso 0 su 5</h4>
+    <p>La prima corrispondenza fra stati e colori era stata dedotta dalla documentazione del controller e provata alla cieca con la persona che l'anello lo guarda davvero. Era <strong>sbagliata su tutti e cinque gli stati</strong>. Quella in uso è la mappa letta dall'hardware dallo spettatore: fa 6 su 6. La documentazione descrive le intenzioni, gli occhi descrivono l'anello.</p>
+  </div>
+
+  <h3>Sopravvivere alla rete</h3>
+  <p>L'unico difetto vero trovato dalla campagna di torture da mezz'ora era nel ricevitore audio, e solo un cavo staccato fisicamente lo ha fatto emergere: un timeout di socket veniva ingoiato con <code>continue</code>, quindi una connessione morta restava in mano per sempre — diciotto respawn, tre socket semiaperti, 80 kB non letti. Ora il ricevitore rinuncia dopo 15 s di silenzio e imposta <code>SO_KEEPALIVE</code> con 10 s di inattività, 5 s di intervallo e 3 sonde.</p>
+</section>
+
+
+<!-- ============================================================ -->
+<section id="file">
+  <span class="section-num">06b</span>
+  <h2>Sottotitola anche quello che riproduci dal box</h2>
+  <p class="kicker">Un film dallo storage del ricevitore passa dalla stessa catena — nessun componente in più, nessun secondo percorso di codice.</p>
+
+  <p>La diretta è il caso difficile ed è quello di cui ha parlato tutta questa pagina. Ma il relay è un secondo lettore di <em>quello che il decoder sta riproducendo</em>: il demux per la diretta, il file per un file. In entrambi i casi manda avanti solo la traccia audio scelta, compressa, da un punto più avanti rispetto allo spettatore. Il ricevitore vede <code>source_type: file</code> invece di <code>dvb</code> nella risposta di controllo, e tira dritto.</p>
+
+  <div class="tscroll">
+    <table>
+      <caption>Riproduzione da file · otto controlli col telecomando</caption>
+      <thead><tr><th>Controllo</th><th>Esito</th><th class="n">Ripresa</th></tr></thead>
+      <tbody>
+        <tr><th>Primo sottotitolo dopo l'avvio</th><td><span class="chip pass">Pass</span></td><td class="n">36,1 s</td></tr>
+        <tr><th>Pausa</th><td><span class="chip pass">Pass</span></td><td class="n">relay <code>paused</code>, 0 stantii</td></tr>
+        <tr><th>Ripresa</th><td><span class="chip pass">Pass</span></td><td class="n">1,2 s</td></tr>
+        <tr><th>Salto avanti</th><td><span class="chip pass">Pass</span></td><td class="n">19,1 s</td></tr>
+        <tr><th>Salto indietro</th><td><span class="chip pass">Pass</span></td><td class="n">64,9 s</td></tr>
+        <tr><th>Cambio film</th><td><span class="chip pass">Pass</span></td><td class="n">epoca 41 → 42</td></tr>
+        <tr><th><code>F4</code> spento e riacceso</th><td><span class="chip pass">Pass</span></td><td class="n">5,4 s</td></tr>
+        <tr><th>Cambio traccia audio</th><td><span class="chip open">Non provabile</span></td><td class="n">il film ha una traccia sola</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p><code>FILE_STALE_SUBTITLES: 0</code> su tutta la corsa: niente di precedente a una pausa, a un salto o a un cambio di file è mai stato dipinto dopo. Una regressione alla v1.2.0 aveva già chiuso lo stesso percorso.</p>
+
+  <div class="note">
+    <h4>Due cose volutamente diverse</h4>
+    <p><strong>I tasti di sincronia sono rifiutati su una sorgente file.</strong> <code>F2</code> e <code>F3</code> regolano il ritardo di pubblicazione, che compensa quanto il tap corre davanti all'immagine. Su un file quell'anticipo non esiste, quindi i tasti non fanno niente e lo dicono, invece di applicare in silenzio una correzione priva di significato.</p>
+    <p><strong>Il primo sottotitolo tarda di più</strong> — 36,1 s contro i circa 4 della diretta, perché far partire un film significa il relay che nasce, il flusso che comincia da un confine di contenitore, e il riconoscitore che non ha ancora sentito niente. Una volta avviato si comporta allo stesso modo.</p>
+  </div>
+
+  <p>Misurato con il film sullo storage USB del box (<code>/media/hdd</code>). Un NVMe o un disco interno è lo stesso percorso per HearAble — legge quello che Enigma2 sta riproducendo e lo storage non lo tocca mai — ma <strong>non è stato misurato</strong> e qui non viene affermato.</p>
+</section>
+
+<!-- ============================================================ -->
+<section id="protocolli">
+  <span class="section-num">07</span>
+  <h2>I due protocolli</h2>
+  <p class="kicker">Piccoli di proposito, separati di proposito, e ciascuno con una regola che decide tutto il resto.</p>
+
+  <h3>Sottotitoli: <code>hearable-enigma2/1</code></h3>
+  <p>Un WebSocket persistente che porta un oggetto JSON per frame di testo. Il produttore si connette verso l'esterno, il renderer sta in ascolto. Niente TLS e niente autenticazione: il confine di fiducia è il cavo privato.</p>
+  <div class="tscroll">
+    <table>
+      <thead><tr><th>Messaggio</th><th>Direzione</th><th>Scopo</th></tr></thead>
+      <tbody>
+        <tr><th><code>hello</code></th><td>entrambi</td><td>Ruolo, progetto, versione del protocollo</td></tr>
+        <tr><th><code>capabilities</code></th><td>entrambi</td><td>Numero di righe, lunghezza, supporto agli ACK</td></tr>
+        <tr><th><code>subtitle_state</code></th><td>produttore → renderer</td><td>Le due righe da mostrare</td></tr>
+        <tr><th><code>clear_subtitles</code></th><td>produttore → renderer</td><td>Pulisci lo schermo adesso</td></tr>
+        <tr><th><code>source_changed</code></th><td>produttore → renderer</td><td>Il canale è cambiato: comincia una nuova epoca</td></tr>
+        <tr><th><code>heartbeat</code></th><td>produttore → renderer</td><td>Segno di vita mentre non si dice niente</td></tr>
+        <tr><th><code>render_ack</code></th><td>renderer → produttore</td><td>Questo numero di sequenza è arrivato sullo schermo</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p><strong>Non mandare mai la trascrizione cumulativa.</strong> Un <code>subtitle_state</code> porta le due righe da mostrare e nient'altro; il validatore rifiuta esplicitamente una trascrizione progressiva, perché mandarla renderebbe traffico e memoria quadratici nella durata della sessione. <strong>E il produttore non aspetta mai.</strong> Gli ACK sono osservativi: un renderer lento costa freschezza del sottotitolo, mai contropressione sulla catena di riconoscimento. C'è esattamente uno stato in attesa, e uno più nuovo lo sostituisce.</p>
+
+  <h3>Audio: <code>hearable-audio-relay/1</code></h3>
+  <p>Due canali in direzioni opposte, perché un ricevitore lento non possa mai bloccare Enigma2.</p>
+  <div class="tscroll">
+    <table>
+      <thead><tr><th></th><th>Control</th><th>Media</th></tr></thead>
+      <tbody>
+        <tr><th>Direzione</th><td>ricevitore → box</td><td>box → ricevitore</td></tr>
+        <tr><th>Trasporto</th><td>HTTP GET su <code>:8770</code></td><td>TCP, MPEG-TS, porta scelta dal ricevitore</td></tr>
+        <tr><th>Chi si connette</th><td>il ricevitore</td><td>il box</td></tr>
+        <tr><th>Cadenza</th><td>ogni 500 ms</td><td>continua, al ritmo di riproduzione</td></tr>
+        <tr><th>Dentro Enigma2</th><td>sì, il plugin</td><td>no, un <code>ffmpeg</code> separato</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p>La richiesta di controllo è anche l'annuncio e il battito: il ricevitore dice dove vuole l'audio, quanto anticipo vuole, e quanto è risultato avanti rispetto allo spettatore. Questi ultimi due sono numeri diversi e non vanno confusi: uno è una richiesta, l'altro è una misura.</p>
+</section>
+
+<!-- ============================================================ -->
+<section id="ritardo">
+  <span class="section-num">08</span>
+  <h2>Dove va quel secondo</h2>
+  <p class="kicker">Il sottotitolo arriva circa un secondo dopo la parola pronunciata. Quasi tutto è il riconoscitore che decide, ed è una scelta, non un incidente.</p>
+
+  <p>Misurato da capo a fondo: <strong>p50 1,072 s</strong> fra l'audio consumato e lo stato di sottotitolo emesso (n = 1461, p05 0,893 s). Ricostruito dalle impostazioni in uso:</p>
+
+  <div class="tscroll">
+    <table>
+      <caption>Bilancio del ritardo</caption>
+      <thead><tr><th>Voce</th><th class="n">Costo</th><th>Che cosa compra</th></tr></thead>
+      <tbody>
+        <tr><th><code>chunk_ms: 160</code></th><td class="n">~80 ms medi</td><td>L'audio arriva al riconoscitore a blocchi</td></tr>
+        <tr><th><code>rnnt_right_context: 1</code></th><td class="n">~160 ms</td><td>Il modello guarda avanti di un blocco prima di decidere</td></tr>
+        <tr><th>Calcolo ASR</th><td class="n">74 ms</td><td>Nemotron sul processore, p50</td></tr>
+        <tr><th>Conferme dello stabilizzatore</th><td class="n">320–480 ms</td><td>Una parola diventa «stabile» solo dopo N passaggi concordi</td></tr>
+        <tr><th>Trattenuta della coda</th><td class="n">≤450 ms</td><td>L'ultima parola è trattenuta finché non ne arriva un'altra</td></tr>
+        <tr><th>Tetto di ridisegno</th><td class="n">≤166 ms</td><td>Sei ridisegni al secondo, così le correzioni non lampeggiano</td></tr>
+        <tr><th>Ritardo di pubblicazione</th><td class="n">0 ms</td><td>Niente — ed è proprio quella la correzione</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p>Più di metà di quel secondo è spesa a <em>non</em> mostrare qualcosa che potrebbe essere sbagliato. Lo stabilizzatore aspetta che una parola sia confermata, e la coda non confermata non si mostra affatto. Un sottotitolo più veloce che si riscrive davanti a chi legge è peggio di uno più lento che sta fermo — e per un lettore che dal testo dipende, invece di darci un'occhiata, è molto peggio.</p>
+
+  <div class="note measure">
+    <h4>Uno strumento contro un occhio, sciolto</h4>
+    <p>Spostare il sottotitolo di 3 s era nettamente visibile in tre domini di orologio indipendenti — 3018,9 ms sul monotonic, 3008,0 ms sul PTS, +3,31 s su un marcatore ripreso — e completamente invisibile sullo schermo. Il motivo è che il pannello si ridisegna solo ogni 0,55 s e il rumore di arrivo del riconoscitore è largo 3,75 s da p05 a p95: il rumore è più largo dello spostamento. Il verdetto è stato registrato come metodo di misura non valido, e non è stata cambiata una riga per inseguirlo.</p>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<section id="aperto">
+  <span class="section-num">09</span>
+  <h2>Che cosa non è finito, e che cosa non è mai stato misurato</h2>
+  <p class="kicker">Scritto come lacuna invece che omesso in silenzio, perché una misura mancante che sembra un risultato è la cosa più costosa di questo progetto.</p>
+
+  <div class="tscroll">
+    <table>
+      <thead><tr><th>Voce</th><th>Stato</th><th>Dettaglio</th></tr></thead>
+      <tbody>
+        <tr><th>Prova sul campo</th><td><span class="chip open">In corso</span></td><td>Il sistema è in uso quotidiano. Resta un punto aperto, ancora da caratterizzare.</td></tr>
+        <tr><th>Ritardi A/V grandi</th><td><span class="chip open">Non misurato</span></td><td>1,37 s e 7,56 s sono stati osservati per dieci secondi ciascuno. Se un ritardo grande regga per ore non si sa — e il ramo è chiuso comunque.</td></tr>
+        <tr><th>Timeshift in RAM</th><td><span class="chip open">Inconclusivo</span></td><td>Il buffer è comparso in <code>tmpfs</code> e le scritture su flash non si sono fermate. Non un risultato negativo: una domanda senza risposta.</td></tr>
+        <tr><th>AVX-VNNI</th><td><span class="chip open">Disponibile</span></td><td>La CPU la dichiara e la build non la usa. Attesa piccola, accanto al governor.</td></tr>
+        <tr><th>Indirizzo predefinito negli strumenti</th><td><span class="chip open">Per scelta</span></td><td>Circa 33 strumenti puntano ancora al vecchio indirizzo del decoder. Non sostituito di proposito: un indirizzo cablato sarebbe di nuovo sbagliato al prossimo cambio.</td></tr>
+        <tr><th>Riavvio completo all'installazione</th><td><span class="chip open">Osservato</span></td><td>Installare il plugin riavvia tutto il box, non il solo Enigma2 come dichiara il comando. Visto, non indagato.</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>Che cosa invece ha ricevuto risposta</h3>
+  <ul>
+    <li><strong>Il Wake-on-LAN sopravvive a un taglio di corrente.</strong> Tutto quello che si sapeva sul risveglio del mini PC era misurato da spento via software, con l'alimentatore che teneva viva la scheda di rete. Staccata fisicamente la corrente a entrambe le macchine, il mini PC si è acceso lo stesso 6,4 minuti dopo il decoder — quando è stato premuto <code>F4</code> — con gli orologi delle due macchine allineati entro un secondo e il pulsante di accensione mai toccato.</li>
+    <li><strong>Il tap sul demux non costa un sintonizzatore.</strong> Trenta zap fra multiplex diversi, trenta successi, nessun servizio perso.</li>
+    <li><strong>La catena sopravvive a essere attaccata.</strong> Diciannove guasti iniettati, diciannove riprese senza intervento; trenta minuti di disturbo deliberato con zero chunk persi e zero sottotitoli stantii.</li>
+  </ul>
+
+  <div class="note">
+    <h4>L'avvio a freddo ha trovato un difetto, che è il motivo per cui si fa</h4>
+    <p>Il plugin dichiarava 78 minuti di vita su un decoder acceso da 12. Il box corregge il proprio orologio da parete <em>dopo</em> l'avvio di Enigma2 — 88 minuti di orologio consumati in due minuti reali, misurati direttamente — quindi ogni durata si portava dietro il salto. L'uptime era l'estremità innocua: lo stesso orologio reggeva anche i quattro secondi che il saluto deve restare sullo schermo, e la regola che toglie un sottotitolo vecchio. Ora tutte le durate stanno sull'orologio monotonic, con un test che vieta di misurarne una sul wall clock.</p>
+  </div>
+</section>
+
+
+<!-- ============================================================ -->
+<section id="costruito">
+  <span class="section-num">10</span>
+  <h2>Come è stato costruito</h2>
+  <p class="kicker">Orchestrato da una persona, scritto da un modello sotto la sua direzione, e passato a ogni fase da test e misure.</p>
+
+  <p>HearAble è stato <strong>orchestrato da Nunzio Raciti e scritto da Claude</strong> (il modello Opus di Anthropic) sotto la sua direzione. Lui ha posto l'obiettivo e i vincoli, ha preso ogni decisione di progetto, possiede l'hardware e ha fatto le prove che contavano di più. Claude è stato l'esecutore materiale: il codice, i test, gli strumenti di misura e questi rapporti.</p>
+
+  <p>La divisione si vede nei risultati. Diversi difetti che contano non li ha trovati un test, ma la persona che usava la cosa vera:</p>
+
+  <div class="tscroll">
+    <table>
+      <thead><tr><th>Trovato da</th><th>Che cosa ha trovato</th></tr></thead>
+      <tbody>
+        <tr><th>I tasti del telecomando premuti</th><td>Due difetti che una matrice automatica da diciannove casi aveva dichiarato verdi</td></tr>
+        <tr><th>Il cavo staccato fisicamente</th><td>Un socket morto che <code>ip link down</code> non riproduceva</td></tr>
+        <tr><th>La corrente tolta dalla presa</th><td>Che il Wake-on-LAN ci sopravvive — domanda a cui nessuno spegnimento via software poteva rispondere</td></tr>
+        <tr><th>L'anello di stato guardato a occhio</th><td>Una mappa dei colori che faceva 0 su 5 contro la documentazione da cui era stata dedotta</td></tr>
+        <tr><th>Il televisore ascoltato</th><td>Che i sottotitoli erano in ritardo, prima che lo strumento fosse d'accordo</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>Niente è andato avanti su un'opinione</h3>
+  <p><strong>246 test automatici</strong>, tutti eseguibili senza un decoder in stanza: il protocollo sul filo, il renderer lato ricevitore col rifiuto per epoca e sequenza, lo stabilizzatore, le regole di commit, i caricatori di configurazione, la disciplina degli orologi, e la coerenza della versione fra pacchetto e plugin.</p>
+  <p><strong>Gate costruiti apposta</strong> per tutto ciò che richiede hardware vero — il gate LAN, la sessione dal vivo, il ciclo di vita dell'interfaccia, i cicli di avvio, il Wake-on-LAN, il timer di inattività, il lettore di file, una matrice di guasti da diciannove casi. Ognuno produce un verdetto e un blocco leggibile a macchina, non un log da interpretare.</p>
+  <p><strong>Rapporti di campagna</strong> con ogni riga etichettata <code>MEASURED</code>, <code>DERIVED</code> o <code>NOT_MEASURED</code>, così una lacuna non può mai essere letta come un risultato.</p>
+  <p><strong>Verdetti a cui è permesso dire di no.</strong> Due indagini sono state chiuse dai numeri che le hanno chiuse, e un gate che produce troppe poche prove dichiara <code>NON_MISURATO</code> invece di passare sul nulla.</p>
+
+  <div class="note measure">
+    <h4>E quando una misura non era d'accordo con lo strumento, ha perso lo strumento</h4>
+    <p>Si credeva che il tap corresse 2,4 s davanti all'immagine, e la catena era stata costruita per compensarlo. Chiedendolo al decoder direttamente — due orologi letti nello stesso istante, pacchetto in mano — sono venuti fuori <strong>64 ms</strong>. Sbagliato di un fattore quaranta, e sbagliato nella direzione che peggiorava il prodotto.</p>
+  </div>
+</section>
+
+<footer>
+  <p><strong>HearAble 1.5.1</strong> — sottotitolazione italiana in tempo reale per DVB-T2. Orchestrato da <b>Nunzio Raciti</b>, scritto da <b>Claude</b> (Opus) sotto la sua direzione. Ogni fase è passata da test e misure.</p>
+  <p>Octagon SF8008 V3 Supreme Combo · T9 Plus Intel N95 · Nemotron 3.5 ASR Streaming 0.6B su NeMo-Speech.cpp.</p>
+  <p>Ogni cifra di questa pagina è una misura presa sull'hardware vero, oppure è dichiarata come non misurata.</p>
+</footer>
+
+</main>

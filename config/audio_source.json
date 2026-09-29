@@ -1,0 +1,7 @@
+{
+  "type": "pipewire",
+  "options": {
+    "target": "alsa_output.pci-0000_05_00.1.2.hdmi-stereo",
+    "capture_latency": "20ms"
+  }
+}

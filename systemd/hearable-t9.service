@@ -1,0 +1,43 @@
+[Unit]
+Description=HearAble: sottotitoli in tempo reale per il decoder SF8008
+Documentation=file:///opt/devel/hearable_dvb-t/benchmark/results/T9_N95_cpu.md
+# The private link must exist before the pipeline looks for the decoder on it;
+# the decoder itself need not be awake — the relay source waits and reconnects,
+# which is the behaviour the failure matrix checks.
+After=network-online.target hearable-governor.service
+Wants=network-online.target
+Requires=hearable-governor.service
+# These two belong to the unit, not the service: systemd ignores them here if
+# they sit under [Service], and the restart limit then does not exist at all.
+StartLimitIntervalSec=300
+StartLimitBurst=5
+
+[Service]
+Type=simple
+User=hearable
+Group=hearable
+WorkingDirectory=/home/hearable/hearable
+Environment=ROOT=/home/hearable/hearable
+Environment=BOX=10.77.0.1
+Environment=LABEL=appliance
+Environment=DURATION=0
+# The governor is a separate unit's job, and F4 on the handset is what turns
+# HearAble on: the appliance must not decide that for the viewer.
+Environment=ON=0
+Environment=GOVERNOR=performance
+ExecStart=/home/hearable/hearable/scripts/hearable_t9_live.sh
+# always, not on-failure: a clean exit is still an appliance that has stopped
+# making subtitles. Measured — a measurement tool stopped the pipeline with
+# SIGINT, systemd saw exit code 0, and the service stayed dead for twenty-three
+# minutes with nobody the wiser. An explicit `systemctl stop` is still honoured.
+Restart=always
+RestartSec=10
+# The restart limit is in [Unit]: slow enough that a persistent fault shows up
+# as a stopped unit rather than as a loop that never settles.
+KillSignal=SIGINT
+TimeoutStopSec=30
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target

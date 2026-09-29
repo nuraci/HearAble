@@ -1,0 +1,916 @@
+<title>HearAble Internals</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+
+<style>
+:root{
+  --ground:#eef1f5;
+  --surface:#ffffff;
+  --surface-2:#e4e9ef;
+  --ink:#141d2b;
+  --ink-2:#3e4d60;
+  --ink-3:#6a7a8d;
+  --rule:#cbd4de;
+  --rule-strong:#9fadbd;
+  --accent:#a65e06;
+  --accent-fill:#e79a32;
+  --accent-wash:#fbeeda;
+  --measure:#1a666f;
+  --measure-wash:#dcecee;
+  --pass:#2a6d47;
+  --nogo:#a5382b;
+  --band:#0a0d12;
+  --band-ink:#ffffff;
+  --shadow:0 1px 2px rgba(20,29,43,.06),0 8px 24px -12px rgba(20,29,43,.22);
+
+  --sans:"Archivo",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --serif:"Source Serif 4",Georgia,"Times New Roman",serif;
+  --mono:"IBM Plex Mono",ui-monospace,"SF Mono",Menlo,monospace;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --ground:#0d1218;
+    --surface:#141b23;
+    --surface-2:#1b242e;
+    --ink:#e7edf3;
+    --ink-2:#b4c1cf;
+    --ink-3:#8496a8;
+    --rule:#28323d;
+    --rule-strong:#3d4b59;
+    --accent:#eaa751;
+    --accent-fill:#e79a32;
+    --accent-wash:#2a2115;
+    --measure:#5cb9c4;
+    --measure-wash:#12272a;
+    --pass:#5cb381;
+    --nogo:#dd7a6b;
+    --band:#04060a;
+    --band-ink:#ffffff;
+    --shadow:0 1px 2px rgba(0,0,0,.4),0 10px 28px -14px rgba(0,0,0,.7);
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#0d1218;
+  --surface:#141b23;
+  --surface-2:#1b242e;
+  --ink:#e7edf3;
+  --ink-2:#b4c1cf;
+  --ink-3:#8496a8;
+  --rule:#28323d;
+  --rule-strong:#3d4b59;
+  --accent:#eaa751;
+  --accent-fill:#e79a32;
+  --accent-wash:#2a2115;
+  --measure:#5cb9c4;
+  --measure-wash:#12272a;
+  --pass:#5cb381;
+  --nogo:#dd7a6b;
+  --band:#04060a;
+  --band-ink:#ffffff;
+  --shadow:0 1px 2px rgba(0,0,0,.4),0 10px 28px -14px rgba(0,0,0,.7);
+}
+
+*{box-sizing:border-box}
+body{
+  background:var(--ground);
+  color:var(--ink);
+  font-family:var(--serif);
+  font-size:17px;
+  line-height:1.62;
+  -webkit-font-smoothing:antialiased;
+}
+
+/* ---------- masthead ---------- */
+.masthead{
+  position:sticky;
+  top:env(safe-area-inset-top,0px);
+  z-index:40;
+  background:color-mix(in srgb,var(--ground) 88%,transparent);
+  backdrop-filter:blur(10px);
+  border-bottom:1px solid var(--rule);
+}
+.masthead-inner{
+  max-width:1180px;margin:0 auto;
+  padding-block:10px;padding-inline:20px;
+  display:flex;align-items:center;gap:20px;flex-wrap:wrap;
+}
+.wordmark{
+  font-family:var(--sans);font-weight:700;font-size:15px;
+  letter-spacing:.14em;text-transform:uppercase;color:var(--ink);
+  display:flex;align-items:center;gap:9px;white-space:nowrap;
+}
+.wordmark .dot{width:9px;height:9px;border-radius:50%;background:var(--accent-fill);flex:none}
+.masthead nav{display:flex;gap:2px;flex-wrap:wrap;margin-left:auto}
+.masthead nav a{
+  font-family:var(--sans);font-size:12.5px;font-weight:500;
+  letter-spacing:.04em;color:var(--ink-3);text-decoration:none;
+  padding:5px 9px;border-radius:5px;
+}
+.masthead nav a:hover{color:var(--ink);background:var(--surface-2)}
+.masthead nav a:focus-visible,a:focus-visible,button:focus-visible{
+  outline:2px solid var(--accent-fill);outline-offset:2px;
+}
+
+/* ---------- shell ---------- */
+.wrap{max-width:1180px;margin:0 auto;padding-inline:20px}
+main{max-width:760px;margin:0 auto;padding-inline:20px;padding-block:0 96px}
+
+/* ---------- hero ---------- */
+.hero{padding-block:56px 40px;border-bottom:1px solid var(--rule)}
+.eyebrow{
+  font-family:var(--sans);font-size:11.5px;font-weight:600;
+  letter-spacing:.2em;text-transform:uppercase;color:var(--accent);
+  margin:0 0 18px;
+}
+h1{
+  font-family:var(--sans);font-weight:700;
+  font-size:clamp(2.3rem,7vw,3.6rem);line-height:1.04;
+  letter-spacing:-.022em;margin:0 0 20px;text-wrap:balance;
+}
+.standfirst{
+  font-size:clamp(1.08rem,2.6vw,1.32rem);line-height:1.5;
+  color:var(--ink-2);margin:0 0 30px;max-width:34em;
+}
+.standfirst strong{color:var(--ink);font-weight:600}
+.byline{
+  font-family:var(--sans);font-size:12.5px;color:var(--ink-3);
+  letter-spacing:.03em;margin:0;
+}
+.byline b{color:var(--ink-2);font-weight:600}
+
+/* ---------- instrument strip ---------- */
+.strip{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));
+  gap:1px;background:var(--rule);border:1px solid var(--rule);
+  border-radius:8px;overflow:hidden;margin:34px 0 0;
+}
+.strip div{background:var(--surface);padding:15px 16px}
+.strip dt{
+  font-family:var(--sans);font-size:10.5px;font-weight:600;
+  letter-spacing:.13em;text-transform:uppercase;color:var(--ink-3);
+  margin:0 0 7px;
+}
+.strip dd{
+  margin:0;font-family:var(--mono);font-size:1.32rem;font-weight:500;
+  font-variant-numeric:tabular-nums;color:var(--ink);line-height:1.15;
+}
+.strip dd span{font-size:.74em;color:var(--ink-3);font-weight:400}
+
+/* ---------- sections ---------- */
+section{padding-block:56px 0;scroll-margin-top:72px}
+h2{
+  font-family:var(--sans);font-weight:700;
+  font-size:clamp(1.55rem,4.2vw,2.05rem);line-height:1.14;
+  letter-spacing:-.016em;margin:0 0 6px;text-wrap:balance;
+}
+.section-num{
+  font-family:var(--mono);font-size:12px;font-weight:500;
+  color:var(--accent);letter-spacing:.1em;display:block;margin:0 0 10px;
+}
+.kicker{
+  color:var(--ink-3);font-size:1.02rem;margin:0 0 26px;
+  padding-bottom:18px;border-bottom:1px solid var(--rule);
+}
+h3{
+  font-family:var(--sans);font-weight:600;font-size:1.16rem;
+  letter-spacing:-.008em;margin:38px 0 12px;color:var(--ink);
+}
+h4{
+  font-family:var(--sans);font-weight:600;font-size:.86rem;
+  letter-spacing:.09em;text-transform:uppercase;color:var(--ink-3);
+  margin:28px 0 10px;
+}
+p{margin:0 0 17px}
+a{color:var(--accent);text-decoration-thickness:1px;text-underline-offset:2px}
+strong{font-weight:600}
+ul,ol{margin:0 0 17px;padding-left:1.3em}
+li{margin-bottom:7px}
+li::marker{color:var(--ink-3)}
+
+/* ---------- the subtitle band: the product's own artefact ---------- */
+.band{
+  background:var(--band);border-radius:6px;
+  padding:18px 22px;margin:30px 0;
+  box-shadow:var(--shadow);
+}
+.band p{
+  margin:0;color:var(--band-ink);text-align:center;
+  font-family:var(--sans);font-weight:500;
+  font-size:clamp(.98rem,2.5vw,1.16rem);line-height:1.5;
+  text-wrap:balance;
+}
+.band p+p{margin-top:2px}
+.band .dim{color:#9aa6b4;font-size:.8em;font-weight:500}
+.band-caption{
+  font-family:var(--sans);font-size:11.5px;color:var(--ink-3);
+  text-align:center;margin:-20px 0 30px;letter-spacing:.03em;
+}
+
+/* ---------- tables ---------- */
+.tscroll{overflow-x:auto;margin:0 0 22px;border:1px solid var(--rule);border-radius:8px;background:var(--surface)}
+table{border-collapse:collapse;width:100%;font-size:.9rem}
+caption{
+  font-family:var(--sans);font-size:11px;font-weight:600;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--ink-3);text-align:left;
+  padding:13px 16px 0;
+}
+th,td{padding:9px 16px;text-align:left;border-bottom:1px solid var(--rule);vertical-align:top}
+thead th{
+  font-family:var(--sans);font-size:11px;font-weight:600;letter-spacing:.09em;
+  text-transform:uppercase;color:var(--ink-3);
+  border-bottom:1px solid var(--rule-strong);white-space:nowrap;
+}
+tbody tr:last-child th,tbody tr:last-child td{border-bottom:none}
+td.n,th.n{text-align:right;font-family:var(--mono);font-variant-numeric:tabular-nums;white-space:nowrap}
+tbody th{font-family:var(--serif);font-weight:600;font-size:.92rem}
+code{
+  font-family:var(--mono);font-size:.855em;
+  background:var(--surface-2);padding:1px 5px;border-radius:4px;
+  color:var(--ink);white-space:nowrap;
+}
+th code,td code{background:transparent;padding:0}
+
+/* ---------- verdict chips ---------- */
+.chip{
+  font-family:var(--sans);font-size:10.5px;font-weight:700;letter-spacing:.09em;
+  text-transform:uppercase;padding:2px 7px;border-radius:4px;white-space:nowrap;
+  display:inline-block;
+}
+.chip.pass{background:color-mix(in srgb,var(--pass) 16%,transparent);color:var(--pass)}
+.chip.nogo{background:color-mix(in srgb,var(--nogo) 16%,transparent);color:var(--nogo)}
+.chip.open{background:var(--accent-wash);color:var(--accent)}
+
+/* ---------- callout ---------- */
+.note{
+  border-left:3px solid var(--accent-fill);
+  background:var(--surface);
+  padding:17px 20px;margin:26px 0;border-radius:0 7px 7px 0;
+  box-shadow:var(--shadow);
+}
+.note p:last-child{margin-bottom:0}
+.note h4{margin-top:0}
+.note.measure{border-left-color:var(--measure)}
+.note.measure h4{color:var(--measure)}
+
+/* ---------- code block ---------- */
+pre{
+  font-family:var(--mono);font-size:.8rem;line-height:1.62;
+  background:var(--surface);color:var(--ink-2);
+  border:1px solid var(--rule);border-radius:8px;
+  padding:15px 17px;overflow-x:auto;margin:0 0 22px;
+}
+pre b{color:var(--ink);font-weight:600}
+pre .c{color:var(--ink-3)}
+
+/* ---------- diagram ---------- */
+figure{margin:30px 0}
+.dscroll{overflow-x:auto;border:1px solid var(--rule);border-radius:8px;background:var(--surface);padding:18px 14px}
+svg{display:block;max-width:100%;height:auto;margin:0 auto}
+figcaption{
+  font-family:var(--sans);font-size:12px;color:var(--ink-3);
+  margin-top:11px;line-height:1.5;
+}
+
+/* ---------- spec list ---------- */
+.spec{
+  display:grid;grid-template-columns:minmax(140px,auto) 1fr;
+  gap:0;border:1px solid var(--rule);border-radius:8px;
+  background:var(--surface);overflow:hidden;margin:0 0 22px;font-size:.9rem;
+}
+.spec dt{
+  font-family:var(--sans);font-size:11px;font-weight:600;letter-spacing:.07em;
+  text-transform:uppercase;color:var(--ink-3);
+  padding:10px 16px;border-bottom:1px solid var(--rule);
+}
+.spec dd{margin:0;padding:10px 16px;border-bottom:1px solid var(--rule)}
+.spec dt:last-of-type,.spec dd:last-of-type{border-bottom:none}
+
+/* ---------- timeline ---------- */
+.tl{list-style:none;padding:0;margin:26px 0 0}
+.tl li{
+  position:relative;padding:0 0 26px 30px;
+  border-left:1px solid var(--rule);margin:0;
+}
+.tl li:last-child{border-left-color:transparent;padding-bottom:0}
+.tl li::before{
+  content:"";position:absolute;left:-5px;top:7px;
+  width:9px;height:9px;border-radius:50%;
+  background:var(--accent-fill);border:2px solid var(--ground);
+}
+.tl li.dead::before{background:var(--nogo)}
+.tl h3{margin:0 0 6px;font-size:1.03rem}
+.tl p{margin:0 0 8px;font-size:.96rem;color:var(--ink-2)}
+.tl .when{
+  font-family:var(--mono);font-size:11px;color:var(--ink-3);
+  letter-spacing:.04em;display:block;margin-bottom:3px;
+}
+
+/* ---------- two-up ---------- */
+.two{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin:0 0 22px}
+.two>div{
+  background:var(--surface);border:1px solid var(--rule);
+  border-radius:8px;padding:16px 18px;
+}
+.two h4{margin-top:0}
+.two p:last-child{margin-bottom:0}
+.two p{font-size:.93rem}
+
+footer{
+  border-top:1px solid var(--rule);margin-top:70px;
+  padding-block:30px 10px;
+  font-family:var(--sans);font-size:12.5px;color:var(--ink-3);
+}
+footer p{margin:0 0 7px}
+
+@media (max-width:640px){
+  body{font-size:16px}
+  .masthead nav{display:none}
+  .two{grid-template-columns:1fr}
+  .spec{grid-template-columns:1fr}
+  .spec dt{padding-bottom:0;border-bottom:none}
+  .spec dd{padding-top:4px}
+  section{padding-block:44px 0}
+}
+@media (prefers-reduced-motion:reduce){
+  *{animation:none!important;transition:none!important;scroll-behavior:auto!important}
+}
+html{scroll-behavior:smooth}
+</style>
+
+<style>
+/* internals-only additions, on top of the project's shared tokens */
+.steps{list-style:none;padding:0;margin:26px 0 0;counter-reset:step}
+.steps>li{
+  position:relative;padding:0 0 24px 46px;margin:0;
+  border-left:1px solid var(--rule);
+}
+.steps>li:last-child{border-left-color:transparent;padding-bottom:0}
+.steps>li::before{
+  counter-increment:step;content:counter(step);
+  position:absolute;left:-14px;top:0;
+  width:28px;height:28px;border-radius:50%;
+  background:var(--surface);border:1px solid var(--rule-strong);
+  color:var(--ink-2);font-family:var(--mono);font-size:12px;font-weight:500;
+  display:flex;align-items:center;justify-content:center;
+}
+.steps h3{margin:2px 0 8px;font-size:1.04rem}
+.steps p{font-size:.96rem;margin-bottom:10px}
+.steps .where{
+  font-family:var(--mono);font-size:11px;color:var(--ink-3);
+  display:block;margin-bottom:6px;letter-spacing:.02em;
+}
+.side{
+  font-family:var(--sans);font-size:10px;font-weight:700;letter-spacing:.09em;
+  text-transform:uppercase;padding:2px 6px;border-radius:3px;white-space:nowrap;
+  display:inline-block;
+}
+.side.box{background:var(--accent-wash);color:var(--accent)}
+.side.pc{background:var(--measure-wash);color:var(--measure)}
+.manifest td:first-child,.manifest th:first-child{white-space:nowrap}
+.manifest code{font-size:.8rem}
+.legend{
+  font-family:var(--sans);font-size:12px;color:var(--ink-3);
+  display:flex;gap:16px;flex-wrap:wrap;margin:0 0 16px;
+}
+</style>
+
+<header class="masthead">
+  <div class="masthead-inner">
+    <span class="wordmark"><span class="dot"></span>HearAble</span>
+    <nav>
+      <a href="#shape">Shape</a>
+      <a href="#sequence">Sequence</a>
+      <a href="#audio">Audio path</a>
+      <a href="#asr">Recognition</a>
+      <a href="#text">Text back</a>
+      <a href="#appliance">Appliance</a>
+      <a href="#files">Files</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+
+<div class="hero">
+  <p class="eyebrow">Technical reference · version 1.5.1</p>
+  <h1>HearAble internals</h1>
+  <p class="standfirst">Exactly how live Italian subtitles get from a broadcast transport stream onto a television screen, component by component — <strong>the system as it runs</strong>, with every file that makes it up and every file it creates on the two machines.</p>
+  <p class="byline">Orchestrated by <b>Nunzio Raciti</b>, written by <b>Claude</b> (Opus) to his direction · this page describes the shipped design only; the routes that were tried and abandoned are documented separately</p>
+</div>
+
+<!-- ============================================================ -->
+<section id="shape">
+  <span class="section-num">01</span>
+  <h2>The shape</h2>
+  <p class="kicker">Two machines. Compressed audio goes one way, two lines of text come back. Nothing else crosses the wire.</p>
+
+  <figure>
+    <div class="dscroll">
+      <svg viewBox="0 0 760 300" role="img" aria-label="Detailed signal chain from the DVB frontend through the demux PID tap and ffmpeg relay, across a private link to the mini PC's AAC decode, recogniser, stabiliser and two-line formatter, then back over a WebSocket to the on-screen display.">
+        <defs>
+          <marker id="a1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+            <path d="M0,0 L10,5 L0,10 z" fill="var(--rule-strong)"/>
+          </marker>
+          <marker id="a2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+            <path d="M0,0 L10,5 L0,10 z" fill="var(--accent-fill)"/>
+          </marker>
+          <marker id="a3" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+            <path d="M0,0 L10,5 L0,10 z" fill="var(--measure)"/>
+          </marker>
+        </defs>
+
+        <rect x="18" y="32" width="300" height="200" rx="9" fill="var(--surface-2)" stroke="var(--rule-strong)"/>
+        <text x="32" y="54" font-family="Archivo,sans-serif" font-size="10.5" font-weight="600" letter-spacing="1.4" fill="var(--ink-3)">DECODER · ENIGMA2</text>
+
+        <rect x="34" y="66" width="128" height="38" rx="5" fill="var(--surface)" stroke="var(--rule)"/>
+        <text x="98" y="83" text-anchor="middle" font-family="Archivo,sans-serif" font-size="11" font-weight="600" fill="var(--ink)">frontend1</text>
+        <text x="98" y="96" text-anchor="middle" font-family="IBM Plex Mono,monospace" font-size="8.5" fill="var(--ink-3)">DVB-T2 → demux0</text>
+
+        <rect x="34" y="118" width="128" height="42" rx="5" fill="var(--surface)" stroke="var(--accent-fill)" stroke-width="1.4"/>
+        <text x="98" y="135" text-anchor="middle" font-family="Archivo,sans-serif" font-size="11" font-weight="600" fill="var(--ink)">PID filter</text>
+        <text x="98" y="149" text-anchor="middle" font-family="IBM Plex Mono,monospace" font-size="8.5" fill="var(--accent)">TSDEMUX_TAP</text>
+        <line x1="98" y1="104" x2="98" y2="114" stroke="var(--rule-strong)" stroke-width="1.3" marker-end="url(#a1)"/>
+
+        <rect x="34" y="174" width="128" height="42" rx="5" fill="var(--surface)" stroke="var(--rule)"/>
+        <text x="98" y="191" text-anchor="middle" font-family="Archivo,sans-serif" font-size="11" font-weight="600" fill="var(--ink)">ffmpeg</text>
+        <text x="98" y="205" text-anchor="middle" font-family="IBM Plex Mono,monospace" font-size="8.5" fill="var(--ink-3)">-c copy → TCP</text>
+        <line x1="98" y1="160" x2="98" y2="170" stroke="var(--rule-strong)" stroke-width="1.3" marker-end="url(#a1)"/>
+
+        <rect x="186" y="66" width="116" height="38" rx="5" fill="var(--surface)" stroke="var(--rule)"/>
+        <text x="244" y="83" text-anchor="middle" font-family="Archivo,sans-serif" font-size="11" font-weight="600" fill="var(--ink)">wsserver</text>
+        <text x="244" y="96" text-anchor="middle" font-family="IBM Plex Mono,monospace" font-size="8.5" fill="var(--ink-3)">:8770/hearable</text>
+
+        <rect x="186" y="118" width="116" height="38" rx="5" fill="var(--surface)" stroke="var(--rule)"/>
+        <text x="244" y="135" text-anchor="middle" font-family="Archivo,sans-serif" font-size="11" font-weight="600" fill="var(--ink)">session</text>
+        <text x="244" y="148" text-anchor="middle" font-family="IBM Plex Mono,monospace" font-size="8.5" fill="var(--ink-3)">one pending</text>
+        <line x1="244" y1="104" x2="244" y2="114" stroke="var(--rule-strong)" stroke-width="1.3" marker-end="url(#a1)"/>
+
+        <rect x="186" y="170" width="116" height="46" rx="5" fill="var(--band)" stroke="var(--rule-strong)"/>
+        <rect x="196" y="198" width="96" height="11" rx="2" fill="#ffffff" opacity="0.92"/>
+        <text x="244" y="189" text-anchor="middle" font-family="Archivo,sans-serif" font-size="10.5" font-weight="600" fill="#ffffff">OSD · 25 fps</text>
+        <line x1="244" y1="156" x2="244" y2="166" stroke="var(--rule-strong)" stroke-width="1.3" marker-end="url(#a1)"/>
+
+        <rect x="442" y="32" width="300" height="200" rx="9" fill="var(--surface-2)" stroke="var(--rule-strong)"/>
+        <text x="456" y="54" font-family="Archivo,sans-serif" font-size="10.5" font-weight="600" letter-spacing="1.4" fill="var(--ink-3)">MINI PC · DEBIAN</text>
+
+        <rect x="458" y="174" width="128" height="42" rx="5" fill="var(--surface)" stroke="var(--rule)"/>
+        <text x="522" y="191" text-anchor="middle" font-family="Archivo,sans-serif" font-size="11" font-weight="600" fill="var(--ink)">relay_source</text>
+        <text x="522" y="205" text-anchor="middle" font-family="IBM Plex Mono,monospace" font-size="8.5" fill="var(--ink-3)">:9010 listen</text>
+
+        <rect x="610" y="174" width="120" height="42" rx="5" fill="var(--surface)" stroke="var(--rule)"/>
+        <text x="670" y="191" text-anchor="middle" font-family="Archivo,sans-serif" font-size="11" font-weight="600" fill="var(--ink)">AAC → PCM</text>
+        <text x="670" y="205" text-anchor="middle" font-family="IBM Plex Mono,monospace" font-size="8.5" fill="var(--ink-3)">16 kHz mono</text>
+        <line x1="588" y1="195" x2="604" y2="195" stroke="var(--rule-strong)" stroke-width="1.3" marker-end="url(#a1)"/>
+
+        <rect x="610" y="118" width="120" height="42" rx="5" fill="var(--surface)" stroke="var(--measure)" stroke-width="1.4"/>
+        <text x="670" y="135" text-anchor="middle" font-family="Archivo,sans-serif" font-size="11" font-weight="600" fill="var(--ink)">Nemotron</text>
+        <text x="670" y="149" text-anchor="middle" font-family="IBM Plex Mono,monospace" font-size="8.5" fill="var(--measure)">160 ms chunks</text>
+        <line x1="670" y1="170" x2="670" y2="164" stroke="var(--rule-strong)" stroke-width="1.3" marker-end="url(#a1)"/>
+
+        <rect x="610" y="66" width="120" height="38" rx="5" fill="var(--surface)" stroke="var(--rule)"/>
+        <text x="670" y="83" text-anchor="middle" font-family="Archivo,sans-serif" font-size="11" font-weight="600" fill="var(--ink)">stabiliser</text>
+        <text x="670" y="96" text-anchor="middle" font-family="IBM Plex Mono,monospace" font-size="8.5" fill="var(--ink-3)">C_tail1</text>
+        <line x1="670" y1="118" x2="670" y2="108" stroke="var(--rule-strong)" stroke-width="1.3" marker-end="url(#a1)"/>
+
+        <rect x="458" y="66" width="128" height="38" rx="5" fill="var(--surface)" stroke="var(--rule)"/>
+        <text x="522" y="83" text-anchor="middle" font-family="Archivo,sans-serif" font-size="11" font-weight="600" fill="var(--ink)">two-line</text>
+        <text x="522" y="96" text-anchor="middle" font-family="IBM Plex Mono,monospace" font-size="8.5" fill="var(--ink-3)">40 chars × 2</text>
+        <line x1="606" y1="85" x2="592" y2="85" stroke="var(--rule-strong)" stroke-width="1.3" marker-end="url(#a1)"/>
+
+        <line x1="166" y1="195" x2="452" y2="195" stroke="var(--accent-fill)" stroke-width="1.8" marker-end="url(#a2)"/>
+        <text x="309" y="188" text-anchor="middle" font-family="IBM Plex Mono,monospace" font-size="9.5" fill="var(--accent)">26 kB/s MPEG-TS</text>
+
+        <line x1="452" y1="85" x2="308" y2="85" stroke="var(--measure)" stroke-width="1.8" marker-end="url(#a3)"/>
+        <text x="380" y="78" text-anchor="middle" font-family="IBM Plex Mono,monospace" font-size="9.5" fill="var(--measure)">subtitle_state</text>
+
+        <text x="380" y="258" text-anchor="middle" font-family="Archivo,sans-serif" font-size="10" fill="var(--ink-3)">private link 10.77.0.0/24 · no router, no DHCP, no name resolution</text>
+        <line x1="380" y1="222" x2="380" y2="244" stroke="var(--rule)" stroke-width="1" stroke-dasharray="3 3"/>
+      </svg>
+    </div>
+    <figcaption>Two loops that never block each other: audio is pushed by the box and text is pushed by the mini PC, each over its own connection. The control channel that arranges the audio is a third, polled connection not drawn here.</figcaption>
+  </figure>
+
+  <p>The division of labour follows from what each machine can do. The receiver has the signal and the screen but a 4.4 kernel, a few hundred megabytes of flash and no room for a speech model. The mini PC has four x86 cores and cannot draw a pixel on the television. So the receiver taps and paints; the mini PC listens and recognises; and the link between them carries as little as possible.</p>
+</section>
+
+<!-- ============================================================ -->
+<section id="sequence">
+  <span class="section-num">02</span>
+  <h2>From button to subtitle</h2>
+  <p class="kicker">The full sequence, in order, with the component responsible for each step.</p>
+
+  <p class="legend">
+    <span><span class="side box">Box</span> runs on the receiver</span>
+    <span><span class="side pc">PC</span> runs on the mini PC</span>
+  </p>
+
+  <ol class="steps">
+    <li>
+      <span class="where"><span class="side box">Box</span> <code>plugin.py</code> · <code>WHERE_SESSIONSTART</code></span>
+      <h3>Enigma2 starts and loads the plugin</h3>
+      <p>The plugin instantiates its dialog, binds three remote-control keys through a global action map, opens its WebSocket and control server on port 8770, and starts a 20 ms poll loop and a 40 ms render loop. <strong>HearAble is off.</strong> That state is not persisted on purpose: subtitles are something the viewer asks for.</p>
+    </li>
+    <li>
+      <span class="where"><span class="side box">Box</span> <code>plugin.py</code> → <code>relay.py</code></span>
+      <h3><code>F4</code> is pressed</h3>
+      <p>Key code 62 arrives. The plugin paints the greeting for four seconds, marks the relay enabled, and increments an <em>epoch</em> — a counter that invalidates everything from the previous session, so nothing stale can arrive later and be painted. In the same action it sends a Wake-on-LAN magic packet to the mini PC's MAC, broadcast to <code>10.77.0.255</code> on UDP ports 9 and 7, repeating up to fifteen times at twenty-second intervals.</p>
+    </li>
+    <li>
+      <span class="where"><span class="side pc">PC</span> <code>hearable-t9.service</code></span>
+      <h3>The mini PC wakes and starts the pipeline</h3>
+      <p>The NIC wakes the machine in about 32 seconds. systemd brings up <code>hearable-governor</code> first — it is a hard dependency, not a nicety — then launches <code>scripts/hearable_t9_live.sh</code>, which execs <code>python3 -m hearable.realtime_server</code> with the private-link source and sink configurations.</p>
+    </li>
+    <li>
+      <span class="where"><span class="side pc">PC</span> <code>sf8008/relay_source.py</code></span>
+      <h3>The receiver announces itself</h3>
+      <p>The mini PC opens a listening socket on port 9010 and starts polling the box's control endpoint every 500 ms:</p>
+<pre>GET http://10.77.0.1:8770/control?receiver=10.77.0.2%3A9010
+    &amp;want_lead_ms=1500&amp;lead_s=&lt;measured&gt;</pre>
+      <p>The poll is simultaneously a request, an announcement and a heartbeat. A receiver that stops polling disappears after an 8 s TTL and the relay shuts itself down — which is why an absent mini PC costs the decoder nothing at all: no process is started and no port is held open waiting.</p>
+    </li>
+    <li>
+      <span class="where"><span class="side box">Box</span> <code>relay.py</code> → <code>ffmpeg</code></span>
+      <h3>The box starts pushing audio</h3>
+      <p>Seeing a receiver, the relay reads the currently selected audio PID from the service and spawns an <code>ffmpeg</code> process <em>outside</em> Enigma2 that copies that one elementary stream, uncompressed-untouched, into MPEG-TS over a TCP connection out to <code>10.77.0.2:9010</code>. About 26 kB/s. Nothing is re-encoded and nothing about this touches the user interface thread.</p>
+    </li>
+    <li>
+      <span class="where"><span class="side pc">PC</span> <code>relay_source.py</code> → <code>ffmpeg</code></span>
+      <h3>Audio becomes chunks</h3>
+      <p>The receiver probes the first packets of each epoch for their timestamp and discards the audio ahead of the intended start — <code>-c copy</code> can only seek to a container boundary, so the stream always begins about 0.65 s early, and that excess is dropped rather than corrected through a feedback loop. What remains is decoded from AAC and resampled to 16 kHz mono, then cut into <strong>160 ms chunks</strong> and queued (40 deep).</p>
+    </li>
+    <li>
+      <span class="where"><span class="side pc">PC</span> <code>realtime_server.py</code> → <code>asr_capi.py</code></span>
+      <h3>The recogniser runs</h3>
+      <p>Each chunk is pushed into the streaming recogniser through a ctypes binding to NeMo-Speech.cpp. The model is cache-aware, so state carries between chunks; <code>rnnt_right_context: 1</code> means it looks one block ahead before committing to a token. Compute is about 74 ms per 160 ms chunk at p50 — roughly half of real time, which is the whole reason a fanless N95 is enough.</p>
+    </li>
+    <li>
+      <span class="where"><span class="side pc">PC</span> <code>stabilizer.py</code> → <code>led_subtitles/</code></span>
+      <h3>Words are stabilised and laid out</h3>
+      <p>The raw hypothesis is unstable by nature: a streaming model rewrites its own tail. The stabiliser holds a short history and only promotes a word once several passes agree on it. The LED formatter then packs the confirmed words into two rolling lines of at most 40 characters, with the last word held back briefly so a word still being revised does not flicker in front of the reader.</p>
+    </li>
+    <li>
+      <span class="where"><span class="side pc">PC</span> <code>subtitle_sinks.py</code> + <code>enigma2_protocol.py</code></span>
+      <h3>Two lines go back over the WebSocket</h3>
+      <p>A <code>subtitle_state</code> message carries the two display lines, a monotonic sequence number and the epoch — and nothing else. The validator actively rejects a cumulative transcript field, because sending the growing transcript would make traffic and memory quadratic in session length. The producer never waits for an acknowledgement.</p>
+    </li>
+    <li>
+      <span class="where"><span class="side box">Box</span> <code>wsserver.py</code> → <code>subtitle_session.py</code> → <code>plugin.py</code></span>
+      <h3>The panel is painted</h3>
+      <p>A hand-written WebSocket server — the box has no WebSocket library, and installing one into set-top flash to receive two lines of text would be out of proportion — hands the frame to the session, which keeps exactly one pending state and discards anything from an old epoch or an older sequence number. The render loop paints it at up to 25 fps onto a black band at the bottom of the screen.</p>
+    </li>
+    <li>
+      <span class="where"><span class="side pc">PC</span> <code>hearable_idle_watchdog.py</code></span>
+      <h3>And afterwards, it all goes away</h3>
+      <p>When the television stops sending audio, the watchdog starts a timer and powers the mini PC off. Pressing <code>F4</code> again paints a four-second farewell carrying the version number; switching the receiver off entirely sends a farewell datagram so the mini PC does not even wait out its grace period.</p>
+    </li>
+  </ol>
+</section>
+
+<!-- ============================================================ -->
+<section id="audio">
+  <span class="section-num">03</span>
+  <h2>The audio path in detail</h2>
+  <p class="kicker">One PID, off an already-tuned service, compressed all the way to the recogniser's doorstep.</p>
+
+  <h3>The tap</h3>
+  <p>Enigma2 holds twenty-four PID filters open on <code>demux0</code> while showing a channel. HearAble opens a twenty-fifth. Userspace only — no kernel module, no patched image, nothing persistent on the box.</p>
+
+<pre>open("/dev/dvb/adapter0/demux0", O_RDWR | O_NONBLOCK)
+DMX_SET_BUFFER_SIZE   1 MiB
+DMX_SET_PES_FILTER    pid      = &lt;selected audio PID&gt;
+                      input    = <b>DMX_IN_FRONTEND</b>
+                      output   = <b>DMX_OUT_TSDEMUX_TAP</b>
+                      pes_type = DMX_PES_OTHER
+                      flags    = DMX_IMMEDIATE_START
+read()                <span class="c">188-byte MPEG-TS packets, 132.8 kbit/s</span></pre>
+
+  <div class="tscroll">
+    <table>
+      <caption>Why these constants and not the neighbouring ones</caption>
+      <thead><tr><th>Constant</th><th>Effect</th></tr></thead>
+      <tbody>
+        <tr><th><code>DMX_IN_FRONTEND</code></th><td>Reads the stream <em>entering</em> the receiver rather than what the decoder is presenting. This is what puts the tap <strong>64 ms ahead</strong> of the picture instead of behind it, and what keeps HearAble entirely out of the video path.</td></tr>
+        <tr><th><code>DMX_OUT_TSDEMUX_TAP</code></th><td>Delivers to this file descriptor. First data after <strong>0.03 s</strong>. Its neighbour <code>DMX_OUT_TS_TAP</code> opens without error and delivers zero bytes for ever, because it routes to the <code>dvr</code> device instead.</td></tr>
+        <tr><th><code>1 MiB</code> buffer</th><td>Enough that a scheduling hiccup inside Enigma2 does not cost packets. The demux drops silently when its ring fills.</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>The two channels of <code>hearable-audio-relay/1</code></h3>
+  <p>Control and media are deliberately separate connections, in opposite directions, so a slow or dead receiver can never stall the user interface.</p>
+
+  <div class="tscroll">
+    <table>
+      <thead><tr><th></th><th>Control</th><th>Media</th></tr></thead>
+      <tbody>
+        <tr><th>Direction</th><td>receiver → box</td><td>box → receiver</td></tr>
+        <tr><th>Transport</th><td>HTTP GET on <code>:8770/control</code></td><td>TCP, MPEG-TS, to the receiver's port</td></tr>
+        <tr><th>Who connects</th><td>the receiver</td><td>the box</td></tr>
+        <tr><th>Cadence</th><td>every 500 ms</td><td>continuous, at playback rate</td></tr>
+        <tr><th>Runs inside Enigma2</th><td>yes — the plugin</td><td>no — a separate <code>ffmpeg</code></td></tr>
+        <tr><th>Failure cost</th><td>receiver forgotten after 8 s</td><td>relay exits; control is unaffected</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p>The control response is a stable JSON document: protocol name, <code>source_type</code> (<code>dvb</code> for live television), the service reference, an <code>source_epoch</code> that increments on every discontinuity, the relay <code>state</code>, the selected audio track and PID, and the lead currently in force.</p>
+
+  <div class="note">
+    <h4>Surviving a dead cable</h4>
+    <p>The receiver gives up on a silent connection after <strong>15 s</strong> and sets <code>SO_KEEPALIVE</code> with a 10 s idle, 5 s interval and 3 probes. Without that, a socket timeout swallowed by a bare <code>continue</code> held a dead connection indefinitely — eighteen respawns, three half-open sockets and 80 kB of unread data, a state only a physically unplugged cable produced.</p>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<section id="asr">
+  <span class="section-num">04</span>
+  <h2>Recognition and stabilisation</h2>
+  <p class="kicker">The model produces an unstable hypothesis many times a second. Turning that into something a person can read is a separate problem from recognising it.</p>
+
+  <dl class="spec">
+    <dt>Model</dt><dd>Nemotron 3.5 ASR Streaming 0.6B, <code>q8_0</code>, 741 548 352 bytes, sha256 <code>a5c435f2…f429ae</code></dd>
+    <dt>Runtime</dt><dd>NeMo-Speech.cpp at <code>4f96762</code> on ggml, CPU backend, built natively on the machine</dd>
+    <dt>Chunk</dt><dd>160 ms · <code>rnnt_right_context: 1</code> · language <code>it-IT</code></dd>
+    <dt>Compute</dt><dd>74 ms per chunk at p50 — RTF 0.4848 over thirty minutes of live television</dd>
+    <dt>Governor</dt><dd><code>performance</code>, set by its own unit. Worth 27.6 % of the real-time factor on this bursty duty cycle</dd>
+  </dl>
+
+  <h3>The stabiliser</h3>
+  <p>A streaming RNN-T revises its own tail constantly: "andiamo a Ro" becomes "andiamo a Roma" becomes "andiamo a Roma sì". Showing that raw would be unreadable. The stabiliser keeps a short history of hypotheses and promotes a word to <em>stable</em> only once several consecutive passes agree on it at the same position. The unconfirmed tail is not displayed at all.</p>
+
+  <h3>The two-line formatter</h3>
+  <p>Confirmed words are packed into a roll-up display of two rows, at most 40 characters each — the geometry that reads as one block from across a room. Three parameters govern when a word is allowed onto the screen:</p>
+
+  <div class="tscroll">
+    <table>
+      <caption><code>config/led_subtitles.json</code> · the commit rules</caption>
+      <thead><tr><th>Key</th><th class="n">Value</th><th>Meaning</th></tr></thead>
+      <tbody>
+        <tr><th><code>COMMIT_STABLE_UPDATES</code></th><td class="n">2</td><td>Passes that must agree before a word is committed</td></tr>
+        <tr><th><code>COMMIT_LOOKAHEAD</code></th><td class="n">1</td><td>Words that must follow it before it counts as settled</td></tr>
+        <tr><th><code>COMMIT_TAIL_HOLD_WORDS</code></th><td class="n">1</td><td>How many trailing words are withheld from commit</td></tr>
+        <tr><th><code>COMMIT_TAIL_FLUSH_MS</code></th><td class="n">450</td><td>How long the held tail waits before being released anyway</td></tr>
+        <tr><th><code>SHOW_UNSTABLE_TAIL</code></th><td class="n">false</td><td>Unconfirmed words are never painted</td></tr>
+        <tr><th><code>MAX_CHARS</code></th><td class="n">40</td><td>Characters per line; lines do not wrap</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="note measure">
+    <h4>What "quiet" has to mean</h4>
+    <p>The held tail is released by the pipeline's tick after <code>COMMIT_TAIL_FLUSH_MS</code> of quiet — and <em>quiet means the hypothesis stopped changing</em>, not that no event arrived. A cache-aware recogniser emits a result for every chunk, including while nobody is speaking. Measuring quiet as "no event" means those identical results restamp the timer forever, the tail never flushes on silence, and the last word of a sentence appears at the head of the next one. The timer is stamped on change only.</p>
+  </div>
+
+  <h3>Where the second goes</h3>
+  <p>Measured end to end: <strong>p50 1.072 s</strong> from audio consumed to subtitle state emitted (n = 1461, p05 0.893 s).</p>
+
+  <div class="tscroll">
+    <table>
+      <thead><tr><th>Component</th><th class="n">Cost</th><th>What it buys</th></tr></thead>
+      <tbody>
+        <tr><th>Chunking, 160 ms</th><td class="n">~80 ms avg</td><td>Audio arrives in blocks</td></tr>
+        <tr><th>Right context, 1 block</th><td class="n">~160 ms</td><td>The model sees ahead before committing</td></tr>
+        <tr><th>ASR compute</th><td class="n">74 ms</td><td>The inference itself</td></tr>
+        <tr><th>Stabiliser confirmations</th><td class="n">320–480 ms</td><td>Words that do not rewrite themselves</td></tr>
+        <tr><th>Tail hold</th><td class="n">≤450 ms</td><td>A settled last word</td></tr>
+        <tr><th>Repaint cap, 6 fps</th><td class="n">≤166 ms</td><td>Corrections that do not strobe</td></tr>
+        <tr><th>Publication delay</th><td class="n">0 ms</td><td>Nothing: the tap is already ahead</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<section id="text">
+  <span class="section-num">05</span>
+  <h2>Text back to the screen</h2>
+  <p class="kicker">A small protocol with two rules, a hand-rolled server, and a renderer that can never accumulate a backlog.</p>
+
+  <h3><code>hearable-enigma2/1</code></h3>
+  <p>One JSON object per WebSocket text frame, over the private link. The producer connects out; the renderer listens. No TLS and no authentication — the cable is the trust boundary, and the port must not be exposed beyond it.</p>
+
+  <div class="tscroll">
+    <table>
+      <thead><tr><th>Message</th><th>Direction</th><th>Purpose</th></tr></thead>
+      <tbody>
+        <tr><th><code>hello</code></th><td>both</td><td>Role, project, protocol version</td></tr>
+        <tr><th><code>capabilities</code></th><td>both</td><td>Line count, line length, ACK support</td></tr>
+        <tr><th><code>subtitle_state</code></th><td>producer → renderer</td><td>The two display lines, a sequence number, the epoch</td></tr>
+        <tr><th><code>clear_subtitles</code></th><td>producer → renderer</td><td>Blank the panel now</td></tr>
+        <tr><th><code>source_changed</code></th><td>producer → renderer</td><td>The channel changed; a new epoch begins</td></tr>
+        <tr><th><code>heartbeat</code></th><td>producer → renderer</td><td>Liveness while nothing is being said</td></tr>
+        <tr><th><code>render_ack</code></th><td>renderer → producer</td><td>This sequence number reached the screen</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p><strong>Rule one: never send a cumulative transcript.</strong> <code>validate()</code> rejects <code>final_text</code> and <code>raw</code> outright. <strong>Rule two: the producer never waits.</strong> Acknowledgements are observational. There is exactly one pending state and a newer one replaces it, so a renderer that falls behind loses freshness rather than accumulating a queue.</p>
+
+  <h3>The renderer</h3>
+  <p>The session drops any state whose epoch is older than the current one, or whose sequence number is older than the last rendered — the two mechanisms that make a channel change, a restart or a reconnection safe. A separate rule takes the panel down when the producer goes quiet for 8 s or disconnects entirely, because a test message once sat on a television for hours.</p>
+
+  <h3>Drawing on the television</h3>
+  <p>The panel is an Enigma2 skin generated at runtime: two centred white lines on a black band at 85 % opacity, each about 7.5 % of screen height, touching, sitting 7 % above the bottom edge.</p>
+
+  <div class="two">
+    <div>
+      <h4>Colours are <code>#AARRGGBB</code></h4>
+      <p>And <code>AA</code> is <em>transparency</em>, not opacity. <code>#ffffffff</code> is the skin's own definition of invisible — glyphs written that way are drawn see-through and take the colour of whatever is behind them. White is <code>#00ffffff</code>. The band is <code>#26000000</code> at 85 %.</p>
+    </div>
+    <div>
+      <h4>The window is the band</h4>
+      <p>A full-screen transparent window looks identical and captures the remote control: volume keeps working because it is handled globally, but <code>MENU</code> stops responding. The screen is positioned and sized to exactly the two lines it draws.</p>
+    </div>
+  </div>
+
+  <p>The OSD canvas is <strong>1280 × 720</strong> even on an HD service. Five look parameters are configurable at runtime in <code>/etc/enigma2/hearable_look.json</code> — <code>font_scale</code>, <code>line_gap</code>, <code>background_opacity</code>, <code>background_enabled</code>, <code>padding</code> — and a change destroys and re-instantiates the dialog rather than restarting Enigma2, which would blank the picture.</p>
+</section>
+
+<!-- ============================================================ -->
+<section id="appliance">
+  <span class="section-num">06</span>
+  <h2>What makes it an appliance</h2>
+  <p class="kicker">Nobody logs into the mini PC. It arrives when the button is pressed and leaves when the television goes quiet.</p>
+
+  <div class="tscroll">
+    <table>
+      <caption>systemd units on the mini PC</caption>
+      <thead><tr><th>Unit</th><th>Type</th><th>Job</th></tr></thead>
+      <tbody>
+        <tr><th><code>hearable-governor</code></th><td>oneshot, <code>RemainAfterExit</code></td><td>Every core to <code>performance</code>; back to <code>powersave</code> on stop. A <code>Requires=</code> of the pipeline.</td></tr>
+        <tr><th><code>hearable-t9</code></th><td>simple, <code>Restart=always</code></td><td>The pipeline. <code>KillSignal=SIGINT</code>, 30 s stop timeout, restart limit in <code>[Unit]</code>.</td></tr>
+        <tr><th><code>hearable-idle-watchdog</code></th><td>simple, root</td><td>Powers the machine off. Independent of the recogniser by design.</td></tr>
+        <tr><th><code>hearable-rgb</code></th><td>simple</td><td>The status ring. Degrades to nothing if <code>pyserial</code> is absent.</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="note">
+    <h4>Two systemd details worth copying</h4>
+    <p><code>StartLimitIntervalSec</code> belongs in <code>[Unit]</code>. Under <code>[Service]</code> it is silently ignored and the restart limit does not exist at all.</p>
+    <p><code>Restart=always</code>, never <code>on-failure</code>. A clean exit is still an appliance that has stopped making subtitles — a tool once stopped the pipeline with <code>SIGINT</code>, systemd saw exit code 0 and left it dead for twenty-three minutes.</p>
+  </div>
+
+  <h3>The private link</h3>
+  <p>An <code>/etc/network/interfaces.d/hearable</code> stanza gives the NIC a static <code>10.77.0.2/24</code> with <strong>no gateway and no DNS</strong>, so it can never become the default route, and re-arms Wake-on-LAN on every boot because the <code>r8169</code> driver clears it:</p>
+
+<pre>auto enp1s0
+iface enp1s0 inet static
+    address 10.77.0.2
+    netmask 255.255.255.0
+    up /usr/sbin/ethtool -s $IFACE wol g || true</pre>
+
+  <p>Nothing on the subtitle path goes through the house network: no router, no DHCP, no name resolution. The house Wi-Fi going down cannot take subtitles with it.</p>
+
+  <h3>The idle watchdog</h3>
+  <p>It asks two questions and needs both to act: is anything connected to port 9010 (read from <code>/proc/net/tcp</code>), and is the decoder still watching (its <code>/api/powerstate</code>, falling back to a ping)? With no audio session it starts a timer and powers down; a returning session cancels it.</p>
+
+  <div class="tscroll">
+    <table>
+      <caption><code>/etc/default/hearable</code></caption>
+      <thead><tr><th>Variable</th><th class="n">Value</th><th>Why</th></tr></thead>
+      <tbody>
+        <tr><th><code>HEARABLE_IDLE_POWEROFF_MINUTES</code></th><td class="n">20</td><td>The signal is the session's presence, not speech: a channel can be silent or play music for half an hour and still be on.</td></tr>
+        <tr><th><code>HEARABLE_IDLE_GRACE_MINUTES</code></th><td class="n">3</td><td>Short wait after the decoder says goodbye. Deliberately not instant: Enigma2 also says goodbye when it restarts for an update.</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>The status ring</h3>
+  <p>A CH340 serial bridge on the case, named by a udev rule so it does not depend on enumeration order. The protocol is a five-byte frame at 10 000 baud: <code>0xFA</code>, mode, brightness, speed, checksum — with brightness and speed inverted relative to intuition.</p>
+</section>
+
+<!-- ============================================================ -->
+<section id="files">
+  <span class="section-num">07</span>
+  <h2>Every file involved</h2>
+  <p class="kicker">What the system is made of, and what it puts on the two machines.</p>
+
+  <h3>On the receiver — the plugin</h3>
+  <p>Copied to <code>/usr/lib/enigma2/python/Plugins/Extensions/HearAbleOSD/</code>. Six files plus one shared module deployed from the project rather than duplicated, so the two ends of the protocol cannot drift apart.</p>
+
+  <div class="tscroll">
+    <table class="manifest">
+      <thead><tr><th>File</th><th class="n">Lines</th><th>Role</th></tr></thead>
+      <tbody>
+        <tr><td><code>plugin.py</code></td><td class="n">1269</td><td>The plugin proper: skin generation, key handling, lifecycle messages, look configuration, render and poll loops, status file, control endpoint</td></tr>
+        <tr><td><code>relay.py</code></td><td class="n">812</td><td>The audio relay: control endpoint state, <code>ffmpeg</code> supervision, epoch management, Wake-on-LAN, the farewell datagram</td></tr>
+        <tr><td><code>wsserver.py</code></td><td class="n">331</td><td>A WebSocket server in <code>hashlib</code>, <code>base64</code> and <code>struct</code>, because the box has no WebSocket library</td></tr>
+        <tr><td><code>subtitle_session.py</code></td><td class="n">284</td><td>Receiver-side state: epoch and sequence rejection, one pending state, staleness. Testable without a set-top box</td></tr>
+        <tr><td><code>dvb_demux_tap.py</code></td><td class="n">159</td><td>The PID filter itself: <code>DMX_SET_PES_FILTER</code> and the read loop</td></tr>
+        <tr><td><code>__init__.py</code></td><td class="n">9</td><td>The plugin's own copy of the version string, checked against the package by a test</td></tr>
+        <tr><td><code>enigma2_protocol.py</code></td><td class="n">278</td><td>Deployed from <code>hearable/</code>, not duplicated: the wire format both ends import</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>On the mini PC — the pipeline</h3>
+  <p>The repository is checked out at <code>/home/hearable/hearable</code>. These are the modules on the live-television path.</p>
+
+  <div class="tscroll">
+    <table class="manifest">
+      <thead><tr><th>File</th><th class="n">Lines</th><th>Role</th></tr></thead>
+      <tbody>
+        <tr><td><code>hearable/realtime_server.py</code></td><td class="n">1362</td><td>The pipeline: chunk loop, ASR events, the LED bridge, tick, metrics, latency records</td></tr>
+        <tr><td><code>hearable/audio_sources.py</code></td><td class="n">1364</td><td>Source abstraction and factory; epoch and source-change handling</td></tr>
+        <tr><td><code>hearable/subtitle_sinks.py</code></td><td class="n">678</td><td>The WebSocket client to the box, with reconnection and heartbeat</td></tr>
+        <tr><td><code>hearable/sf8008/relay_source.py</code></td><td class="n">627</td><td>The receiving end of the audio relay: listen, control poll, timestamp trim, AAC decode, keepalive</td></tr>
+        <tr><td><code>hearable/enigma2_protocol.py</code></td><td class="n">278</td><td>Message construction and validation; the single source of truth for the wire</td></tr>
+        <tr><td><code>hearable/asr_capi.py</code></td><td class="n">243</td><td>ctypes binding to NeMo-Speech.cpp: push samples, drain events</td></tr>
+        <tr><td><code>hearable/stabilizer.py</code></td><td class="n">135</td><td>C_tail1: hypothesis history, common prefix, promotion to stable</td></tr>
+        <tr><td><code>hearable/led_subtitles/rollup.py</code></td><td class="n">134</td><td>The two rolling rows and their timing</td></tr>
+        <tr><td><code>hearable/led_subtitles/asr_commit.py</code></td><td class="n">109</td><td>Which word may be committed, and why: stability, lookahead, forced flush</td></tr>
+        <tr><td><code>hearable/led_subtitles/config.py</code></td><td class="n">70</td><td>The commit and layout parameters</td></tr>
+        <tr><td><code>hearable/led_subtitles/layout.py</code></td><td class="n">68</td><td>Tokenisation and line packing at 40 characters</td></tr>
+        <tr><td><code>hearable/io_config.py</code></td><td class="n">45</td><td>Loading the source and sink configuration files</td></tr>
+        <tr><td><code>hearable/__init__.py</code></td><td class="n">15</td><td>The one place the release version is written</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p>Four further modules under <code>hearable/sf8008/</code> — <code>supervised_reader.py</code>, <code>box.py</code>, <code>byte_position.py</code>, <code>frame_match.py</code> — implement <code>sf8008_usb</code>, an <strong>earlier and superseded</strong> source type that required the receiving machine to hold a bit-identical copy of the media, so the decoder's play position could be recovered by matching a frame off its screen. Nothing on the current path uses them.</p>
+
+  <h3>Local media takes the same path</h3>
+  <p>A film played from the receiver's own storage — a USB stick, an internal drive — is subtitled by <strong>the same chain, with no second code path</strong>. The relay is a second reader of whatever the decoder is playing: the demux for live television, the file for a file. Either way it forwards only the selected audio track, compressed, from ahead of the viewer's position. The receiver sees <code>source_type: file</code> instead of <code>dvb</code> in the control response and carries on.</p>
+
+  <div class="tscroll">
+    <table>
+      <caption>File playback · eight checks, all passing</caption>
+      <thead><tr><th>Check</th><th>Result</th><th class="n">Recovery</th></tr></thead>
+      <tbody>
+        <tr><th>First subtitle after play starts</th><td><span class="chip pass">Pass</span></td><td class="n">36.1 s</td></tr>
+        <tr><th>Pause</th><td><span class="chip pass">Pass</span></td><td class="n">relay <code>paused</code>, 0 stale</td></tr>
+        <tr><th>Resume</th><td><span class="chip pass">Pass</span></td><td class="n">1.2 s</td></tr>
+        <tr><th>Seek forward</th><td><span class="chip pass">Pass</span></td><td class="n">19.1 s</td></tr>
+        <tr><th>Seek backward</th><td><span class="chip pass">Pass</span></td><td class="n">64.9 s</td></tr>
+        <tr><th>Change to a different film</th><td><span class="chip pass">Pass</span></td><td class="n">epoch 41 → 42</td></tr>
+        <tr><th><code>F4</code> off then on</th><td><span class="chip pass">Pass</span></td><td class="n">5.4 s</td></tr>
+        <tr><th>Audio track change</th><td><span class="chip open">Not testable</span></td><td class="n">one track in the file</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p><code>FILE_STALE_SUBTITLES: 0</code> across the run — nothing from before a pause, a seek or a change of file was ever painted afterwards.</p>
+
+  <div class="note">
+    <h4>Two deliberate differences on a file</h4>
+    <p><strong>The sync keys are refused.</strong> <code>F2</code> and <code>F3</code> adjust the publication delay, which exists to compensate for how far ahead of the picture the tap runs. A file has no such offset, so the keys do nothing and say so, rather than silently applying a correction with no meaning.</p>
+    <p><strong>The first subtitle takes longer</strong> — 36.1 s against about 4 s on live television, because starting a film means the relay spawning, the stream beginning at a container boundary, and the recogniser having heard nothing yet. Once running, it behaves the same.</p>
+  </div>
+
+  <p>Measured with the film on the box's USB storage (<code>/media/hdd</code>). An NVMe or internal drive is the same path as far as HearAble is concerned — it reads whatever Enigma2 is playing and never touches the storage itself — but that has not been measured and is not claimed here.</p>
+
+  <h3>Configuration and deployment</h3>
+
+  <div class="tscroll">
+    <table class="manifest">
+      <thead><tr><th>Source in the repository</th><th>Installed as</th><th>What it sets</th></tr></thead>
+      <tbody>
+        <tr><td><code>config/audio_source_sf8008_relay_private.json</code></td><td>read in place</td><td>Box at <code>10.77.0.1</code>, control 8770, receiver 9010, 40-chunk queue, 1500 ms lead</td></tr>
+        <tr><td><code>config/subtitle_sink_sf8008_private.json</code></td><td>read in place</td><td>WebSocket to <code>ws://10.77.0.1:8770/hearable</code>, 2 s heartbeat, backoff 250 ms → 5 s</td></tr>
+        <tr><td><code>config/led_subtitles.json</code></td><td>read in place</td><td>Two lines of 40, the commit rules, hold times, the Italian orphan-word list</td></tr>
+        <tr><td><code>scripts/hearable_t9_live.sh</code></td><td>launched by the unit</td><td>Governor, model path, <code>--chunk-ms 160</code>, <code>--gpu -1</code>, <code>--language it-IT</code></td></tr>
+        <tr><td><code>systemd/hearable-t9.service</code></td><td><code>/etc/systemd/system/</code></td><td>The pipeline unit</td></tr>
+        <tr><td><code>systemd/hearable-governor.service</code></td><td><code>/etc/systemd/system/</code></td><td>The CPU governor unit</td></tr>
+        <tr><td><code>systemd/hearable-idle-watchdog.service</code></td><td><code>/etc/systemd/system/</code></td><td>The power-off watchdog unit</td></tr>
+        <tr><td><code>systemd/hearable-rgb.service</code></td><td><code>/etc/systemd/system/</code></td><td>The status ring unit</td></tr>
+        <tr><td><code>systemd/hearable.default</code></td><td><code>/etc/default/hearable</code></td><td>Idle timeout and grace period</td></tr>
+        <tr><td><code>systemd/hearable-private-link.conf</code></td><td><code>/etc/network/interfaces.d/hearable</code></td><td>Static <code>10.77.0.2/24</code>, no gateway, Wake-on-LAN re-armed at boot</td></tr>
+        <tr><td><code>systemd/99-hearable-ring.rules</code></td><td><code>/etc/udev/rules.d/</code></td><td>A stable name for the CH340 bridge</td></tr>
+        <tr><td><code>tools/hearable_idle_watchdog.py</code></td><td>run by its unit</td><td>Session detection and the power-off decision</td></tr>
+        <tr><td><code>tools/hearable_rgb.py</code></td><td>run by its unit</td><td>The ring protocol and the state-to-colour map</td></tr>
+        <tr><td><code>tools/sf8008_install_plugin.sh</code></td><td>run from a workstation</td><td>Copies the plugin, refuses a version mismatch, verifies a new process is running</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>Files the system creates on the machines</h3>
+  <p>Nothing else on either machine is modified. Everything below is written by HearAble itself.</p>
+
+  <div class="tscroll">
+    <table class="manifest">
+      <thead><tr><th>Path</th><th>Where</th><th>Contents · lifetime</th></tr></thead>
+      <tbody>
+        <tr><td><code>/etc/enigma2/hearable_look.json</code></td><td><span class="side box">Box</span></td><td>The five look parameters. Written when the viewer changes one; survives reboots</td></tr>
+        <tr><td><code>/etc/enigma2/hearable_sync.json</code></td><td><span class="side box">Box</span></td><td>Publication delays, step and limits. Written 2 s after the viewer stops pressing, to avoid a flash write storm</td></tr>
+        <tr><td><code>/etc/enigma2/hearable_wol.json</code></td><td><span class="side box">Box</span></td><td>The mini PC's MAC, broadcast address and ports</td></tr>
+        <tr><td><code>/tmp/hearable_osd_status.json</code></td><td><span class="side box">Box</span></td><td>Full state, rewritten every second. The instrument every gate reads</td></tr>
+        <tr><td><code>/tmp/hearable_osd.log</code></td><td><span class="side box">Box</span></td><td>Plugin log. Cleared at boot</td></tr>
+        <tr><td><code>/tmp/hearable_diag.jsonl</code></td><td><span class="side box">Box</span></td><td>Diagnostic records, capped at 20 000. Off by default</td></tr>
+        <tr><td><code>/run/hearable-idle.json</code></td><td><span class="side pc">PC</span></td><td>The watchdog's view of the session and its timer</td></tr>
+        <tr><td><code>benchmark/results/T9_N95_cpu/*.json</code></td><td><span class="side pc">PC</span></td><td>Metrics and event logs per run, named by <code>LABEL</code></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p>The receiver's own configuration is never edited. No Enigma2 setting is changed, no init script is added, no kernel module is loaded, and the tuner is never opened by HearAble. Removing the plugin directory and the three <code>hearable_*.json</code> files returns the box to stock.</p>
+</section>
+
+<footer>
+  <p><strong>HearAble 1.5.1</strong> — technical reference. Orchestrated by <b>Nunzio Raciti</b>, written by <b>Claude</b> (Opus) to his direction. Every phase gated by tests and measurements.</p>
+  <p>Octagon SF8008 V3 Supreme Combo · T9 Plus Intel N95 · Nemotron 3.5 ASR Streaming 0.6B on NeMo-Speech.cpp.</p>
+  <p>Line counts are from the repository at version 1.5.1. Every measurement named here was taken on this hardware.</p>
+</footer>
+
+</main>

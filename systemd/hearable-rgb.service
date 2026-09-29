@@ -1,0 +1,27 @@
+[Unit]
+Description=HearAble: il ring RGB racconta lo stato della macchina
+Documentation=https://github.com/cwt/LED
+# The ring watches; it is not part of the subtitle path and nothing depends on
+# it. If it fails, systemd restarts it and the captions never notice.
+After=hearable-t9.service hearable-idle-watchdog.service
+Wants=hearable-t9.service
+
+[Service]
+Type=simple
+# The controller node belongs to root:dialout; this user is in dialout, so the
+# service does not need to be root and nobody needs to chmod anything.
+User=hearable
+Group=dialout
+SupplementaryGroups=dialout
+WorkingDirectory=/home/hearable/hearable
+ExecStart=/usr/bin/python3 /home/hearable/hearable/tools/hearable_rgb.py \
+    --device /dev/hearable-ring --watchdog-file /run/hearable-idle.json
+ExecStopPost=-/usr/bin/python3 /home/hearable/hearable/tools/hearable_rgb.py \
+    --device /dev/hearable-ring --demo SHUTDOWN --seconds 2
+Restart=always
+RestartSec=10
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target

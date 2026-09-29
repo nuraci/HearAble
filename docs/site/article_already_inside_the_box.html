@@ -1,0 +1,621 @@
+<title>Already Inside the Box</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+
+<style>
+:root{
+  --ground:#eef1f5;
+  --surface:#ffffff;
+  --surface-2:#e4e9ef;
+  --ink:#141d2b;
+  --ink-2:#3e4d60;
+  --ink-3:#6a7a8d;
+  --rule:#cbd4de;
+  --rule-strong:#9fadbd;
+  --accent:#a65e06;
+  --accent-fill:#e79a32;
+  --accent-wash:#fbeeda;
+  --measure:#1a666f;
+  --measure-wash:#dcecee;
+  --pass:#2a6d47;
+  --nogo:#a5382b;
+  --band:#0a0d12;
+  --band-ink:#ffffff;
+  --shadow:0 1px 2px rgba(20,29,43,.06),0 8px 24px -12px rgba(20,29,43,.22);
+
+  --sans:"Archivo",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --serif:"Source Serif 4",Georgia,"Times New Roman",serif;
+  --mono:"IBM Plex Mono",ui-monospace,"SF Mono",Menlo,monospace;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --ground:#0d1218;
+    --surface:#141b23;
+    --surface-2:#1b242e;
+    --ink:#e7edf3;
+    --ink-2:#b4c1cf;
+    --ink-3:#8496a8;
+    --rule:#28323d;
+    --rule-strong:#3d4b59;
+    --accent:#eaa751;
+    --accent-fill:#e79a32;
+    --accent-wash:#2a2115;
+    --measure:#5cb9c4;
+    --measure-wash:#12272a;
+    --pass:#5cb381;
+    --nogo:#dd7a6b;
+    --band:#04060a;
+    --band-ink:#ffffff;
+    --shadow:0 1px 2px rgba(0,0,0,.4),0 10px 28px -14px rgba(0,0,0,.7);
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#0d1218;
+  --surface:#141b23;
+  --surface-2:#1b242e;
+  --ink:#e7edf3;
+  --ink-2:#b4c1cf;
+  --ink-3:#8496a8;
+  --rule:#28323d;
+  --rule-strong:#3d4b59;
+  --accent:#eaa751;
+  --accent-fill:#e79a32;
+  --accent-wash:#2a2115;
+  --measure:#5cb9c4;
+  --measure-wash:#12272a;
+  --pass:#5cb381;
+  --nogo:#dd7a6b;
+  --band:#04060a;
+  --band-ink:#ffffff;
+  --shadow:0 1px 2px rgba(0,0,0,.4),0 10px 28px -14px rgba(0,0,0,.7);
+}
+
+*{box-sizing:border-box}
+body{
+  background:var(--ground);
+  color:var(--ink);
+  font-family:var(--serif);
+  font-size:17px;
+  line-height:1.62;
+  -webkit-font-smoothing:antialiased;
+}
+
+/* ---------- masthead ---------- */
+.masthead{
+  position:sticky;
+  top:env(safe-area-inset-top,0px);
+  z-index:40;
+  background:color-mix(in srgb,var(--ground) 88%,transparent);
+  backdrop-filter:blur(10px);
+  border-bottom:1px solid var(--rule);
+}
+.masthead-inner{
+  max-width:1180px;margin:0 auto;
+  padding-block:10px;padding-inline:20px;
+  display:flex;align-items:center;gap:20px;flex-wrap:wrap;
+}
+.wordmark{
+  font-family:var(--sans);font-weight:700;font-size:15px;
+  letter-spacing:.14em;text-transform:uppercase;color:var(--ink);
+  display:flex;align-items:center;gap:9px;white-space:nowrap;
+}
+.wordmark .dot{width:9px;height:9px;border-radius:50%;background:var(--accent-fill);flex:none}
+.masthead nav{display:flex;gap:2px;flex-wrap:wrap;margin-left:auto}
+.masthead nav a{
+  font-family:var(--sans);font-size:12.5px;font-weight:500;
+  letter-spacing:.04em;color:var(--ink-3);text-decoration:none;
+  padding:5px 9px;border-radius:5px;
+}
+.masthead nav a:hover{color:var(--ink);background:var(--surface-2)}
+.masthead nav a:focus-visible,a:focus-visible,button:focus-visible{
+  outline:2px solid var(--accent-fill);outline-offset:2px;
+}
+
+/* ---------- shell ---------- */
+.wrap{max-width:1180px;margin:0 auto;padding-inline:20px}
+main{max-width:760px;margin:0 auto;padding-inline:20px;padding-block:0 96px}
+
+/* ---------- hero ---------- */
+.hero{padding-block:56px 40px;border-bottom:1px solid var(--rule)}
+.eyebrow{
+  font-family:var(--sans);font-size:11.5px;font-weight:600;
+  letter-spacing:.2em;text-transform:uppercase;color:var(--accent);
+  margin:0 0 18px;
+}
+h1{
+  font-family:var(--sans);font-weight:700;
+  font-size:clamp(2.3rem,7vw,3.6rem);line-height:1.04;
+  letter-spacing:-.022em;margin:0 0 20px;text-wrap:balance;
+}
+.standfirst{
+  font-size:clamp(1.08rem,2.6vw,1.32rem);line-height:1.5;
+  color:var(--ink-2);margin:0 0 30px;max-width:34em;
+}
+.standfirst strong{color:var(--ink);font-weight:600}
+.byline{
+  font-family:var(--sans);font-size:12.5px;color:var(--ink-3);
+  letter-spacing:.03em;margin:0;
+}
+.byline b{color:var(--ink-2);font-weight:600}
+
+/* ---------- instrument strip ---------- */
+.strip{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));
+  gap:1px;background:var(--rule);border:1px solid var(--rule);
+  border-radius:8px;overflow:hidden;margin:34px 0 0;
+}
+.strip div{background:var(--surface);padding:15px 16px}
+.strip dt{
+  font-family:var(--sans);font-size:10.5px;font-weight:600;
+  letter-spacing:.13em;text-transform:uppercase;color:var(--ink-3);
+  margin:0 0 7px;
+}
+.strip dd{
+  margin:0;font-family:var(--mono);font-size:1.32rem;font-weight:500;
+  font-variant-numeric:tabular-nums;color:var(--ink);line-height:1.15;
+}
+.strip dd span{font-size:.74em;color:var(--ink-3);font-weight:400}
+
+/* ---------- sections ---------- */
+section{padding-block:56px 0;scroll-margin-top:72px}
+h2{
+  font-family:var(--sans);font-weight:700;
+  font-size:clamp(1.55rem,4.2vw,2.05rem);line-height:1.14;
+  letter-spacing:-.016em;margin:0 0 6px;text-wrap:balance;
+}
+.section-num{
+  font-family:var(--mono);font-size:12px;font-weight:500;
+  color:var(--accent);letter-spacing:.1em;display:block;margin:0 0 10px;
+}
+.kicker{
+  color:var(--ink-3);font-size:1.02rem;margin:0 0 26px;
+  padding-bottom:18px;border-bottom:1px solid var(--rule);
+}
+h3{
+  font-family:var(--sans);font-weight:600;font-size:1.16rem;
+  letter-spacing:-.008em;margin:38px 0 12px;color:var(--ink);
+}
+h4{
+  font-family:var(--sans);font-weight:600;font-size:.86rem;
+  letter-spacing:.09em;text-transform:uppercase;color:var(--ink-3);
+  margin:28px 0 10px;
+}
+p{margin:0 0 17px}
+a{color:var(--accent);text-decoration-thickness:1px;text-underline-offset:2px}
+strong{font-weight:600}
+ul,ol{margin:0 0 17px;padding-left:1.3em}
+li{margin-bottom:7px}
+li::marker{color:var(--ink-3)}
+
+/* ---------- the subtitle band: the product's own artefact ---------- */
+.band{
+  background:var(--band);border-radius:6px;
+  padding:18px 22px;margin:30px 0;
+  box-shadow:var(--shadow);
+}
+.band p{
+  margin:0;color:var(--band-ink);text-align:center;
+  font-family:var(--sans);font-weight:500;
+  font-size:clamp(.98rem,2.5vw,1.16rem);line-height:1.5;
+  text-wrap:balance;
+}
+.band p+p{margin-top:2px}
+.band .dim{color:#9aa6b4;font-size:.8em;font-weight:500}
+.band-caption{
+  font-family:var(--sans);font-size:11.5px;color:var(--ink-3);
+  text-align:center;margin:-20px 0 30px;letter-spacing:.03em;
+}
+
+/* ---------- tables ---------- */
+.tscroll{overflow-x:auto;margin:0 0 22px;border:1px solid var(--rule);border-radius:8px;background:var(--surface)}
+table{border-collapse:collapse;width:100%;font-size:.9rem}
+caption{
+  font-family:var(--sans);font-size:11px;font-weight:600;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--ink-3);text-align:left;
+  padding:13px 16px 0;
+}
+th,td{padding:9px 16px;text-align:left;border-bottom:1px solid var(--rule);vertical-align:top}
+thead th{
+  font-family:var(--sans);font-size:11px;font-weight:600;letter-spacing:.09em;
+  text-transform:uppercase;color:var(--ink-3);
+  border-bottom:1px solid var(--rule-strong);white-space:nowrap;
+}
+tbody tr:last-child th,tbody tr:last-child td{border-bottom:none}
+td.n,th.n{text-align:right;font-family:var(--mono);font-variant-numeric:tabular-nums;white-space:nowrap}
+tbody th{font-family:var(--serif);font-weight:600;font-size:.92rem}
+code{
+  font-family:var(--mono);font-size:.855em;
+  background:var(--surface-2);padding:1px 5px;border-radius:4px;
+  color:var(--ink);white-space:nowrap;
+}
+th code,td code{background:transparent;padding:0}
+
+/* ---------- verdict chips ---------- */
+.chip{
+  font-family:var(--sans);font-size:10.5px;font-weight:700;letter-spacing:.09em;
+  text-transform:uppercase;padding:2px 7px;border-radius:4px;white-space:nowrap;
+  display:inline-block;
+}
+.chip.pass{background:color-mix(in srgb,var(--pass) 16%,transparent);color:var(--pass)}
+.chip.nogo{background:color-mix(in srgb,var(--nogo) 16%,transparent);color:var(--nogo)}
+.chip.open{background:var(--accent-wash);color:var(--accent)}
+
+/* ---------- callout ---------- */
+.note{
+  border-left:3px solid var(--accent-fill);
+  background:var(--surface);
+  padding:17px 20px;margin:26px 0;border-radius:0 7px 7px 0;
+  box-shadow:var(--shadow);
+}
+.note p:last-child{margin-bottom:0}
+.note h4{margin-top:0}
+.note.measure{border-left-color:var(--measure)}
+.note.measure h4{color:var(--measure)}
+
+/* ---------- code block ---------- */
+pre{
+  font-family:var(--mono);font-size:.8rem;line-height:1.62;
+  background:var(--surface);color:var(--ink-2);
+  border:1px solid var(--rule);border-radius:8px;
+  padding:15px 17px;overflow-x:auto;margin:0 0 22px;
+}
+pre b{color:var(--ink);font-weight:600}
+pre .c{color:var(--ink-3)}
+
+/* ---------- diagram ---------- */
+figure{margin:30px 0}
+.dscroll{overflow-x:auto;border:1px solid var(--rule);border-radius:8px;background:var(--surface);padding:18px 14px}
+svg{display:block;max-width:100%;height:auto;margin:0 auto}
+figcaption{
+  font-family:var(--sans);font-size:12px;color:var(--ink-3);
+  margin-top:11px;line-height:1.5;
+}
+
+/* ---------- spec list ---------- */
+.spec{
+  display:grid;grid-template-columns:minmax(140px,auto) 1fr;
+  gap:0;border:1px solid var(--rule);border-radius:8px;
+  background:var(--surface);overflow:hidden;margin:0 0 22px;font-size:.9rem;
+}
+.spec dt{
+  font-family:var(--sans);font-size:11px;font-weight:600;letter-spacing:.07em;
+  text-transform:uppercase;color:var(--ink-3);
+  padding:10px 16px;border-bottom:1px solid var(--rule);
+}
+.spec dd{margin:0;padding:10px 16px;border-bottom:1px solid var(--rule)}
+.spec dt:last-of-type,.spec dd:last-of-type{border-bottom:none}
+
+/* ---------- timeline ---------- */
+.tl{list-style:none;padding:0;margin:26px 0 0}
+.tl li{
+  position:relative;padding:0 0 26px 30px;
+  border-left:1px solid var(--rule);margin:0;
+}
+.tl li:last-child{border-left-color:transparent;padding-bottom:0}
+.tl li::before{
+  content:"";position:absolute;left:-5px;top:7px;
+  width:9px;height:9px;border-radius:50%;
+  background:var(--accent-fill);border:2px solid var(--ground);
+}
+.tl li.dead::before{background:var(--nogo)}
+.tl h3{margin:0 0 6px;font-size:1.03rem}
+.tl p{margin:0 0 8px;font-size:.96rem;color:var(--ink-2)}
+.tl .when{
+  font-family:var(--mono);font-size:11px;color:var(--ink-3);
+  letter-spacing:.04em;display:block;margin-bottom:3px;
+}
+
+/* ---------- two-up ---------- */
+.two{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin:0 0 22px}
+.two>div{
+  background:var(--surface);border:1px solid var(--rule);
+  border-radius:8px;padding:16px 18px;
+}
+.two h4{margin-top:0}
+.two p:last-child{margin-bottom:0}
+.two p{font-size:.93rem}
+
+footer{
+  border-top:1px solid var(--rule);margin-top:70px;
+  padding-block:30px 10px;
+  font-family:var(--sans);font-size:12.5px;color:var(--ink-3);
+}
+footer p{margin:0 0 7px}
+
+@media (max-width:640px){
+  body{font-size:16px}
+  .masthead nav{display:none}
+  .two{grid-template-columns:1fr}
+  .spec{grid-template-columns:1fr}
+  .spec dt{padding-bottom:0;border-bottom:none}
+  .spec dd{padding-top:4px}
+  section{padding-block:44px 0}
+}
+@media (prefers-reduced-motion:reduce){
+  *{animation:none!important;transition:none!important;scroll-behavior:auto!important}
+}
+html{scroll-behavior:smooth}
+</style>
+
+<style>
+/* article-only additions, on top of the project's shared tokens */
+.lede{
+  font-family:var(--serif);font-size:1.22rem;line-height:1.55;
+  color:var(--ink-2);border-left:3px solid var(--accent-fill);
+  padding-left:20px;margin:0 0 30px;
+}
+.pull{
+  font-family:var(--sans);font-weight:600;
+  font-size:clamp(1.15rem,3.2vw,1.45rem);line-height:1.32;
+  color:var(--ink);margin:34px 0;padding:0;text-wrap:balance;
+  border-top:1px solid var(--rule);border-bottom:1px solid var(--rule);
+  padding-block:22px;
+}
+.bom dt{white-space:normal}
+.stakes{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));
+  gap:1px;background:var(--rule);border:1px solid var(--rule);
+  border-radius:8px;overflow:hidden;margin:0 0 26px;
+}
+.stakes div{background:var(--surface);padding:14px 16px}
+.stakes b{
+  display:block;font-family:var(--mono);font-size:1.18rem;font-weight:500;
+  font-variant-numeric:tabular-nums;color:var(--ink);margin-bottom:5px;
+}
+.stakes span{
+  font-family:var(--sans);font-size:11.5px;color:var(--ink-3);
+  line-height:1.4;display:block;
+}
+</style>
+
+<header class="masthead">
+  <div class="masthead-inner">
+    <span class="wordmark"><span class="dot"></span>HearAble</span>
+    <nav>
+      <a href="#gap">The gap</a>
+      <a href="#tap">The tap</a>
+      <a href="#fit">Does it fit?</a>
+      <a href="#second">The second</a>
+      <a href="#build">Build one</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+
+<div class="hero">
+  <p class="eyebrow">Live speech recognition · DVB-T2 · consumer hardware</p>
+  <h1>The audio is already inside your set-top box</h1>
+  <p class="lede">Live subtitling used to need a broadcaster. It now needs a €50-ish receiver you probably own, a fanless mini PC, one Ethernet cable, and about two thousand lines of Python. Here is how the pieces fit, what the real numbers are, and which of my ideas died on the way.</p>
+  <p class="byline">By <b>Nunzio Raciti</b> · a build report, September 2026 · <span style="color:var(--ink-3)">orchestrated by me, written by Claude (Opus) to my direction</span></p>
+</div>
+
+<!-- ============================================================ -->
+<section id="gap">
+  <span class="section-num">01</span>
+  <h2>A gap that stays open</h2>
+  <p class="kicker">Broadcasters caption some programmes. The rest of the schedule is the problem.</p>
+
+  <p>My starting point was not a technical curiosity. A close friend of mine is hard of hearing, and Italian television captions the evening news and not much else. Live regional windows, sport, talk shows, most of daytime: nothing, or captions so far behind that they describe a sentence that finished half a minute ago. The practical result is watching people move their mouths.</p>
+
+  <p>The received wisdom is that fixing this is a broadcaster's job, because live subtitling means a respeaker in a booth or a speech stack in a data centre. That was true for a long time. It stopped being true quietly, when streaming ASR models got small enough to run on a CPU you can buy for the price of a games console — and almost nobody has gone back to check what that makes possible at home.</p>
+
+  <p>So I checked. The result runs on his television, adds about a second of delay, never touches the internet, and is switched on with one button on the remote he already had.</p>
+
+  <div class="stakes">
+    <div><b>~1.0 s</b><span>behind the spoken word</span></div>
+    <div><b>0.4848</b><span>real-time factor on an N95</span></div>
+    <div><b>26 kB/s</b><span>audio between the two boxes</span></div>
+    <div><b>0</b><span>tuners taken from the TV</span></div>
+  </div>
+
+  <p>The rest of this is the interesting part: not that it works, but <em>where</em> the audio comes from, and what it cost to find that out.</p>
+</section>
+
+<!-- ============================================================ -->
+<section id="tap">
+  <span class="section-num">02</span>
+  <h2>The part that had to be invented</h2>
+  <p class="kicker">Everything downstream is ordinary engineering. Getting clean programme audio out of a closed box, for free, is not.</p>
+
+  <p>A recogniser needs audio. The obvious ways to get it off a set-top box each charge a price, and it took me a while to notice that all three prices were being paid in the same currency: <strong>delay</strong>.</p>
+
+  <p>A <strong>microphone near the television</strong> gives you the room — including, in this case, the feedback from the listener's own hearing aid. You would be handing the recogniser the worst possible copy of a signal that exists perfectly, uncompressed, three feet away inside a plastic case.</p>
+
+  <p>An <strong>HDMI audio extractor</strong> is cleaner and still wrong. The audio you capture there has already been decoded and presented. It comes out <em>after</em> the decoder's own output buffer — which is precisely the delay you are trying not to pay, bought a second time.</p>
+
+  <p>The <strong>streaming port</strong> that Enigma2 boxes expose on 8001 works on the first try, which is how it earns your trust before taking something. A client attached to that port holds the service. Zap to a channel on another multiplex and the box has no tuner left for the thing you were watching. I measured that, rather than reading it somewhere: it is a hard failure, on screen, in front of the person you built this for.</p>
+
+  <p class="pull">Then it occurred to me that the box is already demultiplexing the exact audio I want, right now, and Linux has had a standard API for reading it since the 1990s.</p>
+
+  <h3>Five calls</h3>
+
+  <p>Every DVB receiver running Linux exposes <code>/dev/dvb/adapterN/demuxM</code>. You open it, install a PID filter, and read. The box's own software is doing this twenty-four times over while it shows you a channel; you are asking to be the twenty-fifth.</p>
+
+<pre><span class="c">/* the whole mechanism */</span>
+open("/dev/dvb/adapter0/demux0", O_RDWR | O_NONBLOCK)
+DMX_SET_BUFFER_SIZE   1 MiB
+DMX_SET_PES_FILTER    pid    = &lt;the audio PID the viewer selected&gt;
+                      input  = <b>DMX_IN_FRONTEND</b>
+                      output = <b>DMX_OUT_TSDEMUX_TAP</b>
+                      flags  = DMX_IMMEDIATE_START
+read()                <span class="c">188-byte MPEG-TS packets</span></pre>
+
+  <p>No kernel module. No patched firmware. No root exploit. Userspace, on a stock image, with an API older than the box.</p>
+
+  <p><code>DMX_IN_FRONTEND</code> is the line that matters. It says <em>read the stream entering the receiver</em>, not the stream the decoder is presenting. You end up upstream of the picture — which means the recogniser gets a head start instead of a handicap, and it means you are not in the video path at all, so you cannot break it.</p>
+
+  <div class="note measure">
+    <h4>Try the modes on the hardware, not in the header file</h4>
+    <p>There are three plausible output modes and the documentation will not tell you which one your SoC honours. On this box: <code>DMX_OUT_TS_TAP</code> opens without error and delivers <strong>zero bytes</strong> for ever, because it routes to the <code>dvr</code> device rather than to your descriptor. <code>DMX_OUT_TAP</code> works — 127.3 kbit/s, first data after 0.27 s. <code>DMX_OUT_TSDEMUX_TAP</code> works better — 132.8 kbit/s, first data after <strong>0.03 s</strong>. That is a ninefold difference in time-to-first-byte between two calls that look equally correct.</p>
+  </div>
+
+  <p>What comes out is the selected audio track, still compressed, at about <strong>26 kB/s</strong>. That number is the reason the rest of the design is small: you can push it down a cable to a machine that has no idea what a transport stream is, and all that machine needs to do is one AAC decode and a resample.</p>
+</section>
+
+<!-- ============================================================ -->
+<section id="fit">
+  <span class="section-num">03</span>
+  <h2>Does the recogniser fit on something cheap?</h2>
+  <p class="kicker">I spent a campaign proving it did not, on the board I most wanted it to.</p>
+
+  <p>The model is Nemotron 3.5 ASR Streaming 0.6B, quantised to <code>q8_0</code>, running on NeMo-Speech.cpp. On a desktop it transcribes Italian at a real-time factor of 0.476 with a display word error rate of 4.74 %. Half of real time with room to spare — so the obvious next question is how far down the hardware ladder you can push it.</p>
+
+  <p>I tried to push it onto an <strong>Arduino UNO Q</strong>, a €50-class board with four Cortex-A53 cores and an Adreno GPU. Five measured attempts, and I want to report the failure properly because the failure is more useful than the success.</p>
+
+  <div class="tscroll">
+    <table>
+      <caption>Five ways not to run a speech model on a €50 board</caption>
+      <thead><tr><th>Path</th><th>Result</th><th class="n">The number</th></tr></thead>
+      <tbody>
+        <tr><th>CPU, native build</th><td><span class="chip nogo">No-go</span></td><td class="n">RTF 2.3146</td></tr>
+        <tr><th>Vulkan, build and capability</th><td><span class="chip pass">Pass</span></td><td class="n">57.9 MB of shaders</td></tr>
+        <tr><th>Vulkan, actually running</th><td><span class="chip nogo">Blocked</span></td><td class="n">0.267 GFLOP/s</td></tr>
+        <tr><th>GPU measured on its own</th><td><span class="chip nogo">Poor</span></td><td class="n">3.43 GB/s</td></tr>
+        <tr><th>Hexagon DSP</th><td><span class="chip nogo">Absent</span></td><td class="n">no CDSP domain</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p>The last row is worth dwelling on, because it is the advice everyone gives. "Put it on the DSP." There is no DSP to put it on: the SoC variant on this board has no CDSP domain at all. You can spend a week discovering that from forum posts, or twenty minutes discovering it from the device tree.</p>
+
+  <p>And the closing number is not about any one path:</p>
+
+  <p class="pull">Reaching real time needed 7.33×. The memory bandwidth allowed 2.79×. The door was closed by physics before it was closed by software.</p>
+
+  <p>Two things survived that campaign and both are worth stealing. The whole stack <strong>compiles on the board itself</strong>, with its own gcc — no cross toolchain, no sysroot, no emulation. And the transcript it produced was not merely similar to the desktop's, it was <strong>identical</strong>: the same 74 words, 0.00 % WER. Different architecture, different compiler, different SIMD kernels, not one letter moved. If you are wondering whether a quantised ASR stack is portable, that is your answer.</p>
+
+  <h3>The machine that did work, and the one line that made it</h3>
+
+  <p>What shipped is a fanless <strong>Intel N95 mini PC</strong> — four cores, no GPU, no fan, the kind of box sold for digital signage. It reaches a real-time factor of <strong>0.4848</strong> over thirty minutes of live television.</p>
+
+  <p>I did not optimise a single line of compute code to get there. I changed a governor.</p>
+
+  <div class="tscroll">
+    <table>
+      <caption>Real-time factor · lower is faster</caption>
+      <thead><tr><th>Condition</th><th class="n">RTF</th></tr></thead>
+      <tbody>
+        <tr><th>Governor <code>powersave</code> (the default)</th><td class="n">0.6741</td></tr>
+        <tr><th>Governor <code>performance</code></th><td class="n">0.4896</td></tr>
+        <tr><th>Ten minutes of real television</th><td class="n">0.4962</td></tr>
+        <tr><th>Thirty minutes of deliberate abuse</th><td class="n">0.4848</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p>That is <strong>27.6 %</strong> of the real-time factor, from one line of sysfs. The reason is specific to this workload and probably applies to yours: streaming ASR runs in bursts — about 105 ms of compute every 160 ms — and <code>intel_pstate</code> in <code>powersave</code> never sees a burst long enough to decide to clock up. It spends its life ramping.</p>
+
+  <div class="note measure">
+    <h4>For calibration</h4>
+    <p>The governor was worth more than <code>-march=native</code> and AVX-VNNI put together, <em>by a factor of twenty</em>. I had assumed the opposite and measured them in the wrong order. If you are tuning a bursty inference workload, check the governor before you read a single line of assembly.</p>
+  </div>
+
+  <p>There is also a GPU lesson hiding here. I did benchmark a Radeon RX 6600 over Vulkan, and in raw throughput it is 5.7× the CPU. Under <em>pacing</em> — feeding it audio at the rate audio actually arrives, which is the only mode that matters for live — the advantage collapses to 2.2×, because a GPU cannot overlap work it has not been given yet. A live pipeline is not a benchmark, and a throughput number will lie to you about it.</p>
+</section>
+
+<!-- ============================================================ -->
+<section id="second">
+  <span class="section-num">04</span>
+  <h2>The second you cannot avoid, and the one I invented</h2>
+  <p class="kicker">Most of the delay is a decision. One chunk of it was a measurement error I carried for weeks.</p>
+
+  <p>Subtitles land about a second after the word. Here is the whole budget, because "about a second" is not an engineering statement:</p>
+
+  <div class="tscroll">
+    <table>
+      <caption>Where the second goes</caption>
+      <thead><tr><th>Component</th><th class="n">Cost</th><th>What it buys</th></tr></thead>
+      <tbody>
+        <tr><th>Chunk size, 160 ms</th><td class="n">~80 ms</td><td>Audio arrives in blocks</td></tr>
+        <tr><th>RNN-T right context, 1</th><td class="n">~160 ms</td><td>The model looks one block ahead before committing</td></tr>
+        <tr><th>ASR compute</th><td class="n">74 ms</td><td>The actual inference, p50</td></tr>
+        <tr><th>Stabiliser confirmations</th><td class="n">320–480 ms</td><td>A word is shown only after N passes agree on it</td></tr>
+        <tr><th>Tail hold</th><td class="n">≤450 ms</td><td>The last word waits for a successor</td></tr>
+        <tr><th>Repaint cap, 6 fps</th><td class="n">≤166 ms</td><td>Corrections do not strobe</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p>More than half of that is spent deliberately <em>not</em> showing you something. That is the part I would defend hardest to anyone optimising for a lower number. A subtitle that appears fast and then rewrites itself in front of the reader is worse than one that appears later and stays put — and for a reader who is <em>depending</em> on the text rather than glancing at it, it is much worse. The unconfirmed tail is not displayed at all.</p>
+
+  <h3>The 2.4 seconds that were 64 milliseconds</h3>
+
+  <p>For weeks the pipeline held its subtitles back by an extra 1.5 s. I had measured the tap running 2.4 s ahead of the picture, so I was compensating.</p>
+
+  <p>I had measured it by screenshotting the decoder's framebuffer and correlating. That method has half a second of systematic doubt baked into it, and it was wrong by considerably more than that. The honest measurement is to ask the decoder directly — read <code>AUDIO_GET_PTS</code> from the audio device and the PTS of the packet the PID filter is handing you, <em>in the same instant, packet in hand</em>:</p>
+
+<pre>pairs.append((time.time(), pes_pts(packet), audio_pts(audio_fd)))
+<span class="c"># the two ioctls are microseconds apart, so the difference
+# between the two clocks IS the offset — no correlation needed</span></pre>
+
+  <p>The real figure is <strong>64 ms</strong>, spread 32 ms over a hundred samples. I had been wrong by a factor of forty, and in the direction that made the product worse: a second and a half of delay the system did not owe, added to compensate for a number that did not exist.</p>
+
+  <p class="pull">The person the system was built for had told me the subtitles felt late. I believed my instrument over the ear it was built to serve. The ear was right.</p>
+
+  <p>If there is one transferable lesson in this whole project it is that one. Every defect of consequence here was found by doing the real thing rather than its convenient imitation: unplugging a cable found a dead socket that <code>ip link down</code> could not reproduce; pressing buttons on the remote found two faults that a nineteen-case automated matrix had passed; pulling the mains answered a Wake-on-LAN question that months of software-off testing could not.</p>
+</section>
+
+<!-- ============================================================ -->
+<section id="build">
+  <span class="section-num">05</span>
+  <h2>What it takes to build one</h2>
+  <p class="kicker">Two consumer boxes, one cable, and no subscription to anything.</p>
+
+  <div class="tscroll">
+    <table>
+      <caption>Bill of materials</caption>
+      <thead><tr><th>Part</th><th>What I used</th><th>What matters</th></tr></thead>
+      <tbody>
+        <tr><th>Receiver</th><td>Octagon SF8008 V3, openATV 7.5.1</td><td>Any Enigma2 box with root and a working <code>/dev/dvb</code>. The tap is standard Linux DVB, not vendor-specific.</td></tr>
+        <tr><th>Inference host</th><td>T9 Plus, Intel N95, 15 GiB, fanless</td><td>x86 with AVX2, four cores, and a governor you are allowed to change. No GPU needed — and on this workload, not wanted.</td></tr>
+        <tr><th>Link</th><td>One Ethernet cable, <code>10.77.0.0/24</code> static</td><td>No router, no DHCP, no gateway on the critical path. The house network going down must not take subtitles with it.</td></tr>
+        <tr><th>Model</th><td>Nemotron 3.5 ASR Streaming 0.6B <code>q8_0</code></td><td>707 MB on disk. Any streaming ASR with a cache-aware encoder will slot in.</td></tr>
+        <tr><th>Runtime</th><td>NeMo-Speech.cpp on ggml</td><td>Compiles natively on both machines. No CUDA, no Python inference.</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p>The shape of the running system is deliberately boring. The box taps its own demux and pushes 26 kB/s of compressed audio down the private cable. The mini PC decodes it, runs the recogniser, stabilises the words into two lines, and sends those two lines back over a WebSocket. The box paints them on a black band at the bottom of the picture. Nothing else crosses the wire — no video, no transcript history, no telemetry.</p>
+
+  <h3>Three details that took longer than they should have</h3>
+
+  <ul>
+    <li><strong>Enigma2's colour format is <code>#AARRGGBB</code>, and <code>AA</code> is <em>transparency</em>, not opacity.</strong> White text written as <code>#ffffffff</code> is the skin's own definition of invisible: my glyphs were drawn see-through and took the colour of whatever was behind them — green over a green bar, blue over a blue one. White is <code>#00ffffff</code>.</li>
+    <li><strong>Size the window to what you draw.</strong> A full-screen transparent overlay looks identical and takes the remote control with it. Volume kept working, because that is handled globally, but <code>MENU</code> did nothing at all. The television looked broken while the subtitles worked perfectly.</li>
+    <li><strong>The OSD canvas is 1280 × 720</strong> even on a 1080p service. Lay the band out in 1080p coordinates and it lands below the bottom of the screen, where you will never see it and will spend an evening wondering why.</li>
+  </ul>
+
+  <h3>Making it an appliance, not a project</h3>
+
+  <p>The difference between a demo and something a person actually uses every evening is that nobody should have to think about the second machine. So: pressing the button on the remote sends a Wake-on-LAN magic packet down the private cable, and the mini PC comes up in 32 seconds. When the television stops sending audio, a watchdog on the mini PC waits out a timer and powers it off. Switching the receiver off sends a farewell datagram so it does not even wait.</p>
+
+  <p>The viewer presses one key. The rest of the system appears and disappears around them.</p>
+
+  <div class="note">
+    <h4>One systemd line that cost me twenty-three minutes of silence</h4>
+    <p><code>Restart=on-failure</code> is the wrong choice for an appliance. A measurement tool stopped my pipeline with <code>SIGINT</code>, systemd saw exit code 0, decided that was fine, and the service stayed dead for twenty-three minutes with nobody the wiser. A clean exit is still an appliance that has stopped doing its job. Use <code>Restart=always</code>. (And put <code>StartLimitIntervalSec</code> under <code>[Unit]</code> — under <code>[Service]</code> it is silently ignored and your restart limit simply does not exist.)</p>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<section id="close">
+  <span class="section-num">06</span>
+  <h2>It can be done at home, now</h2>
+  <p class="kicker">Not as a proof of concept. As the thing that is on in the evening.</p>
+
+  <p>What I find worth saying is not that this is clever — most of it is fifteen-year-old APIs used in the obvious order. It is that the capability arrived and the assumption did not move. Live subtitling is still filed mentally under "broadcaster infrastructure", and the actual requirement turned out to be a receiver, a fanless box the size of a paperback, and a cable.</p>
+
+  <p>There are tens of millions of people in Europe living with meaningful hearing loss, and a television schedule that is captioned in patches. The gap is not waiting on a research breakthrough. It is waiting on someone plugging the two boxes together.</p>
+
+  <p>What I would still like to know: whether this generalises to receivers I have never touched. The tap is standard Linux DVB, so it ought to. If you try it on different hardware, the measurement I would want back is the one from the box you own — first byte out of <code>DMX_OUT_TSDEMUX_TAP</code>, and how far ahead of <code>AUDIO_GET_PTS</code> it runs.</p>
+</section>
+
+<footer>
+  <p><strong>HearAble</strong> — Italian live subtitling on DVB-T2, by Nunzio Raciti.</p>
+  <p>I orchestrated this project and Claude (Opus) wrote it, working to my direction: the decisions, the hardware and the testing that mattered were mine; the code, the tests and the measurement tools were its. Every phase was gated by tests and benchmarks — nothing here advanced on an opinion.</p>
+  <p>Every figure here is a measurement taken on the hardware named beside it. Where something was not measured, the text says so.</p>
+</footer>
+
+</main>

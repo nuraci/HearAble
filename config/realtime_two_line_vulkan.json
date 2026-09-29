@@ -1,0 +1,7 @@
+{
+  "chunk_ms": 80,
+  "rnnt_right_context": 3,
+  "ui_max_fps": 6.0,
+  "led_config": "config/led_subtitles.json",
+  "final_ack_wait": 1.0
+}

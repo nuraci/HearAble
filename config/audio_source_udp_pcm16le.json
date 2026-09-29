@@ -1,0 +1,13 @@
+{
+  "type": "udp",
+  "options": {
+    "listen_address": "0.0.0.0",
+    "listen_port": 18080,
+    "audio_format": "pcm_s16le",
+    "sample_rate": 16000,
+    "channels": 1,
+    "source_timeout_ms": 1000,
+    "max_datagram_bytes": 65535,
+    "rx_buffer_bytes": 1048576
+  }
+}

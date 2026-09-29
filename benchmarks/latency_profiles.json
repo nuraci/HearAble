@@ -1,0 +1,63 @@
+{
+  "schema_version": 1,
+  "profiles": [
+    {
+      "id": "A",
+      "name": "current_conservative",
+      "config": {
+        "COMMIT_STABLE_UPDATES": 2,
+        "COMMIT_LOOKAHEAD": 2,
+        "COMMIT_TAIL_HOLD_WORDS": 6,
+        "COMMIT_TAIL_FLUSH_MS": 1200,
+        "SHOW_UNSTABLE_TAIL": false,
+        "MAX_CHARS": 40,
+        "SOFT_BREAK_MIN": 28,
+        "SCROLL_MS": 120,
+        "MIN_LINE_HOLD_MS": 1500,
+        "IDLE_CLEAR_MS": 5500
+      }
+    },
+    {
+      "id": "B",
+      "name": "balanced",
+      "config": {
+        "COMMIT_STABLE_UPDATES": 2,
+        "COMMIT_LOOKAHEAD": 1,
+        "COMMIT_TAIL_HOLD_WORDS": 3,
+        "COMMIT_TAIL_FLUSH_MS": 650,
+        "SHOW_UNSTABLE_TAIL": false,
+        "MAX_CHARS": 40,
+        "SOFT_BREAK_MIN": 28,
+        "SCROLL_MS": 120,
+        "MIN_LINE_HOLD_MS": 1500,
+        "IDLE_CLEAR_MS": 5500
+      }
+    },
+    {
+      "id": "C",
+      "name": "aggressive",
+      "config": {
+        "COMMIT_STABLE_UPDATES": 2,
+        "COMMIT_LOOKAHEAD": 1,
+        "COMMIT_TAIL_HOLD_WORDS": 2,
+        "COMMIT_TAIL_FLUSH_MS": 450,
+        "SHOW_UNSTABLE_TAIL": false,
+        "MAX_CHARS": 40,
+        "SOFT_BREAK_MIN": 28,
+        "SCROLL_MS": 120,
+        "MIN_LINE_HOLD_MS": 1500,
+        "IDLE_CLEAR_MS": 5500
+      }
+    }
+  ],
+  "runtime": {
+    "backend": "vulkan",
+    "chunk_ms": 80,
+    "rnnt_right_context": 3,
+    "punctuation": true
+  },
+  "gates": {
+    "display_latency_p95_multiplier": 1.1,
+    "visible_wer_abs_tolerance": 0.02
+  }
+}

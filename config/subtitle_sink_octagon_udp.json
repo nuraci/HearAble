@@ -1,0 +1,9 @@
+{
+  "type": "octagon_udp",
+  "options": {
+    "host": "127.0.0.1",
+    "port": 18081,
+    "format": "json",
+    "max_datagram_bytes": 4096
+  }
+}

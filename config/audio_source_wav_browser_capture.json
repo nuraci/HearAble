@@ -1,0 +1,6 @@
+{
+  "type": "wav",
+  "options": {
+    "path": "benchmarks/audio/browser_capture_16k_mono.wav"
+  }
+}

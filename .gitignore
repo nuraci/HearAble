@@ -1,0 +1,65 @@
+__pycache__/
+*.py[cod]
+.pytest_cache/
+build/
+dist/
+
+# Large external trees, reproduced by scripts/build_*.sh and the models symlink.
+models/
+# ...tranne la nota che dice dove mettere il modello e come verificarlo.
+!models/
+models/*
+!models/README.md
+upstream/
+
+# Regenerable: tools/hearable_benchmark.py rebuilds this suite with espeak-ng+ffmpeg.
+benchmarks/latency/audio/
+# Regenerable: the registered sample concatenated 5x for the 30-minute run.
+benchmarks/audio/italian_latency_001_loop5x.wav
+# Regenerable: desktop player test media, built by tools/make_desktop_fixtures.py.
+benchmarks/desktop/fixtures/
+
+# Capture-debugging residue and pre-canonicalization originals. Kept on disk for
+# provenance, not tracked: no test or script reads them, and the canonical
+# derivatives that are tracked carry the same content.
+benchmarks/audio/pipewire_*
+benchmarks/audio/test_tone_*
+benchmarks/audio/browser_capture.wav
+benchmarks/audio/browser_capture.wav.*
+benchmarks/audio/*.original.wav
+benchmarks/audio/*.raw.wav
+benchmarks/audio/italian_latency_001.source.mp3
+
+# Run output, not inputs.
+benchmarks/**/*.jsonl
+benchmarks/**/*.raw
+benchmarks/**/*.pcm
+benchmarks/**/*.stderr
+
+# Copyrighted media and anything derived from it. Broadcast or commercial content
+# is never committed; the mock fixtures are regenerated locally by
+# tools/mock_enigma2_server.py and scripts/make_loop_audio.sh.
+*.avi
+*.mkv
+*.mp4
+*.ts
+benchmarks/network/fixtures/
+
+# Personal helper: holds a session id, not project content.
+resume.sh
+
+# Regenerable: built by tools/make_sf8008_fixture.py (419 MB).
+benchmarks/sf8008_usb_mkv/fixtures/
+
+# Rebuilt on demand from the fixture by tools/sf8008_byte_position.py
+benchmarks/sf8008_usb_mkv/byte_index.json
+
+# Immagini di installazione scaricate per le macchine di prova (T9 Plus N95).
+*.iso
+
+# Event logs from live runs: megabytes of per-chunk records, rebuilt by rerunning.
+benchmark/results/**/*_events.jsonl
+
+# This installation: household addresses and the mini PC MAC.
+# The tracked file is config/site.example.json, with placeholders.
+config/site.json

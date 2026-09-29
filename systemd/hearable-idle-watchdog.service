@@ -1,0 +1,24 @@
+[Unit]
+Description=HearAble: spegnimento del T9 quando il decoder smette di mandare audio
+Documentation=file:///opt/devel/hearable_dvb-t/benchmark/results/T9_N95_cpu.md
+After=hearable-t9.service
+Wants=hearable-t9.service
+
+[Service]
+Type=simple
+# The watchdog decides to power the machine off, so it runs as root; it is a
+# single file that reads /proc and calls systemctl, and it is deliberately
+# independent of the RGB ring and of the recogniser.
+User=root
+ExecStart=/usr/bin/python3 /home/hearable/hearable/tools/hearable_idle_watchdog.py \
+    --minutes ${HEARABLE_IDLE_POWEROFF_MINUTES} --port 9010 \
+    --grace-minutes ${HEARABLE_IDLE_GRACE_MINUTES} \
+    --state-file /run/hearable-idle.json
+EnvironmentFile=/etc/default/hearable
+Restart=on-failure
+RestartSec=15
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target

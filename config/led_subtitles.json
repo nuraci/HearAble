@@ -1,0 +1,27 @@
+{
+  "MAX_CHARS": 40,
+  "SOFT_BREAK_MIN": 28,
+  "COMMIT_STABLE_UPDATES": 2,
+  "COMMIT_LOOKAHEAD": 1,
+  "COMMIT_TAIL_HOLD_WORDS": 1,
+  "COMMIT_TAIL_FLUSH_MS": 450,
+  "SCROLL_MS": 120,
+  "MIN_LINE_HOLD_MS": 1500,
+  "IDLE_CLEAR_MS": 5500,
+  "POPON_GAP_MS": 120,
+  "POPON_MIN_MS": 1000,
+  "POPON_MAX_MS": 6000,
+  "READING_CPS": 18,
+  "BRIGHTNESS_MIN": 5,
+  "BRIGHTNESS_MAX": 100,
+  "SHOW_UNSTABLE_TAIL": false,
+  "GLOBAL_OFFSET_MS": 0,
+  "DIARIZATION_CONFIDENCE_MIN": 0.65,
+  "ORPHAN_WORDS": [
+    "il", "lo", "la", "i", "gli", "le", "un", "uno", "una",
+    "di", "a", "da", "in", "con", "su", "per", "tra", "fra",
+    "del", "della", "dei", "delle", "al", "alla", "ai", "alle",
+    "dal", "dalla", "nel", "nella", "che", "e", "ed", "ma",
+    "o", "se", "non"
+  ]
+}

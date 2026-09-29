@@ -1,0 +1,10 @@
+{
+  "type": "sf8008_relay",
+  "options": {
+    "host": "10.77.0.1",
+    "control_port": 8770,
+    "receiver_port": 9010,
+    "queue_chunks": 40,
+    "lead_ms": 1500
+  }
+}

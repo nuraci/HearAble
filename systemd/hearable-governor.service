@@ -1,0 +1,19 @@
+[Unit]
+Description=HearAble: CPU governor performance
+Documentation=file:///opt/devel/hearable_dvb-t/benchmark/results/T9_N95_cpu.md
+DefaultDependencies=no
+After=sysinit.target
+Before=hearable-t9.service
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+# Phase 8 measured this: the recogniser works in bursts of about 105 ms every
+# 160, and intel_pstate in powersave never stays busy long enough to clock up.
+# The governor is worth 27.6% of the RTF — more than -march=native and AVX-VNNI
+# together, by a factor of twenty.
+ExecStart=/bin/sh -c 'for c in /sys/devices/system/cpu/cpu[0-9]*/cpufreq/scaling_governor; do echo performance > "$c"; done'
+ExecStop=/bin/sh -c 'for c in /sys/devices/system/cpu/cpu[0-9]*/cpufreq/scaling_governor; do echo powersave > "$c"; done'
+
+[Install]
+WantedBy=multi-user.target

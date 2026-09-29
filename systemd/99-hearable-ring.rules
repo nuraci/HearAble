@@ -1,0 +1,7 @@
+# /etc/udev/rules.d/99-hearable-ring.rules
+#
+# The ring's bridge is a generic CH340: on a machine with any other serial
+# adapter, /dev/ttyUSB0 is whichever came up first. Name it by what it is, so
+# the service does not depend on enumeration order — and keep the permissions
+# the distribution already gives it, without a chmod anywhere.
+SUBSYSTEM=="tty", ATTRS{idVendor}=="1a86", ATTRS{idProduct}=="7523", SYMLINK+="hearable-ring", GROUP="dialout", MODE="0660"

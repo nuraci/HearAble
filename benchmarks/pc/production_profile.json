@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "profiles": [
+    {
+      "id": "C_tail1",
+      "name": "production_c_tail1",
+      "config": {
+        "COMMIT_STABLE_UPDATES": 2,
+        "COMMIT_LOOKAHEAD": 1,
+        "COMMIT_TAIL_HOLD_WORDS": 1,
+        "COMMIT_TAIL_FLUSH_MS": 450,
+        "SHOW_UNSTABLE_TAIL": false,
+        "MAX_CHARS": 40,
+        "SOFT_BREAK_MIN": 28,
+        "SCROLL_MS": 120,
+        "MIN_LINE_HOLD_MS": 1500,
+        "IDLE_CLEAR_MS": 5500
+      }
+    }
+  ]
+}

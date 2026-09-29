@@ -1,0 +1,550 @@
+<title>Il secondo che resta</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&display=swap">
+<style>
+  :root {
+    --ground: #ECEEEF;
+    --surface: #FFFFFF;
+    --band: #0B0D0E;
+    --band-ink: #FFFFFF;
+    --ink: #14191C;
+    --ink-soft: #57646C;
+    --line: #D2D8DB;
+    --line-soft: #E3E8EA;
+    --accent: #00707C;
+    --accent-soft: #D7ECEE;
+    --good: #2A6E42;
+    --bad: #A82740;
+    --warn: #8A6410;
+
+    --display: "Archivo", ui-sans-serif, system-ui, sans-serif;
+    --body: "Source Serif 4", Georgia, "Times New Roman", serif;
+    --mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --ground: #0E1113;
+      --surface: #161A1D;
+      --band: #000000;
+      --band-ink: #FFFFFF;
+      --ink: #E6EBEE;
+      --ink-soft: #99A6AE;
+      --line: #273034;
+      --line-soft: #1E2528;
+      --accent: #3FBCC9;
+      --accent-soft: #10353A;
+      --good: #5CB97C;
+      --bad: #E4708A;
+      --warn: #D2A23F;
+    }
+  }
+  :root[data-theme="dark"] {
+    --ground: #0E1113;
+    --surface: #161A1D;
+    --band: #000000;
+    --band-ink: #FFFFFF;
+    --ink: #E6EBEE;
+    --ink-soft: #99A6AE;
+    --line: #273034;
+    --line-soft: #1E2528;
+    --accent: #3FBCC9;
+    --accent-soft: #10353A;
+    --good: #5CB97C;
+    --bad: #E4708A;
+    --warn: #D2A23F;
+  }
+
+  body {
+    background: var(--ground);
+    color: var(--ink);
+    font-family: var(--body);
+    font-size: 17px;
+    line-height: 1.62;
+    -webkit-font-smoothing: antialiased;
+  }
+  .page {
+    max-width: 47rem;
+    margin: 0 auto;
+    padding-inline: 20px;
+    padding-block: 3.5rem 4rem;
+    display: flex;
+    flex-direction: column;
+    gap: 3rem;
+  }
+
+  /* ---- masthead ------------------------------------------------------- */
+  .masthead { display: flex; flex-direction: column; gap: 1rem; }
+  .bars { display: flex; height: 6px; border-radius: 1px; overflow: hidden; }
+  .bars span { flex: 1; }
+  .eyebrow {
+    font-family: var(--display);
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+    margin: 0;
+  }
+  h1 {
+    font-family: var(--display);
+    font-weight: 700;
+    font-size: clamp(2.1rem, 7vw, 3.1rem);
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+    text-wrap: balance;
+    margin: 0;
+  }
+  .standfirst {
+    font-size: 1.16rem;
+    color: var(--ink-soft);
+    margin: 0;
+    max-width: 38rem;
+  }
+
+  /* ---- the panel, as it looks on the television ------------------------ */
+  figure { margin: 0; display: flex; flex-direction: column; gap: 0.7rem; }
+  .osd {
+    background: var(--band);
+    color: var(--band-ink);
+    padding: 1.1rem 1.4rem;
+    font-family: var(--display);
+    font-size: clamp(1rem, 3.4vw, 1.3rem);
+    line-height: 1.5;
+    font-weight: 500;
+    border-radius: 2px;
+  }
+  figcaption { font-size: 0.87rem; color: var(--ink-soft); }
+
+  /* ---- sections ------------------------------------------------------- */
+  section { display: flex; flex-direction: column; gap: 1.1rem; }
+  h2 {
+    font-family: var(--display);
+    font-weight: 700;
+    font-size: 1.5rem;
+    letter-spacing: -0.01em;
+    text-wrap: balance;
+    margin: 0;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid var(--ink);
+  }
+  h3 {
+    font-family: var(--display);
+    font-weight: 600;
+    font-size: 1.06rem;
+    margin: 0;
+  }
+  p { margin: 0; }
+  p + p { margin-top: -0.2rem; }
+  a { color: var(--accent); }
+  strong { font-weight: 600; }
+  code, .num {
+    font-family: var(--mono);
+    font-size: 0.88em;
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* ---- the four figures ----------------------------------------------- */
+  .figures {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(9.5rem, 1fr));
+    gap: 1px;
+    background: var(--line);
+    border: 1px solid var(--line);
+  }
+  .figure { background: var(--surface); padding: 1rem 1.1rem; }
+  .figure dt {
+    font-family: var(--display);
+    font-size: 0.68rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+  }
+  .figure dd {
+    margin: 0.35rem 0 0;
+    font-family: var(--mono);
+    font-weight: 500;
+    font-size: 1.5rem;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.02em;
+  }
+  .figure dd small {
+    display: block;
+    font-family: var(--body);
+    font-size: 0.82rem;
+    font-weight: 400;
+    letter-spacing: 0;
+    color: var(--ink-soft);
+    margin-top: 0.15rem;
+  }
+
+  /* ---- the correction -------------------------------------------------- */
+  .correction {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr));
+    gap: 1rem;
+  }
+  .measure {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    padding: 1.1rem 1.2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+  }
+  .measure.right { border-color: var(--accent); box-shadow: inset 3px 0 0 var(--accent); }
+  .measure h3 { font-size: 0.72rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-soft); }
+  .measure .big {
+    font-family: var(--mono);
+    font-size: 2rem;
+    font-weight: 500;
+    letter-spacing: -0.03em;
+    font-variant-numeric: tabular-nums;
+  }
+  .measure p { font-size: 0.9rem; color: var(--ink-soft); }
+
+  /* ---- the budget bar --------------------------------------------------- */
+  .budget { display: flex; flex-direction: column; gap: 0.8rem; }
+  .bar {
+    display: flex;
+    height: 2.6rem;
+    border: 1px solid var(--line);
+    overflow: hidden;
+    font-family: var(--mono);
+    font-size: 0.7rem;
+  }
+  .bar div {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--band-ink);
+    font-variant-numeric: tabular-nums;
+    min-width: 0;
+    overflow: hidden;
+  }
+  .scale {
+    display: flex;
+    justify-content: space-between;
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    color: var(--ink-soft);
+    font-variant-numeric: tabular-nums;
+  }
+  .key { display: flex; flex-wrap: wrap; gap: 0.5rem 1.2rem; font-size: 0.9rem; }
+  .key span { display: flex; align-items: center; gap: 0.45rem; }
+  .swatch { width: 0.85rem; height: 0.85rem; border-radius: 2px; flex: none; }
+  .deliberate {
+    border-left: 3px solid var(--accent);
+    background: var(--accent-soft);
+    padding: 0.9rem 1.1rem;
+    font-size: 0.97rem;
+  }
+
+  /* ---- tables ----------------------------------------------------------- */
+  .scroll { overflow-x: auto; }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.95rem;
+    background: var(--surface);
+  }
+  caption {
+    text-align: left;
+    font-size: 0.87rem;
+    color: var(--ink-soft);
+    padding-bottom: 0.5rem;
+  }
+  th, td {
+    text-align: left;
+    padding: 0.6rem 0.8rem;
+    border-bottom: 1px solid var(--line-soft);
+    vertical-align: top;
+  }
+  thead th {
+    font-family: var(--display);
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+    border-bottom: 1px solid var(--line);
+    white-space: nowrap;
+  }
+  td.n, th.n { text-align: right; font-family: var(--mono); font-variant-numeric: tabular-nums; white-space: nowrap; }
+  tbody tr:last-child td { border-bottom: none; }
+
+  /* ---- the three roads --------------------------------------------------- */
+  .roads { display: flex; flex-direction: column; gap: 1rem; }
+  .road {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    padding: 1.2rem 1.3rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+  }
+  .road.chosen { border-color: var(--accent); box-shadow: inset 4px 0 0 var(--accent); }
+  .road-head { display: flex; align-items: baseline; gap: 0.7rem; flex-wrap: wrap; }
+  .road-head h3 { font-size: 1.14rem; }
+  .pill {
+    font-family: var(--display);
+    font-size: 0.66rem;
+    font-weight: 600;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    padding: 0.2rem 0.5rem;
+    border-radius: 2px;
+    white-space: nowrap;
+  }
+  .pill.yes { background: var(--accent); color: var(--surface); }
+  .pill.cost { border: 1px solid var(--bad); color: var(--bad); }
+  .pill.flat { border: 1px solid var(--line); color: var(--ink-soft); }
+  .road ul { margin: 0; padding-left: 1.1rem; display: flex; flex-direction: column; gap: 0.3rem; font-size: 0.96rem; }
+  .gain { font-family: var(--mono); font-size: 0.92rem; color: var(--ink-soft); }
+
+  /* ---- signal chain ------------------------------------------------------ */
+  .chain {
+    background: var(--band);
+    color: var(--band-ink);
+    font-family: var(--mono);
+    font-size: 0.78rem;
+    line-height: 1.75;
+    padding: 1.1rem 1.2rem;
+    border-radius: 2px;
+    white-space: pre;
+    overflow-x: auto;
+  }
+
+  /* ---- open questions ----------------------------------------------------- */
+  .open {
+    border: 1px solid var(--line);
+    border-left: 3px solid var(--warn);
+    background: var(--surface);
+    padding: 1.1rem 1.2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  .open h3 { font-size: 1rem; }
+  .open p { font-size: 0.96rem; }
+
+  footer {
+    border-top: 1px solid var(--line);
+    padding-top: 1.2rem;
+    font-size: 0.85rem;
+    color: var(--ink-soft);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem 1.5rem;
+    font-family: var(--mono);
+  }
+</style>
+
+<div class="page">
+
+  <header class="masthead">
+    <div class="bars" aria-hidden="true">
+      <span style="background:#C8C8C8"></span><span style="background:#C8C800"></span><span style="background:#00C8C8"></span><span style="background:#00C800"></span><span style="background:#C800C8"></span><span style="background:#C80000"></span><span style="background:#0000C8"></span>
+    </div>
+    <p class="eyebrow">HearAble · Octagon SF8008 · DVB-T2 · v1.2.0 · 17 settembre 2026</p>
+    <h1>Il secondo che resta</h1>
+    <p class="standfirst">I sottotitoli arrivano sullo schermo del decoder un secondo dopo le parole. Questo dice dove va quel secondo, e cosa costerebbe chiuderlo.</p>
+  </header>
+
+  <figure>
+    <div class="osd">robotica Royal Gate Hotel non puoi<br>butterci lo spazzatura non è</div>
+    <figcaption>Il pannello come appare sul televisore, ripreso nell'istante in cui il plugin dichiarava quelle due righe. Cartoonito HD, DVB-T2, riconoscimento in tempo reale sul processore.</figcaption>
+  </figure>
+
+  <section>
+    <h2>Dove siamo</h2>
+    <p>Il decoder trascrive quello che è in onda e lo scrive sul proprio schermo, in italiano, senza trattenere il sintonizzatore e senza togliere un tasto al telecomando. Trenta minuti di diretta con zap fra multiplex, cambi traccia e l'interruttore girato due volte.</p>
+    <dl class="figures">
+      <div class="figure"><dt>Ritardo percepito</dt><dd>1,0 s<small>parola detta → parola scritta</small></dd></div>
+      <div class="figure"><dt>Calcolo</dt><dd>0,47<small>RTF: 74 ms ogni 160 di audio</small></dd></div>
+      <div class="figure"><dt>Sottotitoli vecchi</dt><dd>0<small>dopo zap, traccia, spegnimento</small></dd></div>
+      <div class="figure"><dt>Servizi persi</dt><dd>0<small>in trenta minuti di torture</small></dd></div>
+    </dl>
+    <div class="chain">antenna ─> frontend ─┬─> filtro PID ──> Nemotron ──> C_tail1 ──> pannello
+                     └─> decoder ────> televisore</div>
+    <p>Il filtro PID legge dal segnale che <em>entra</em>, non da quello che il decoder mostra. Non apre una seconda sintonizzazione, non trattiene il sintonizzatore, e lo zap fra multiplex funziona come se non ci fosse: trenta transizioni su trenta.</p>
+  </section>
+
+  <section>
+    <h2>La correzione che ha cambiato tutto</h2>
+    <p>Il ritardo di pubblicazione dei sottotitoli era stato costruito a 1500 ms perché una misura diceva che il tap corre 2,4 secondi davanti all'immagine: HearAble batteva la figura sul tempo e andava trattenuto. Quella misura veniva dal confronto fra fotogrammi catturati via <code>/grab</code>, che porta mezzo secondo di incertezza dichiarata.</p>
+    <p>Il decoder però sa dire a che punto è. <code>AUDIO_GET_PTS</code> riporta il PTS che sta suonando, i pacchetti che il filtro consegna portano il loro, e leggendo i due orologi con il pacchetto in mano sono a microsecondi di distanza.</p>
+    <div class="correction">
+      <div class="measure">
+        <h3>Correlazione di fotogrammi</h3>
+        <div class="big">2400 ms</div>
+        <p>± 500 ms di incertezza sistematica. In questo progetto <code>/grab</code> aveva già mentito una volta, con un picco di correlazione piatto su contenuto statico.</p>
+      </div>
+      <div class="measure right">
+        <h3>PTS del decoder</h3>
+        <div class="big">64 ms</div>
+        <p>p05 64 — p95 96, su 104 campioni in venti secondi. Nessuna schermata, nessuna correlazione, nessun dubbio sistematico.</p>
+      </div>
+    </div>
+    <p>Sbagliata di un fattore quaranta, e sbagliata nel verso che faceva trattenere a HearAble un secondo e mezzo che non doveva a nessuno. Il conto corretto:</p>
+    <div class="chain">sottotitolo rispetto a ciò che senti = 1,0 s (riconoscimento) + D − 0,064 s</div>
+    <p>Con <code>D = 0</code> fa <strong>0,95 s</strong>. Lo spettatore, senza aver visto nessuna di queste cifre, aveva descritto «circa un secondo»: è la sua percezione che ha smentito lo strumento, non il contrario. Il valore predefinito ora è zero.</p>
+  </section>
+
+  <section>
+    <h2>Dove va quel secondo</h2>
+    <p>Misurato: <span class="num">1,072 s</span> di mediana fra l'audio consumato e il sottotitolo emesso, su 1461 campioni (p05 <span class="num">0,893</span> — p95 <span class="num">4,646</span>). Ripartito secondo le impostazioni in uso:</p>
+    <div class="budget">
+      <div class="bar" role="img" aria-label="Ripartizione del secondo: blocchi audio 80 ms, lookahead del modello 160 ms, calcolo 74 ms, conferme dello stabilizzatore 400 ms, coda trattenuta 280 ms, ridisegno del pannello 78 ms">
+        <div style="flex:80;background:#3C4A52">80</div>
+        <div style="flex:160;background:#2B5D66">160</div>
+        <div style="flex:74;background:#00707C">74</div>
+        <div style="flex:400;background:#A82740">400</div>
+        <div style="flex:280;background:#C4506A">280</div>
+        <div style="flex:78;background:#D98CA0">78</div>
+      </div>
+      <div class="scale"><span>0 ms</span><span>1072 ms</span></div>
+      <div class="key">
+        <span><i class="swatch" style="background:#3C4A52"></i>blocchi da 160 ms</span>
+        <span><i class="swatch" style="background:#2B5D66"></i>il modello guarda avanti</span>
+        <span><i class="swatch" style="background:#00707C"></i>calcolo Nemotron</span>
+        <span><i class="swatch" style="background:#A82740"></i>conferme prima di scrivere</span>
+        <span><i class="swatch" style="background:#C4506A"></i>ultima parola trattenuta</span>
+        <span><i class="swatch" style="background:#D98CA0"></i>ridisegno del pannello</span>
+      </div>
+    </div>
+    <p class="gain">Ripartizione stimata dalle impostazioni; la somma è pari al valore misurato.</p>
+    <div class="deliberate">
+      <strong>In rosso, circa 760 ms di attesa deliberata.</strong> Non è il modello a essere lento — il calcolo occupa il 47% del tempo reale. È C_tail1 che aspetta di essere sicuro prima di scrivere, perché un sottotitolo che si corregge davanti agli occhi di chi lo sta leggendo è peggio di uno che arriva mezzo secondo dopo. È una scelta giusta, presa apposta. Ma è una scelta.
+    </div>
+    <div class="scroll">
+      <table>
+        <caption>Le voci, con la loro impostazione</caption>
+        <thead><tr><th>Voce</th><th>Impostazione</th><th class="n">Costo</th></tr></thead>
+        <tbody>
+          <tr><td>L'audio va al riconoscitore a blocchi</td><td><code>chunk_ms: 160</code></td><td class="n">~80 ms</td></tr>
+          <tr><td>Il modello guarda avanti di un blocco</td><td><code>rnnt_right_context: 1</code></td><td class="n">~160 ms</td></tr>
+          <tr><td>Calcolo sul processore</td><td>Nemotron 0.6B q8_0, CPU</td><td class="n">74 ms</td></tr>
+          <tr><td>Una parola diventa «stabile» dopo N conferme</td><td><code>min_confirmations: 3</code></td><td class="n">320–480 ms</td></tr>
+          <tr><td>L'ultima parola viene trattenuta</td><td><code>TAIL_FLUSH_MS: 450</code></td><td class="n">≤ 450 ms</td></tr>
+          <tr><td>Il pannello non si ridisegna più di sei volte al secondo</td><td><code>ui_max_fps: 6</code></td><td class="n">≤ 166 ms</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <h2>Le tre strade</h2>
+    <div class="roads">
+
+      <div class="road">
+        <div class="road-head"><h3>A · Ritardare l'immagine</h3><span class="pill flat">timeshift</span><span class="pill cost">la televisione paga</span></div>
+        <p>Enigma2 registra il flusso e te lo ripresenta indietro di N secondi. Il nostro tap legge dal frontend, quindi HearAble resterebbe al bordo live mentre tu guardi un secondo dopo: il testo arriverebbe <strong>insieme alle labbra</strong>. È l'unica strada che arriva davvero a zero — e ne apre una migliore, perché se l'immagine aspetta due secondi il riconoscitore può permettersi di essere <em>più</em> paziente, non meno: sincronia e accuratezza insieme invece che in cambio l'una dell'altra.</p>
+        <ul>
+          <li>Scrive sulla chiavetta senza smettere mai, ~1,25 MB/s su un canale HD. Se non tiene il passo, <strong>si inchioda l'immagine</strong>.</li>
+          <li>La chiavetta è <code>vfat</code>: 4 GB per file, circa cinquanta minuti di HD.</li>
+          <li>Lo zap rallenta: ferma la registrazione, risintonizza, ne riapre un'altra.</li>
+          <li>Durante il timeshift Enigma2 risponde con il riferimento del file, non del servizio: il relay proverebbe a cercarci dentro.</li>
+          <li><strong>Da verificare per primo:</strong> che il filtro PID continui a vedere il live mentre Enigma2 riproduce la registrazione. Dieci minuti di misura.</li>
+        </ul>
+        <p class="gain">Guadagno: tutto. Prezzo: il rischio si sposta sullo schermo.</p>
+      </div>
+
+      <div class="road chosen">
+        <div class="road-head"><h3>B · Spendere meno tempo a essere sicuri</h3><span class="pill yes">prima questa</span></div>
+        <p>Le voci in rosso della tabella sono impostazioni, non leggi fisiche. Abbassare la pazienza dello stabilizzatore si fa con una riga di configurazione, è reversibile, non scrive un byte sulla chiavetta, e il suo prezzo si può <em>contare</em>: quante volte una parola già scritta viene riscritta.</p>
+        <div class="scroll">
+          <table>
+            <thead><tr><th>Cambio</th><th class="n">Guadagno</th><th>Prezzo</th></tr></thead>
+            <tbody>
+              <tr><td><code>TAIL_FLUSH_MS</code> 450 → 200</td><td class="n">≤ 250 ms</td><td>l'ultima parola compare prima, a volte da sola</td></tr>
+              <tr><td><code>TAIL_HOLD_WORDS</code> 1 → 0</td><td class="n">≤ 200 ms</td><td>niente parola trattenuta; più correzioni a video</td></tr>
+              <tr><td><code>min_confirmations</code> 3 → 2</td><td class="n">~160 ms</td><td>testo che si riscrive più spesso</td></tr>
+              <tr><td><code>ui_max_fps</code> 6 → 12</td><td class="n">≤ 80 ms</td><td>pannello più nervoso, più lavoro sul box</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="gain">Guadagno: 400–700 ms, metà o due terzi del divario. Prezzo: leggibilità, che per un sordo è il punto.</p>
+      </div>
+
+      <div class="road">
+        <div class="road-head"><h3>C · Lasciarlo così</h3><span class="pill flat">già accettabile</span></div>
+        <p>Un secondo. Giudicato «decente, accettabile» dopo averlo guardato davvero, non in astratto. Ed è onesto ricordare il termine di paragone: i sottotitoli televisivi scritti da persone, in diretta, stanno fra i due e i cinque secondi indietro. Un secondo non è un ripiego — è meglio dello standard del settore.</p>
+      </div>
+
+    </div>
+  </section>
+
+  <section>
+    <h2>Proposta</h2>
+    <p><strong>Prima B, misurata. Poi A, solo se serve ancora e solo dopo la verifica.</strong></p>
+    <p>L'ordine non è prudenza: è che B è reversibile con una riga, non tocca la televisione, e il suo prezzo si può vedere. Se quattrocento millisecondi si comprano con due correzioni in più al minuto, l'affare è fatto e il divario scende a mezzo secondo senza rischiare niente. A quel punto il timeshift resta sul tavolo per chi vuole la sincronia esatta, con il suo costo dichiarato.</p>
+    <p>Dietro c'è un principio che questo progetto ha tenuto dal primo giorno: il tap che non trattiene il sintonizzatore, il relay che lascia andare prima dello zap, le code limitate. <strong>La televisione non paga mai.</strong> Il timeshift è la prima proposta che chiede di derogare, e va presa sapendolo.</p>
+    <h3>I primi tre passi</h3>
+    <ul>
+      <li>Misurare il bilancio vero voce per voce, invece di ricostruirlo dalle impostazioni come nella tabella qui sopra.</li>
+      <li>Provare B su un canale stabile, misurando due cose sulla stessa parola: quanto anticipa, e quante volte si riscrive.</li>
+      <li>Verificare l'ipotesi del timeshift, così che A resti una scelta e non una speranza.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Il disaccordo, sciolto</h2>
+    <p>Restava una cosa che non tornava: portando il ritardo da 0 a 3000 ms lo strumento vedeva lo schermo fermarsi per <span class="num">3,88 s</span>, e lo spettatore non percepiva differenza. Una campagna diagnostica l'ha inseguita fino in fondo, e il verdetto è <strong>il metodo di misura, non il codice</strong>.</p>
+    <div class="scroll">
+      <table>
+        <caption>Il ritardo arriva davvero al pixel, verificato in tre domini indipendenti</caption>
+        <thead><tr><th>Prova</th><th class="n">D = 0</th><th class="n">D = 1000</th><th class="n">D = 3000</th></tr></thead>
+        <tbody>
+          <tr><td>Stati sintetici, senza riconoscitore</td><td class="n">39 ms</td><td class="n">1039 ms</td><td class="n">3039 ms</td></tr>
+          <tr><td>Catena DVB reale</td><td class="n">1,6 ms</td><td class="n">1020 ms</td><td class="n">3021 ms</td></tr>
+          <tr><td>Orologio del broadcast (PTS attraversato)</td><td class="n">0 ms</td><td class="n">1024 ms</td><td class="n">3008 ms</td></tr>
+          <tr><td>Marcatore numerato ripreso a istante noto</td><td class="n">0,62 s</td><td class="n">—</td><td class="n">3,94 s</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>A tre secondi di ritardo il decoder suona davvero <span class="num">270 000</span> tick di televisione mentre il sottotitolo aspetta. E il pixel segue: sullo schermo lo scarto osservato è <span class="num">+3,31 s</span> contro i 3,00 attesi.</p>
+    <div class="deliberate">
+      <strong>Perché allora non si vede?</strong> Due numeri lo spiegano. Il pannello si riscrive ogni <span class="num">0,55 s</span> — identico a tutti e tre i ritardi: cambia <em>quale</em> testo compare, non <em>ogni quanto</em>. E la grandezza che l'occhio giudica, la latenza del riconoscimento, va da <span class="num">0,893 s</span> al p05 a <span class="num">4,646 s</span> al p95: una larghezza propria di <strong>3,75 s</strong>, più ampia dei 3,00 che si cercavano. Spostare una distribuzione di meno della sua stessa larghezza non è cosa che un occhio possa separare senza un riferimento fisso.
+    </div>
+    <p>Quel riferimento fisso ora esiste: una modalità che scrive <code>DELAY TEST nnn</code> con l'ora di nascita, e con cui la differenza si legge dallo schermo in pochi secondi. Nessuna correzione al codice: in F2 e F3 non c'era niente da correggere.</p>
+  </section>
+
+  <section>
+    <h2>Dove gira il riconoscimento</h2>
+    <p>Il secondo di attesa è di Nemotron, e Nemotron gira sul PC. Una campagna separata ha chiesto se potesse girare invece su un Arduino UNO Q 4GB, accanto al decoder. Sette gate, cinque percorsi di calcolo misurati, e la risposta è no — non con questo modello.</p>
+    <div class="scroll">
+      <table>
+        <thead><tr><th>Percorso</th><th>Esito</th><th class="n">Numero decisivo</th></tr></thead>
+        <tbody>
+          <tr><td>CPU, quattro Cortex-A53</td><td>non ce la fa</td><td class="n">RTF 2,31</td></tr>
+          <tr><td>GPU Adreno via ggml Vulkan</td><td>bloccata dal driver</td><td class="n">0,267 GFLOP/s</td></tr>
+          <tr><td>GPU misurata da sola</td><td>troppo lenta</td><td class="n">2,1 GFLOP/s</td></tr>
+          <tr><td>DSP Hexagon / QNN</td><td><strong>non esiste</strong></td><td class="n">nessun dominio CDSP</td></tr>
+          <tr><td>CPU, dopo profiling completo</td><td>margine insufficiente</td><td class="n">serve 7,33×</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>Il limite non è un difetto da correggere. Il kernel dominante usa già le istruzioni giuste per quella CPU, e deve comunque leggere <span class="num">663 MB</span> di pesi per ogni chunk da 160 ms: anche alla banda di picco della scheda il massimo guadagno fisicamente possibile è <span class="num">2,79×</span>, contro i <span class="num">7,33×</span> che servirebbero. La scheda non è lenta — è piccola per questo carico, e ora sappiamo di quanto.</p>
+    <p class="gain">Resta una leva sola, finora vietata da ogni gate: un modello sensibilmente più piccolo. Che costerebbe per primo il WER 0,00% — oggi il risultato migliore della campagna.</p>
+  </section>
+
+  <section>
+    <h2>Quello che non è risolto</h2>
+    <div class="open">
+      <h3>Due regressioni non eseguite</h3>
+      <p>FILE e Desktop. La prima prende possesso del televisore per far partire un film, la seconda apre una finestra sul computer di chi guarda. Nessuna delle due è stata rimandata per un problema tecnico, e nessuna delle due va data per riuscita. La suite completa, 234 test, è verde.</p>
+    </div>
+    <div class="open">
+      <h3>La ricezione</h3>
+      <p>Su Canale 5 il segnale fa buchi: 28 attese a vuoto del filtro in una sessione di 181 secondi, contro 0–2 sugli altri canali, e due momenti in cui il decoder ha risposto di non avere un PID audio. Non è colpa di HearAble e non la può curare, ma rende il ritardo irregolare e ha reso inutilizzabili le prime valutazioni a occhio.</p>
+    </div>
+  </section>
+
+  <footer>
+    <span>Octagon SF8008 V3 Supreme Combo</span>
+    <span>openATV 7.5.1 · build 20250302</span>
+    <span>Nemotron 3.5 ASR Streaming 0.6B q8_0 · CPU · it-IT</span>
+    <span>v1.2.0</span>
+  </footer>
+
+</div>
