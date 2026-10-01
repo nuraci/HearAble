@@ -6,4 +6,4 @@ to let the two disagree, and `tools/sf8008_install_plugin.sh` refuses to install
 a plugin whose version does not match the tree it came from.
 """
 
-__version__ = "1.5.1"
+__version__ = "1.5.2"

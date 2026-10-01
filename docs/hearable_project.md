@@ -1,6 +1,6 @@
 # HearAble — Subtitles for the television you already own
 
-*Italian live subtitling · DVB-T2 · on-device. Version 1.5.1, September 2026.
+*Italian live subtitling · DVB-T2 · on-device. Version 1.5.2, September 2026.
 Orchestrated by Nunzio Raciti; written by Claude (Opus) to his direction. See
 [How this was built](#10-how-this-was-built).*
 
@@ -304,7 +304,7 @@ them.
 
 ```
 ┌────────────────────────────────┐
-│        HearAble 1.5.1          │
+│        HearAble 1.5.2          │
 │          Arrivederci           │
 └────────────────────────────────┘
 ```
@@ -556,7 +556,7 @@ settings in use:
 | `rnnt_right_context: 1` | ~160 ms | The model looks one block ahead before deciding |
 | ASR compute | 74 ms | Nemotron on the CPU, p50 |
 | Stabiliser confirmations | 320–480 ms | A word becomes "stable" only after N agreeing passes |
-| Tail hold + flush | ≤450 ms | The last word is held until another arrives |
+| Tail hold | ≤450 ms | The last word waits for the model's full stop, or for another word |
 | Panel repaint cap | ≤166 ms | Six repaints a second, so corrections do not flicker |
 | Publication delay | 0 ms | Nothing — and that is the correction |
 
@@ -668,6 +668,6 @@ in the direction that made the product worse.
 
 ---
 
-*HearAble 1.5.1 — Italian realtime subtitling for DVB-T2. Orchestrated by Nunzio
+*HearAble 1.5.2 — Italian realtime subtitling for DVB-T2. Orchestrated by Nunzio
 Raciti, written by Claude (Opus) to his direction. Octagon SF8008 V3 Supreme
 Combo · T9 Plus Intel N95 · Nemotron 3.5 ASR Streaming 0.6B on NeMo-Speech.cpp.*

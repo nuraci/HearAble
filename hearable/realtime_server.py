@@ -9,6 +9,7 @@ from pathlib import Path
 import resource
 import signal
 import statistics
+import sys
 import time
 from typing import Any
 
@@ -94,6 +95,15 @@ class LedSubtitleBridge:
         self._tail_flushed = True
         self._last_payload = self.payload()
         self.last_commit_events: list[dict[str, Any]] = []
+        # What the tail flush actually does, as opposed to what it is meant to
+        # do. The field reported zero TAIL_FLUSH_TIMEOUT commits in a
+        # half-hour session, and nothing recorded whether the deadline never
+        # arrived or the committer refused the words when it did.
+        self.tail_flush_due = 0
+        self.tail_flush_committed = 0
+        self.tail_flush_refused = 0
+        self.tail_refusal_kinds: dict[str, int] = {}
+        self.last_tail_refusal: dict = {}
 
     def reset(self) -> None:
         """Drop committed and displayed text, keeping the frozen C_tail1 config."""
@@ -139,7 +149,31 @@ class LedSubtitleBridge:
 
     def tick(self, now_ms: int) -> tuple[dict, bool]:
         if self._should_flush_tail(now_ms):
-            result = self.committer.force_ingest(self._last_input_text, reason="TAIL_FLUSH_TIMEOUT")
+            self.tail_flush_due += 1
+            before = self.committer.refusals
+            # Which of the two the switch chose is recorded in the metrics, so a
+            # run can always say which behaviour produced its numbers.
+            if self.config.commit_tail_release == "off":
+                # Unchanged behaviour, and it refuses: kept so a run in "off"
+                # still records what the strict guard does.
+                result = self.committer.force_ingest(self._last_input_text,
+                                                    reason="TAIL_FLUSH_TIMEOUT")
+            else:
+                result = self.committer.release_tail(self._last_input_text)
+            if result.committed_words:
+                self.tail_flush_committed += 1
+            else:
+                self.tail_flush_refused += 1
+                if self.committer.refusals > before:
+                    kind = str(self.committer.last_refusal.get("kind", "UNKNOWN"))
+                    first = kind not in self.tail_refusal_kinds
+                    self.tail_refusal_kinds[kind] = self.tail_refusal_kinds.get(kind, 0) + 1
+                    self.last_tail_refusal = dict(self.committer.last_refusal)
+                    if first:
+                        # Once per kind, not per occurrence: the journal should
+                        # name a new failure mode, not count an old one.
+                        print(f"[tail] flush refused: {kind} "
+                              f"{self.committer.last_refusal}", file=sys.stderr, flush=True)
             self.last_commit_events = result.commit_events
             self.renderer.ingest_words(result.committed_words, now_ms=now_ms)
             self._tail_flushed = True
@@ -147,6 +181,20 @@ class LedSubtitleBridge:
             self.last_commit_events = []
         self.renderer.tick(now_ms)
         return self._payload_with_changed()
+
+    def tail_diagnostics(self) -> dict:
+        """Measured, so the next conversation about this starts from numbers."""
+        return {
+            "tail_flush_due": self.tail_flush_due,
+            "tail_flush_committed": self.tail_flush_committed,
+            "tail_flush_refused": self.tail_flush_refused,
+            "refusal_kinds": dict(sorted(self.tail_refusal_kinds.items(),
+                                         key=lambda kv: -kv[1])),
+            "last_refusal": self.last_tail_refusal,
+            "commit_tail_hold_words": self.config.commit_tail_hold_words,
+            "commit_tail_flush_ms": self.config.commit_tail_flush_ms,
+            "commit_tail_release": self.config.commit_tail_release,
+        }
 
     def payload(self) -> dict:
         frame = self.renderer.frame()
@@ -181,9 +229,21 @@ class LedSubtitleBridge:
     def _has_held_tail(self, text: str) -> bool:
         return len(tokenize(text)) > len(tokenize(self._commit_safe_text(text, False)))
 
+    # A full stop, a question or an exclamation mark on the held word: the
+    # model saying the sentence is over, rather than us noticing it paused.
+    TERMINAL_PUNCTUATION = (".", "!", "?", "\u2026")
+
     def _should_flush_tail(self, now_ms: int) -> bool:
         if self._tail_flushed or not self._last_input_text or self._last_input_ms is None:
             return False
+        mode = self.config.commit_tail_release
+        if mode == "off":
+            # The timer still runs, so the counters keep saying what the other
+            # modes would have done. Nothing is released: see _release_tail.
+            return now_ms - self._last_input_ms >= self.config.commit_tail_flush_ms
+        if mode == "punctuation":
+            words = tokenize(self._last_input_text)
+            return bool(words) and words[-1].endswith(self.TERMINAL_PUNCTUATION)
         return now_ms - self._last_input_ms >= self.config.commit_tail_flush_ms
 
 
@@ -1126,6 +1186,7 @@ async def pipeline(
             "audio_source": source_telemetry,
             "source_changes": source_changes,
             "subtitle_sink_telemetry": sink.telemetry() if hasattr(sink, "telemetry") else {},
+            "tail_flush": led_bridge.tail_diagnostics(),
             "mode": args.mode,
             "browser_readiness": readiness,
             "configuration": {

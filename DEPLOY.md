@@ -245,7 +245,7 @@ Both sides roll back the same way they were deployed — check out the earlier
 revision and deploy it again.
 
 ```bash
-git checkout v1.5.1
+git checkout v1.5.2
 tools/t9_deploy.sh
 tools/sf8008_install_plugin.sh 192.168.1.244   # only if plugin/ differs
 ```

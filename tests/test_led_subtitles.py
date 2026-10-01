@@ -13,6 +13,24 @@ from hearable.realtime_server import LedSubtitleBridge
 from hearable.stabilizer import SubtitleStabilizer
 
 
+def bridge_with_release(mode, path="config/led_subtitles.json"):
+    """A bridge whose tail-release mode is pinned, whatever the shipped config says.
+
+    The shipped configuration is a choice the viewer makes and changes; a test
+    that silently inherits it is testing today's preference rather than the
+    behaviour it names. These three failed the moment the shipped mode moved
+    from the timer to punctuation, which is how the gap was found.
+    """
+    import json as _json, tempfile, os, atexit
+    base = _json.load(open(path))
+    base["COMMIT_TAIL_RELEASE"] = mode
+    handle = tempfile.NamedTemporaryFile("w", suffix=".json", delete=False)
+    _json.dump(base, handle)
+    handle.close()
+    atexit.register(lambda: os.path.exists(handle.name) and os.unlink(handle.name))
+    return LedSubtitleBridge(handle.name)
+
+
 class LedSubtitleRulesTest(unittest.TestCase):
     def setUp(self):
         self.config = LedSubtitleConfig()
@@ -180,7 +198,9 @@ class LedSubtitleRulesTest(unittest.TestCase):
         self.assertGreaterEqual(events[1].time_ms - events[0].time_ms, 1000)
 
     def test_realtime_bridge_exports_led_payload_and_idle_clear(self):
-        bridge = LedSubtitleBridge("config/led_subtitles.json")
+        # Pinned to the timer: the assertion that a tick changes the payload
+        # depends on the tail being released, which is a mode and not a fact.
+        bridge = bridge_with_release("time")
 
         payload, changed = bridge.update(
             "buongiorno a tutti benvenuti nella sala oggi vediamo come funziona",
@@ -211,7 +231,7 @@ class LedSubtitleRulesTest(unittest.TestCase):
         self.assertEqual(payload["current_line"], "")
 
     def test_realtime_bridge_flushes_held_tail_after_silence(self):
-        bridge = LedSubtitleBridge("config/led_subtitles.json")
+        bridge = bridge_with_release("time")
         transcript = "però se noi facciamo una colazione ricca di fibre"
 
         payload, _ = bridge.update(transcript, is_final=False, now_ms=0)
@@ -304,7 +324,7 @@ class HeldTailFlushesOnSilenceTest(unittest.TestCase):
     CHUNK_MS = 160
 
     def _bridge(self):
-        return LedSubtitleBridge("config/led_subtitles.json")
+        return bridge_with_release("time")
 
     def _speak(self, bridge, hypotheses, start_ms):
         """One growing hypothesis per chunk, the way the recogniser produces them."""
@@ -367,6 +387,157 @@ class HeldTailFlushesOnSilenceTest(unittest.TestCase):
         bridge.update("Buonasera a tutti", False, 5_000)
 
         self.assertEqual(bridge._last_input_ms, 5_000)
+
+
+class TailReleaseIsReversibleTest(unittest.TestCase):
+    """The held tail can be released by appending, and that can be switched off.
+
+    The strict form refuses unless the whole committed prefix still matches the
+    recogniser's hypothesis. In the field it refused 202 times out of 203: the
+    recogniser committed the partial word `offer`, completed it to `offermi`,
+    and the prefix never agreed again for the remaining 1346 words — nothing
+    resets the committer because `is_final` never fires on this model.
+
+    Both behaviours are kept, chosen by `COMMIT_TAIL_FLUSH_APPENDS`, because a
+    change to what reaches the screen should be undoable by the person watching
+    rather than by whoever can redeploy.
+    """
+
+    def _bridge(self, mode):
+        import json as _json, tempfile, os
+        base = _json.load(open("config/led_subtitles.json"))
+        base["COMMIT_TAIL_RELEASE"] = mode
+        handle = tempfile.NamedTemporaryFile("w", suffix=".json", delete=False)
+        _json.dump(base, handle)
+        handle.close()
+        self.addCleanup(os.unlink, handle.name)
+        return LedSubtitleBridge(handle.name)
+
+    def _diverge_then_pause(self, bridge):
+        """Reproduce the field's shape: a committed word the recogniser extends."""
+        now = 0
+        for text in ("non ho voluto offer",
+                     "non ho voluto offer qualcosa",
+                     "non ho voluto offer qualcosa ok"):
+            bridge.update(text, False, now)
+            now += 160
+            bridge.tick(now)
+        # the recogniser completes the word it had already committed
+        bridge.update("non ho voluto offermi qualcosa ok", False, now)
+        now += 160
+        # then it stops changing: the flush deadline arrives
+        for _ in range(8):
+            bridge.tick(now)
+            now += 160
+        return bridge
+
+    def _visible(self, bridge):
+        frame = bridge.payload()
+        return " ".join(p for p in (frame["previous_line"], frame["current_line"]) if p)
+
+    def test_appending_releases_the_tail_after_the_recogniser_extended_a_word(self):
+        bridge = self._diverge_then_pause(self._bridge('time'))
+        self.assertIn("ok", self._visible(bridge),
+                      "la coda non e' stata rilasciata dopo la divergenza")
+        self.assertGreater(bridge.tail_flush_committed, 0)
+
+    def test_the_strict_form_still_refuses_it(self):
+        """Not a bug to fix here — the behaviour the switch goes back to."""
+        bridge = self._diverge_then_pause(self._bridge('off'))
+        self.assertEqual(bridge.tail_flush_committed, 0)
+        self.assertGreater(bridge.tail_flush_refused, 0)
+        self.assertEqual(bridge.tail_refusal_kinds.get("DIFFERENT_WORD", 0),
+                         bridge.tail_flush_refused)
+
+    def test_releasing_never_rewrites_a_word_already_committed(self):
+        bridge = self._bridge('time')
+        now = 0
+        seen = []
+        for text in ("non ho voluto offer",
+                     "non ho voluto offer qualcosa",
+                     "non ho voluto offermi qualcosa ok",
+                     "non ho voluto offermi qualcosa ok adesso"):
+            before = list(bridge.committer.committed_words)
+            bridge.update(text, False, now)
+            now += 160
+            bridge.tick(now)
+            after = bridge.committer.committed_words
+            seen += [(a, b) for a, b in zip(before, after) if a != b]
+        self.assertEqual(seen, [], f"parole gia' mostrate riscritte: {seen}")
+
+
+class PunctuationReleasesTheTailTest(unittest.TestCase):
+    """The model's full stop, not our stopwatch.
+
+    Measured over the two sessions the viewer actually watched: releasing on a
+    450 ms pause produced 186 and 240 releases of which 55% and 48% were words
+    the model then changed — his verdict was that it had got worse. Releasing
+    when the model puts terminal punctuation on the held word produced 114 and
+    172 releases, 4.4% and 0.0% later changed.
+
+    The difference is the kind of evidence. A pause is an observation about
+    timing; a full stop is the model claiming the sentence is finished.
+    """
+
+    def _bridge(self, mode):
+        import json as _json, tempfile, os
+        base = _json.load(open("config/led_subtitles.json"))
+        base["COMMIT_TAIL_RELEASE"] = mode
+        handle = tempfile.NamedTemporaryFile("w", suffix=".json", delete=False)
+        _json.dump(base, handle)
+        handle.close()
+        self.addCleanup(os.unlink, handle.name)
+        return LedSubtitleBridge(handle.name)
+
+    def _visible(self, bridge):
+        frame = bridge.payload()
+        return " ".join(p for p in (frame["previous_line"], frame["current_line"]) if p)
+
+    def test_a_full_stop_releases_the_held_word(self):
+        bridge = self._bridge("punctuation")
+        now = 0
+        for text in ("non ho voluto", "non ho voluto offrirmi",
+                     "non ho voluto offrirmi."):
+            bridge.update(text, False, now)
+            now += 160
+            bridge.tick(now)
+        self.assertIn("offrirmi.", self._visible(bridge))
+
+    def test_without_punctuation_nothing_is_released(self):
+        """The mode is narrow on purpose: an unpunctuated sentence still waits."""
+        bridge = self._bridge("punctuation")
+        now = 0
+        for _ in range(20):
+            bridge.update("non ho voluto offrirmi", False, now)
+            now += 160
+            bridge.tick(now)
+        self.assertNotIn("offrirmi", self._visible(bridge))
+        self.assertEqual(bridge.tail_flush_committed, 0)
+
+    def test_a_long_pause_alone_does_not_release(self):
+        """What the viewer rejected must stay rejected in this mode."""
+        bridge = self._bridge("punctuation")
+        now = 0
+        bridge.update("non ho voluto offrirmi", False, now)
+        now += 160
+        for _ in range(40):          # six seconds of silence
+            bridge.tick(now)
+            now += 160
+        self.assertEqual(bridge.tail_flush_committed, 0)
+
+    def test_the_legacy_boolean_still_chooses_the_time_rule(self):
+        """An installation configured before the modes existed keeps its choice."""
+        from hearable.led_subtitles.config import LedSubtitleConfig
+        self.assertEqual(
+            LedSubtitleConfig.from_mapping({"COMMIT_TAIL_FLUSH_APPENDS": True}).commit_tail_release,
+            "time")
+        self.assertEqual(
+            LedSubtitleConfig.from_mapping({"COMMIT_TAIL_FLUSH_APPENDS": False}).commit_tail_release,
+            "off")
+
+    def test_the_default_is_off(self):
+        from hearable.led_subtitles.config import LedSubtitleConfig
+        self.assertEqual(LedSubtitleConfig().commit_tail_release, "off")
 
 
 if __name__ == "__main__":

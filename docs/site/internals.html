@@ -393,7 +393,7 @@ html{scroll-behavior:smooth}
 <main>
 
 <div class="hero">
-  <p class="eyebrow">Technical reference · version 1.5.1</p>
+  <p class="eyebrow">Technical reference · version 1.5.2</p>
   <h1>HearAble internals</h1>
   <p class="standfirst">Exactly how live Italian subtitles get from a broadcast transport stream onto a television screen, component by component — <strong>the system as it runs</strong>, with every file that makes it up and every file it creates on the two machines.</p>
   <p class="byline">Orchestrated by <b>Nunzio Raciti</b>, written by <b>Claude</b> (Opus) to his direction · this page describes the shipped design only; the routes that were tried and abandoned are documented separately</p>
@@ -658,8 +658,9 @@ read()                <span class="c">188-byte MPEG-TS packets, 132.8 kbit/s</sp
   </div>
 
   <div class="note measure">
-    <h4>What "quiet" has to mean</h4>
-    <p>The held tail is released by the pipeline's tick after <code>COMMIT_TAIL_FLUSH_MS</code> of quiet — and <em>quiet means the hypothesis stopped changing</em>, not that no event arrived. A cache-aware recogniser emits a result for every chunk, including while nobody is speaking. Measuring quiet as "no event" means those identical results restamp the timer forever, the tail never flushes on silence, and the last word of a sentence appears at the head of the next one. The timer is stamped on change only.</p>
+    <h4>What releases the held word, and what does not</h4>
+    <p>A pause does not. Releasing the tail after <code>COMMIT_TAIL_FLUSH_MS</code> of the hypothesis not changing was built, deployed, and <strong>rejected on live television</strong>: of the words it released, 55 % and 48 % across two sessions were ones the model then changed. Raising the threshold does not rescue it — at three seconds it is still one word in five, by which point the word is late enough that waiting for the next sentence costs no more.</p>
+    <p>What does release it is <strong>the model's own full stop</strong>. A terminal <code>.</code>, <code>?</code> or <code>!</code> on the held word is the recogniser claiming the sentence is finished, rather than us observing that it paused: 4.4 % and 0.0 % later changed, on the same two sessions. <code>COMMIT_TAIL_RELEASE</code> chooses between <code>off</code>, <code>time</code> and <code>punctuation</code>; the default is <code>off</code>, and <code>docs/parola_finale.md</code> carries every number behind that choice.</p>
   </div>
 
   <h3>Where the second goes</h3>
@@ -673,7 +674,7 @@ read()                <span class="c">188-byte MPEG-TS packets, 132.8 kbit/s</sp
         <tr><th>Right context, 1 block</th><td class="n">~160 ms</td><td>The model sees ahead before committing</td></tr>
         <tr><th>ASR compute</th><td class="n">74 ms</td><td>The inference itself</td></tr>
         <tr><th>Stabiliser confirmations</th><td class="n">320–480 ms</td><td>Words that do not rewrite themselves</td></tr>
-        <tr><th>Tail hold</th><td class="n">≤450 ms</td><td>A settled last word</td></tr>
+        <tr><th>Tail hold</th><td class="n">≤450 ms</td><td>A last word the model has finished with</td></tr>
         <tr><th>Repaint cap, 6 fps</th><td class="n">≤166 ms</td><td>Corrections that do not strobe</td></tr>
         <tr><th>Publication delay</th><td class="n">0 ms</td><td>Nothing: the tap is already ahead</td></tr>
       </tbody>
@@ -908,9 +909,9 @@ iface enp1s0 inet static
 </section>
 
 <footer>
-  <p><strong>HearAble 1.5.1</strong> — technical reference. Orchestrated by <b>Nunzio Raciti</b>, written by <b>Claude</b> (Opus) to his direction. Every phase gated by tests and measurements.</p>
+  <p><strong>HearAble 1.5.2</strong> — technical reference. Orchestrated by <b>Nunzio Raciti</b>, written by <b>Claude</b> (Opus) to his direction. Every phase gated by tests and measurements.</p>
   <p>Octagon SF8008 V3 Supreme Combo · T9 Plus Intel N95 · Nemotron 3.5 ASR Streaming 0.6B on NeMo-Speech.cpp.</p>
-  <p>Line counts are from the repository at version 1.5.1. Every measurement named here was taken on this hardware.</p>
+  <p>Line counts are from the repository at version 1.5.2. Every measurement named here was taken on this hardware.</p>
 </footer>
 
 </main>

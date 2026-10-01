@@ -129,7 +129,7 @@ at it.
 | RNN-T right context, 1 | ~160 ms | The model sees ahead before committing |
 | ASR compute | 74 ms | The inference itself |
 | Stabiliser confirmations | 320–480 ms | Words that do not rewrite themselves |
-| Tail hold | ≤450 ms | A settled last word |
+| Tail hold | ≤450 ms | A last word the model has finished with |
 | Repaint cap, 6 fps | ≤166 ms | Corrections that do not strobe |
 | Publication delay | 0 ms | Nothing — the tap is already ahead |
 
@@ -210,7 +210,7 @@ by asking the decoder directly instead of correlating screenshots.
 
 ## Status
 
-Version 1.5.1. In daily use on real broadcast television.
+Version 1.5.2. In daily use on real broadcast television.
 
 Two lines of investigation are closed and documented with the numbers that
 closed them: hosting the recogniser on a €50 single-board computer (it needs

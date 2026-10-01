@@ -1,6 +1,6 @@
 # HearAble — sottotitoli per il televisore che hai già
 
-*Sottotitolazione italiana in diretta · DVB-T2 · tutto in casa. Versione 1.5.1,
+*Sottotitolazione italiana in diretta · DVB-T2 · tutto in casa. Versione 1.5.2,
 settembre 2026. Orchestrato da Nunzio Raciti, scritto da Claude (Opus) sotto la
 sua direzione — vedi [Come è stato costruito](#10--come-è-stato-costruito).*
 
@@ -310,7 +310,7 @@ disegnando sullo schermo è un box che ha deciso al posto dello spettatore.
 
 ```
 ┌────────────────────────────────┐
-│        HearAble 1.5.1          │
+│        HearAble 1.5.2          │
 │          Arrivederci           │
 └────────────────────────────────┘
 ```
@@ -567,7 +567,7 @@ sottotitolo emesso (n = 1461, p05 0,893 s). Ricostruito dalle impostazioni in us
 | `rnnt_right_context: 1` | ~160 ms | Il modello guarda avanti di un blocco prima di decidere |
 | Calcolo ASR | 74 ms | Nemotron sul processore, p50 |
 | Conferme dello stabilizzatore | 320–480 ms | Una parola diventa «stabile» solo dopo N passaggi concordi |
-| Trattenuta della coda | ≤450 ms | L'ultima parola è trattenuta finché non ne arriva un'altra |
+| Trattenuta della coda | ≤450 ms | L'ultima parola aspetta il punto del modello, o un'altra parola |
 | Tetto di ridisegno | ≤166 ms | Sei ridisegni al secondo, così le correzioni non lampeggiano |
 | Ritardo di pubblicazione | 0 ms | Niente — ed è proprio quella la correzione |
 
@@ -682,7 +682,7 @@ peggiorava il prodotto.
 
 ---
 
-*HearAble 1.5.1 — sottotitolazione italiana in tempo reale per DVB-T2.
+*HearAble 1.5.2 — sottotitolazione italiana in tempo reale per DVB-T2.
 Orchestrato da Nunzio Raciti, scritto da Claude (Opus) sotto la sua direzione.
 Octagon SF8008 V3 Supreme Combo · T9 Plus Intel N95 · Nemotron 3.5 ASR Streaming
 0.6B su NeMo-Speech.cpp.*

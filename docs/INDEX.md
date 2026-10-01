@@ -41,7 +41,7 @@ Italian documents are marked **IT**.
 
 | Document | | What it is |
 |---|---|---|
-| [`prova_parola_finale.md`](prova_parola_finale.md) | **IT** | The fix waiting on hardware: what to run, what to look at, why the version was not raised |
+| [`parola_finale.md`](parola_finale.md) | **IT** | The last word of a sentence: the defect, both faults behind it, every attempt and the numbers that rejected it — documented as unsolved |
 
 ## Evidence
 

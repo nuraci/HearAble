@@ -12,29 +12,36 @@ says how to keep working on it.
 ## 1. Where things stand
 
 ```text
-version          1.5.1
-tests            246 in the source repository
-                 218 pass / 53 skip / 0 fail on a fresh clone of this one
+version          1.5.2
+tests            254 in the source repository
+                 179 pass / 23 skip / 0 fail on a fresh clone of this one
 in service       yes — daily, on live broadcast television
 ```
 
-**One fix is written, tested offline, and not yet confirmed on hardware.**
+Nothing is waiting on hardware. The defect that was open at 1.5.1 — the last
+word of a sentence appearing with the next one — is **partly solved and fully
+documented**, which is a different state from fixed and worth stating as such.
 
-A sentence used to end one word short, and if a pause followed, that word
-reappeared at the head of the next sentence. The cause: the tail-flush timer
-measured "no event arrived" instead of "the hypothesis stopped changing", and a
-streaming recogniser emits a result for every chunk even while nobody is
-speaking — so the deadline was restamped forever and never expired.
+What changed: the held word is released when the model puts a full stop on it,
+not after a pause. Two faults sat behind that. The flush timer measured "no
+event arrived" instead of "the hypothesis stopped changing", which was a real
+defect and is fixed. Then the commit guard refused the release 202 times out of
+203, because the recogniser had committed a half-finished word and completed it
+afterwards, and nothing resets the committer — `is_final` never fires on this
+model.
 
-It touches `hearable/realtime_server.py` only, which means **the mini PC alone**:
-the receiver's plugin does not change and does not need reinstalling.
+The obvious repair was tried on live television and **made it worse**: releasing
+on a timer put a word on screen that the model then changed about half the time.
+Changing the signal rather than the threshold is what worked.
 
-```bash
-tools/t9_deploy.sh              # deploy it
-tools/t9_last_word_gate.py      # then judge it
-```
+**What is still open:** sentences the model does not punctuate show the original
+symptom, unchanged. And two causes were never excluded — that the word is never
+produced by the recogniser, or produced and not displayed for a reason below the
+committer. `docs/parola_finale.md` carries every number.
 
-The version was deliberately **not** raised for it. See §4.
+`COMMIT_TAIL_RELEASE` chooses `off`, `time` or `punctuation`. The default is
+`off`; this installation runs `punctuation`; one line of configuration and a
+restart changes it, without waiting for whoever can redeploy.
 
 ---
 
@@ -209,7 +216,7 @@ example, that file, and the environment. Do not write one into a file again.
 
 | Item | State | Note |
 |---|---|---|
-| The last-word fix | Written, not confirmed | §1. Deploy, judge, then tag |
+| The last word of a sentence | Partly solved | Released on the model's full stop, confirmed on live television. Sentences the model does not punctuate still show the symptom: `docs/parola_finale.md` |
 | CASE B and CASE C of the same defect | Not excluded | Only one cause was proven and fixed: the word was produced and held. If the gate passes but sentences still end short, the word was either never produced by the recogniser, or produced and not displayed — neither has been ruled out |
 | Long A/V delays | `NOT_MEASURED` | 1.37 s and 7.56 s were each watched for ten seconds. The branch is closed regardless |
 | Timeshift in RAM | `INCONCLUSIVE` | The buffer appeared in tmpfs and flash writes did not stop. An unanswered question, not a negative result |
@@ -220,7 +227,7 @@ example, that file, and the environment. Do not write one into a file again.
 
 ## 7. How this repository relates to the original
 
-This is a copy of the working tree at 1.5.1. The **full history — 116 commits,
+This is a copy of the working tree at 1.5.2. The **full history — 116 commits,
 each explaining why a decision was made — exists only in the original working
 copy**, not here. If that history matters to you, it has to come from there; it
 was a deliberate choice not to bring it, and the original is currently its only
