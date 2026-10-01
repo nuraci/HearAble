@@ -37,7 +37,7 @@ Changing the signal rather than the threshold is what worked.
 **What is still open:** sentences the model does not punctuate show the original
 symptom, unchanged. And two causes were never excluded — that the word is never
 produced by the recogniser, or produced and not displayed for a reason below the
-committer. `docs/parola_finale.md` carries every number.
+committer. The limit is stated in the README.
 
 `COMMIT_TAIL_RELEASE` chooses `off`, `time` or `punctuation`. The default is
 `off`; this installation runs `punctuation`; one line of configuration and a
@@ -47,31 +47,33 @@ restart changes it, without waiting for whoever can redeploy.
 
 ## 2. How work is done here
 
-Five habits explain most of the decisions in this repository. They are worth
-keeping, because each was paid for.
+Five habits explain most of the decisions in this repository.
 
-**Measure, do not deduce.** Three output modes of the same ioctl behave
-differently on real silicon and identically in the header file: one of them
-delivers zero bytes for ever. Try it on the hardware.
+**Measure, do not deduce.** Three output modes of the same DVB ioctl behave
+identically in the header file and differently on real silicon: one of them
+opens without error and delivers zero bytes for ever. Try it on the hardware you
+have.
 
-**Do the real thing, not its convenient imitation.** `ip link down` did not
-reproduce what unplugging the cable did. Pressing buttons on the remote found two
-faults a nineteen-case matrix had passed. Cutting mains power answered a question
-months of software-off testing could not.
+**Do the real thing, not its convenient imitation.** `ip link down` does not
+reproduce what unplugging the cable does, and a software power-off does not
+reproduce a mains cut. Where a fault can be injected physically, inject it
+physically.
 
-**A missing measurement is not a result.** Every line in a campaign report is
-labelled `MEASURED`, `DERIVED` or `NOT_MEASURED`. A gate with too little evidence
-reports `NON_MISURATO` rather than passing — a gate that says PASS on zero
+**A missing measurement is not a result.** Anything reported here is labelled
+`MEASURED`, `DERIVED` or `NOT_MEASURED`, and a gate with too little evidence
+reports `NON_MISURATO` rather than passing. A gate that says PASS on zero
 observations is decoration.
 
-**Watch it for longer than feels necessary.** The A/V delay was called "stable to
-48 ms" on the strength of ten-second windows. Watched for two minutes it drained
-back to live. The first measurement was not wrong; it answered a narrower
-question than the one being asked.
+**Watch it for longer than feels necessary.** A ten-second window answers a
+narrower question than a two-minute one, and the narrower answer can look
+identical while being useless. Decide what the window has to cover before
+reading the number.
 
 **When the instrument and the person disagree, suspect the instrument.** The tap
-was believed to run 2.4 s ahead of the picture. It runs 64 ms ahead. The viewer
-had said the subtitles felt late before the instrument agreed.
+runs 64 ms ahead of the picture, measured by reading two clocks in the same
+instant — `AUDIO_GET_PTS` against the PTS of the packet the filter is handing
+over. A screenshot-based estimate of the same quantity is wrong by a factor that
+matters, and the viewer's ear was right before either instrument was.
 
 ---
 
@@ -216,10 +218,8 @@ example, that file, and the environment. Do not write one into a file again.
 
 | Item | State | Note |
 |---|---|---|
-| The last word of a sentence | Partly solved | Released on the model's full stop, confirmed on live television. Sentences the model does not punctuate still show the symptom: `docs/parola_finale.md` |
+| The last word of a sentence | Partly solved | Released on the model's full stop, confirmed on live television. Sentences the model does not punctuate still wait for the next one |
 | CASE B and CASE C of the same defect | Not excluded | Only one cause was proven and fixed: the word was produced and held. If the gate passes but sentences still end short, the word was either never produced by the recogniser, or produced and not displayed — neither has been ruled out |
-| Long A/V delays | `NOT_MEASURED` | 1.37 s and 7.56 s were each watched for ten seconds. The branch is closed regardless |
-| Timeshift in RAM | `INCONCLUSIVE` | The buffer appeared in tmpfs and flash writes did not stop. An unanswered question, not a negative result |
 | AVX-VNNI | Available, unused | The CPU advertises it; the build does not use it. Expected small next to the governor |
 | Full reboot on plugin install | Observed, not investigated | Installing the plugin restarts the whole box, not just Enigma2 as the command claims |
 
@@ -233,24 +233,18 @@ copy**, not here. If that history matters to you, it has to come from there; it
 was a deliberate choice not to bring it, and the original is currently its only
 copy.
 
-Three campaign reports are kept here, as the measured evidence for how the
-system behaves today. The rest — the reports of closed lines, the work orders
-they were run from, and around 100 MB of raw artefacts — stayed behind with the
-history.
-
-That is deliberate. This repository is *the system*, not the story of how it was
-arrived at, because that story is only complete in the original. **If somebody
-wants the full record, it exists and can be shared; it was not thrown away.**
+This repository is *the system*, not the story of how it was arrived at. The
+measurement archive the figures come from — around 100 MB of audio and per-run
+data — stayed with the working copy it was produced in.
 
 ---
 
 ## 8. Who did what
 
-HearAble was **orchestrated by Nunzio Raciti and written by Claude** (Anthropic's
-Opus model) working to his direction. He set the goal and the constraints, made
-every design decision, owned the hardware, and did the testing that mattered
-most. Claude was the material executor: the code, the tests, the measurement
-tools and the reports.
+HearAble is **by Nunzio Raciti**, built with **Claude** (Anthropic's Opus) as a
+development assistant. He set the goal and the constraints, made every design
+decision, owns the hardware, and did the testing that mattered most; Claude
+wrote code, tests and measurement tools to his direction.
 
 Anyone continuing this should know which half is which. The code can be read and
 changed by anyone. The judgement about whether a subtitle is good enough to

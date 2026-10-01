@@ -388,7 +388,7 @@ html{scroll-behavior:smooth}
   <p class="eyebrow">Live speech recognition · DVB-T2 · consumer hardware</p>
   <h1>The audio is already inside your set-top box</h1>
   <p class="lede">Live subtitling used to need a broadcaster. It now needs a €50-ish receiver you probably own, a fanless mini PC, one Ethernet cable, and about two thousand lines of Python. Here is how the pieces fit, what the real numbers are, and which of my ideas died on the way.</p>
-  <p class="byline">By <b>Nunzio Raciti</b> · a build report, September 2026 · <span style="color:var(--ink-3)">orchestrated by me, written by Claude (Opus) to my direction</span></p>
+  <p class="byline">By <b>Nunzio Raciti</b> · a build report, September 2026 · <span style="color:var(--ink-3)">built with Claude (Opus) as my development assistant</span></p>
 </div>
 
 <!-- ============================================================ -->
@@ -457,34 +457,14 @@ read()                <span class="c">188-byte MPEG-TS packets</span></pre>
 <!-- ============================================================ -->
 <section id="fit">
   <span class="section-num">03</span>
-  <h2>Does the recogniser fit on something cheap?</h2>
-  <p class="kicker">I spent a campaign proving it did not, on the board I most wanted it to.</p>
+  <h2>What it takes to run the recogniser</h2>
+  <p class="kicker">Less than you would guess, and the thing that matters is not the one you would tune first.</p>
 
-  <p>The model is Nemotron 3.5 ASR Streaming 0.6B, quantised to <code>q8_0</code>, running on NeMo-Speech.cpp. On a desktop it transcribes Italian at a real-time factor of 0.476 with a display word error rate of 4.74 %. Half of real time with room to spare — so the obvious next question is how far down the hardware ladder you can push it.</p>
+  <p>The model is Nemotron 3.5 ASR Streaming 0.6B, quantised to <code>q8_0</code>, running on NeMo-Speech.cpp. On a desktop it transcribes Italian at a real-time factor of 0.476 with a display word error rate of 4.74 % — half of real time with room to spare.</p>
 
-  <p>I tried to push it onto an <strong>Arduino UNO Q</strong>, a €50-class board with four Cortex-A53 cores and an Adreno GPU. Five measured attempts, and I want to report the failure properly because the failure is more useful than the success.</p>
+  <p>There is a GPU lesson worth having before you go shopping. A Radeon RX 6600 over Vulkan is 5.7× the CPU in raw throughput. Under <em>pacing</em> — fed audio at the rate audio actually arrives, which is the only mode that matters for live — the advantage collapses to 2.2×, because a GPU cannot overlap work it has not been given yet. A live pipeline is not a benchmark, and a throughput number will lie to you about it. What shipped has no GPU in it at all.</p>
 
-  <div class="tscroll">
-    <table>
-      <caption>Five ways not to run a speech model on a €50 board</caption>
-      <thead><tr><th>Path</th><th>Result</th><th class="n">The number</th></tr></thead>
-      <tbody>
-        <tr><th>CPU, native build</th><td><span class="chip nogo">No-go</span></td><td class="n">RTF 2.3146</td></tr>
-        <tr><th>Vulkan, build and capability</th><td><span class="chip pass">Pass</span></td><td class="n">57.9 MB of shaders</td></tr>
-        <tr><th>Vulkan, actually running</th><td><span class="chip nogo">Blocked</span></td><td class="n">0.267 GFLOP/s</td></tr>
-        <tr><th>GPU measured on its own</th><td><span class="chip nogo">Poor</span></td><td class="n">3.43 GB/s</td></tr>
-        <tr><th>Hexagon DSP</th><td><span class="chip nogo">Absent</span></td><td class="n">no CDSP domain</td></tr>
-      </tbody>
-    </table>
-  </div>
-
-  <p>The last row is worth dwelling on, because it is the advice everyone gives. "Put it on the DSP." There is no DSP to put it on: the SoC variant on this board has no CDSP domain at all. You can spend a week discovering that from forum posts, or twenty minutes discovering it from the device tree.</p>
-
-  <p>And the closing number is not about any one path:</p>
-
-  <p class="pull">Reaching real time needed 7.33×. The memory bandwidth allowed 2.79×. The door was closed by physics before it was closed by software.</p>
-
-  <p>Two things survived that campaign and both are worth stealing. The whole stack <strong>compiles on the board itself</strong>, with its own gcc — no cross toolchain, no sysroot, no emulation. And the transcript it produced was not merely similar to the desktop's, it was <strong>identical</strong>: the same 74 words, 0.00 % WER. Different architecture, different compiler, different SIMD kernels, not one letter moved. If you are wondering whether a quantised ASR stack is portable, that is your answer.</p>
+  <p>The stack is also more portable than it has any right to be: the same sources built on a completely different architecture, with a different compiler and different SIMD kernels, produce a <strong>bit-identical transcript</strong> — the same 74 words, WER 0.00 %. That is worth knowing before you worry about which box to buy.</p>
 
   <h3>The machine that did work, and the one line that made it</h3>
 

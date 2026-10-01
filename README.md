@@ -111,7 +111,6 @@ That file is gitignored. No household's addresses or MAC are in this tree.
 | [`docs/INDEX.md`](docs/INDEX.md) | What every other document is, and which ones are current |
 | [`docs/enigma2_hearable_protocol.md`](docs/enigma2_hearable_protocol.md) | The subtitle wire format |
 | [`docs/enigma2_hearable_audio_transport.md`](docs/enigma2_hearable_audio_transport.md) | The audio relay protocol |
-| [`benchmark/results/T9_N95_cpu.md`](benchmark/results/T9_N95_cpu.md) | The appliance campaign: 19 injected faults, 19 unattended recoveries |
 
 ---
 
@@ -157,23 +156,19 @@ model in `models/`, and they run.
   measurement here was taken with. Verified from a clean clone on 29 September
   2026: fetch, build, and Italian recognised from a WAV through this
   repository's own pipeline.
-* **The record of how it got here** — the campaign reports of closed lines, the
-  work orders they were run from, and around 100 MB of raw artefacts. Three
-  reports are kept as evidence for how the system behaves *today*; the rest
-  stayed with the original working copy, together with the commit history.
-  That is deliberate: an archive that cannot be verified is worse than no
-  archive. **The full record exists and can be shared — ask.**
+* **The measurement archive** — around 100 MB of audio and per-run data, and
+  the reports that cite it. The figures quoted here come from it; the archive
+  itself stayed with the working copy it was produced in.
 * **Any address or MAC of the installation it was built for.**
 
 ---
 
 ## How this was built
 
-HearAble was **orchestrated by Nunzio Raciti and written by Claude** (Anthropic's
-Opus model) working to his direction. He set the goal and the constraints, made
-every design decision, owned the hardware, and did the testing that mattered
-most; Claude was the material executor — the code, the tests, the measurement
-tools and the reports.
+HearAble is **by Nunzio Raciti**, built with **Claude** (Anthropic's Opus) as a
+development assistant. He set the goal and the constraints, made every design
+decision, owns the hardware, and did the testing that mattered most; Claude
+wrote code, tests and measurement tools to his direction.
 
 The division showed up in the results. Several of the defects that mattered were
 found not by a test but by the person using the real thing: pressing buttons on
@@ -194,9 +189,9 @@ afterwards:
   gate, the live session, the UI lifecycle, boot cycles, Wake-on-LAN, the idle
   timer, the file player, and a nineteen-case failure matrix. Each one produces
   a verdict and a machine-readable block, not a log to read.
-* **Campaign reports** under `benchmark/results/`, each labelling every line
-  **MEASURED**, **DERIVED** or **NOT_MEASURED** — so a missing measurement can
-  never be mistaken for a result.
+* **Every reported figure labelled** **MEASURED**, **DERIVED** or
+  **NOT_MEASURED**, so a missing measurement can never be mistaken for a
+  result.
 * **Verdicts that can say "no"**: two investigations were closed by the numbers
   that closed them rather than quietly dropped, and a gate that produced too
   little evidence reports `NON_MISURATO` instead of passing.
@@ -212,11 +207,9 @@ by asking the decoder directly instead of correlating screenshots.
 
 Version 1.5.2. In daily use on real broadcast television.
 
-Two lines of investigation are closed and documented with the numbers that
-closed them: hosting the recogniser on a €50 single-board computer (it needs
-7.33×, the memory bandwidth allows 2.79×), and delaying the picture so the
-subtitles catch up (the delay is reachable, but drains back to live in about two
-minutes). Both are in `docs/hearable_project.md`, because a measured dead end is
-worth more than an unmeasured hope.
+Known limits, stated rather than discovered: the last word of a sentence
+reaches the screen when the model punctuates it, and sentences it does not
+punctuate still wait for the next one. The subtitle lag is about a second and
+most of that is deliberate — see *Where the second goes*.
 
-Orchestrated by Nunzio Raciti. Written by Claude (Opus) to his direction.
+By Nunzio Raciti, with Claude (Opus) as development assistant.

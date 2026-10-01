@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Did the held last word come out during the pause, or at the head of the next sentence?
+"""Did the held last word reach the screen, or wait for the next sentence?
 
 The defect reported from real use: a sentence would end one word short, and if a
 pause followed, that word reappeared in front of the next sentence. The cause was
@@ -88,22 +88,21 @@ def judge(records: list[dict]) -> dict:
 
     if not events:
         verdict = "NON_MISURATO"
-        why = ("nessun evento di commit nella corsa: o non e' passato parlato, "
-               "o il file degli eventi non e' quello giusto")
+        why = ("no commit events in the run: either no speech came through, "
+               "or this is not the right events file")
     elif flushes == 0:
         verdict = "FAIL"
-        why = ("nessun rilascio per scadenza in tutta la corsa. Con del parlato "
-               "e delle pause, il timer dovrebbe scattare: se non scatta mai, "
-               "l'ultima parola sta ancora aspettando la frase successiva")
+        why = ("nothing released in the whole run. With speech and pauses in it, "
+               "something should release the held word: if nothing ever does, "
+               "the last word is still waiting for the next sentence")
     elif flushes < MIN_FLUSHES_FOR_A_VERDICT:
         verdict = "NON_MISURATO"
-        why = (f"solo {flushes} rilasci: troppo pochi per distinguere una "
-               f"correzione che funziona da una coincidenza. Serve una corsa "
-               f"piu' lunga, o del parlato con piu' pause")
+        why = (f"only {flushes} releases: too few to tell a working fix from a "
+               f"coincidence. Needs a longer run, or speech with more pauses in it")
     else:
         verdict = "PASS"
-        why = (f"{flushes} parole rilasciate dal timer durante la corsa, cioe' "
-               f"durante le pause e non all'arrivo della frase dopo")
+        why = (f"{flushes} words released during the run — while the sentence was "
+               f"ending, not when the next one arrived")
 
     return {
         "class": "MEASURED",
@@ -119,9 +118,9 @@ def judge(records: list[dict]) -> dict:
 
 def run_session(seconds: int, label: str) -> Path:
     """Start a live run on the T9 and bring its events file back."""
-    remote_events = f"{REMOTE_ROOT}/benchmark/results/T9_N95_cpu/{label}_events.jsonl"
-    print(f"== corsa dal vivo sul T9, {seconds} s (label {label})")
-    print("   parla la televisione: servono frasi con delle pause in mezzo.")
+    remote_events = f"{REMOTE_ROOT}/runs/{label}_events.jsonl"
+    print(f"== live run on the mini PC, {seconds} s (label {label})")
+    print("   the television does the talking: it needs sentences with pauses in them.")
     command = (f"cd {REMOTE_ROOT} && LABEL={label} DURATION={seconds} "
                f"ON=0 scripts/hearable_t9_live.sh")
     result = subprocess.run(SSH + [f"{T9_USER}@{T9}", command],
@@ -129,7 +128,7 @@ def run_session(seconds: int, label: str) -> Path:
     if result.returncode != 0:
         print(result.stdout[-2000:])
         print(result.stderr[-2000:], file=sys.stderr)
-        raise SystemExit(f"la corsa e' fallita (rc {result.returncode})")
+        raise SystemExit(f"the run failed (rc {result.returncode})")
 
     local = Path(f"/tmp/{label}_events.jsonl")
     fetch = subprocess.run(
@@ -137,24 +136,24 @@ def run_session(seconds: int, label: str) -> Path:
          f"{T9_USER}@{T9}:{remote_events}", str(local)],
         capture_output=True, text=True)
     if fetch.returncode != 0:
-        raise SystemExit(f"non ho potuto recuperare {remote_events}: {fetch.stderr.strip()}")
+        raise SystemExit(f"could not fetch {remote_events}: {fetch.stderr.strip()}")
     return local
 
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--seconds", type=int, default=180,
-                        help="durata della corsa dal vivo (default 180)")
+                        help="how long to run against live television (default 180)")
     parser.add_argument("--label", default="lastword",
-                        help="nome della corsa, usato per i file di uscita")
+                        help="a name for the run, used for its output files")
     parser.add_argument("--events", type=Path,
-                        help="giudica un file di eventi gia' esistente, senza toccare la rete")
-    parser.add_argument("--json", action="store_true", help="solo il verdetto, in JSON")
+                        help="judge an events file that already exists, touching no network")
+    parser.add_argument("--json", action="store_true", help="the verdict alone, as JSON")
     args = parser.parse_args()
 
     events_path = args.events or run_session(args.seconds, args.label)
     if not events_path.exists():
-        raise SystemExit(f"{events_path} non esiste")
+        raise SystemExit(f"{events_path} does not exist")
 
     report = judge(read_events(events_path))
     report["events_file"] = str(events_path)
@@ -169,19 +168,18 @@ def main() -> int:
     print("=" * 66)
     print(f"  {report['why']}")
     print()
-    print(f"  rilasci per scadenza : {report['tail_flush_timeouts']}")
-    print(f"  eventi di commit     : {report['commit_events_total']}")
-    print(f"  stati di sottotitolo : {report['subtitle_records']}")
+    print(f"  releases             : {report['tail_flush_timeouts']}")
+    print(f"  commit events        : {report['commit_events_total']}")
+    print(f"  subtitle states      : {report['subtitle_records']}")
     if report["commit_reasons"]:
-        print("  motivi di commit     :")
+        print("  commit reasons       :")
         for reason, count in report["commit_reasons"].items():
             print(f"      {count:6d}  {reason}")
     if report["sample_flushed_words"]:
-        print(f"  parole rilasciate    : {', '.join(report['sample_flushed_words'])}")
+        print(f"  words released       : {', '.join(report['sample_flushed_words'])}")
     print()
-    print("  Questo misura il meccanismo, non la qualita'. Se il verdetto e' PASS")
-    print("  ma guardando la televisione le frasi finiscono ancora corte, il difetto")
-    print("  e' altrove e va riaperto il mandato forense.")
+    print("  This measures the mechanism, not the quality. If the verdict is PASS")
+    print("  but sentences on screen still end short, the cause is elsewhere.")
     print()
     return 0 if report["LAST_WORD_RELEASED_ON_SILENCE"] == "PASS" else 1
 

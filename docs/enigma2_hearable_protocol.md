@@ -12,7 +12,7 @@ reconciled with theirs rather than forked** — the producer side is the flexibl
 Persistent WebSocket over the trusted LAN.
 
 ```text
-producer (HearAble PC / Arduino UNO Q)  ──ws──▶  renderer (SF8008 plugin)
+producer (the HearAble node)  ──ws──▶  renderer (the receiver's plugin)
                                         ◀──ack──
 ```
 

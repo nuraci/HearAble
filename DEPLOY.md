@@ -54,7 +54,7 @@ running.
 |---|---|
 | `models/` | 707 MB, already there, and it never changes |
 | `upstream/` | The ASR runtime's build directory, compiled *on* the mini PC |
-| `benchmark/results/` | Written **by** the mini PC. Overwriting it would destroy the evidence of the previous run |
+| `runs/` | Written **by** the mini PC. Overwriting it would destroy the record of the previous run |
 
 ### Before you run it
 
@@ -286,5 +286,4 @@ changes landing at the same moment, while you are trying to judge whether one of
 them worked.
 
 So: deploy, judge, *then* tag. The version number should mean confirmed rather
-than hoped. `docs/prova_parola_finale.md` is a worked example of exactly this,
-for the fix that is currently waiting on an aerial.
+than hoped.

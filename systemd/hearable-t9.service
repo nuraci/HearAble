@@ -1,6 +1,6 @@
 [Unit]
 Description=HearAble: sottotitoli in tempo reale per il decoder SF8008
-Documentation=file:///opt/devel/hearable_dvb-t/benchmark/results/T9_N95_cpu.md
+Documentation=file:///home/hearable/hearable/README.md
 # The private link must exist before the pipeline looks for the decoder on it;
 # the decoder itself need not be awake — the relay source waits and reconnects,
 # which is the behaviour the failure matrix checks.

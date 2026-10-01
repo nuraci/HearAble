@@ -1,6 +1,6 @@
 [Unit]
 Description=HearAble: spegnimento del T9 quando il decoder smette di mandare audio
-Documentation=file:///opt/devel/hearable_dvb-t/benchmark/results/T9_N95_cpu.md
+Documentation=file:///home/hearable/hearable/README.md
 After=hearable-t9.service
 Wants=hearable-t9.service
 

@@ -1,13 +1,14 @@
-# /etc/default/hearable — configurazione dell'appliance HearAble sul T9.
+# /etc/default/hearable — the HearAble appliance on the mini PC.
 
-# Quanto il T9 aspetta, senza sessione audio dal decoder, prima di spegnersi.
-# Il segnale è la presenza della sessione, non il parlato: un canale può essere
-# silenzioso o trasmettere musica per mezz'ora ed è comunque acceso.
+# How long the mini PC waits, with no audio session from the receiver, before
+# switching itself off. The signal is the session's presence, not speech: a
+# channel can be silent, or play music for half an hour, and still be on.
 HEARABLE_IDLE_POWEROFF_MINUTES=20
 
-# Quanto aspettare quando il decoder ha salutato prima di andarsene — spegnimento,
-# standby profondo o riavvio di enigma2. È un'attesa breve e non uno spegnimento
-# immediato di proposito: enigma2 saluta anche quando riparte per un aggiornamento,
-# e un riavvio non deve portarsi via l'appliance. Se il decoder torna entro questa
-# finestra, il timer si annulla come sempre.
+# How long to wait once the receiver has said goodbye — switched off, deep
+# standby, or Enigma2 restarting. Deliberately a short wait rather than an
+# immediate power-off: Enigma2 says goodbye when it restarts for an image
+# update too, and a restart must not take the appliance with it. A receiver
+# that comes back inside this window cancels the timer like any other
+# returning session.
 HEARABLE_IDLE_GRACE_MINUTES=3

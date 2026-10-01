@@ -15,5 +15,5 @@ Every page carries the same stylesheet: tokens on `:root`, a dark variant, and
 the project's own subtitle band (white on black at 85 %) used as a motif. Change
 one and the others should follow.
 
-All of them carry the same attribution: orchestrated by Nunzio Raciti, written
-by Claude (Opus) to his direction, every phase gated by tests and measurements.
+All of them carry the same attribution: by Nunzio Raciti, with Claude (Opus) as
+development assistant, every phase gated by tests and measurements.

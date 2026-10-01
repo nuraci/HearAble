@@ -1,8 +1,8 @@
 # HearAble — sottotitoli per il televisore che hai già
 
 *Sottotitolazione italiana in diretta · DVB-T2 · tutto in casa. Versione 1.5.2,
-settembre 2026. Orchestrato da Nunzio Raciti, scritto da Claude (Opus) sotto la
-sua direzione — vedi [Come è stato costruito](#10--come-è-stato-costruito).*
+settembre 2026. Di Nunzio Raciti, con Claude (Opus) come assistente allo
+sviluppo — vedi [Come è stato costruito](#10--come-è-stato-costruito).*
 
 HearAble mette **i sottotitoli in italiano sulla televisione in diretta**, circa
 un secondo dopo la voce, per uno spettatore che ci sente poco. Gira su un
@@ -109,98 +109,53 @@ dell'immagine non ci siamo proprio.
 
 ---
 
-## 3. Il percorso, comprese le parti finite male
+## 3. Le scelte che l'hanno formato
 
-Cinque campagne. Due sono finite contro una porta chiusa, e sono proprio quelle
-due a spiegare perché il sistema che gira oggi è fatto così.
+Quattro decisioni spiegano quasi tutto l'aspetto del sistema. Ognuna è
+dichiarata con la misura che c'è dietro, perché una scelta di progetto senza un
+numero è una preferenza.
 
-### Baseline su PC — dimostrare il riconoscitore prima di costruirci intorno
+### Il riconoscitore gira sulla CPU, e non c'è nessuna GPU
 
-Nemotron 3.5 ASR Streaming 0.6B, quantizzato `q8_0`, su NeMo-Speech.cpp. Su uno
-Xeon da scrivania trascrive l'italiano a **RTF 0,476** con un ritmo realistico e
-un tasso di errore sulle parole mostrate del **4,74 %**.
+Nemotron 3.5 ASR Streaming 0.6B, quantizzato `q8_0`, su NeMo-Speech.cpp. Una GPU
+è più veloce in pura portata, ma **sotto ritmo** — alimentata al passo con cui
+l'audio arriva davvero, che è l'unica modalità che conti per la diretta — il suo
+vantaggio crolla da 5,7× a 2,2×, perché non può sovrapporre lavoro che non ha
+ancora ricevuto. Un N95 senza ventola arriva a un fattore di tempo reale di
+**0,4848** su trenta minuti di televisione vera senza averne una.
 
-Una Radeon RX 6600 via Vulkan è più veloce in pura portata, ma **sotto ritmo** —
-l'unica modalità che conti per l'audio dal vivo, perché la GPU non può
-sovrapporre lavoro che non ha ancora ricevuto — il suo vantaggio crolla da 5,7×
-a 2,2×. È quella singola osservazione il motivo per cui l'appliance che è andata
-in produzione non ha nessuna GPU.
+### Il governor, non il compilatore
 
-### Arduino UNO Q — CHIUSA
+Nessuna riga di codice di calcolo è tarata per questa macchina. La velocità viene
+da una riga di sysfs: il riconoscitore lavora a raffiche di circa 105 ms ogni
+160, e `intel_pstate` in `powersave` non vede mai una raffica abbastanza lunga da
+salire di frequenza.
 
-Una scheda da cinquanta euro può ospitare il riconoscitore? No, ed è valsa la
-pena di misurarlo in cinque modi per esserne sicuri.
-
-| Percorso | Esito | Numero decisivo |
-|---|---|---|
-| CPU, build nativa | NO-GO | RTF 2,3146 |
-| Vulkan, capability e build | PASS | 57,9 MB di shader, zero errori |
-| Vulkan, esecuzione | bloccato | 0,267 GFLOP/s, poi rifiuto del driver |
-| GPU misurata da sola | SCARSA | 2,1 GFLOP/s, banda 3,43 GB/s |
-| DSP / Hexagon / QNN | non esiste | nessun dominio CDSP nel SoC |
-| CPU, fino in fondo | margine insufficiente | serve 7,33×, la fisica ne concede 2,79 |
-
-Il numero di chiusura è quello onesto: per arrivare al tempo reale serve
-**7,33×**, e la fisica del bus di memoria ne concede **2,79×**. Amdahl non ha
-nemmeno avuto la sua occasione: ha chiuso prima la banda.
-
-Due cose però sono sopravvissute, e contano: gli stessi sorgenti compilano sulla
-scheda con il suo gcc, e la trascrizione è *identica bit per bit a quella del PC*
-— le stesse 74 parole, **WER 0,00 %**. Architettura diversa, compilatore diverso,
-kernel SIMD diversi, e non si muove una lettera.
-
-### La correzione dei 64 millisecondi
-
-La catena tratteneva i sottotitoli per 1,5 s, perché una misura fatta da uno
-screenshot diceva che il tap correva **2,4 s** davanti all'immagine. Chiedendolo
-al decoder direttamente — `AUDIO_GET_PTS` contro il PTS del pacchetto che il
-filtro PID consegna *nello stesso istante* — vengono fuori **64 ms**, con uno
-scarto di 32 ms su cento campioni.
-
-Il ritardo di pubblicazione è andato a zero e ci è rimasto. L'orecchio dello
-spettatore lo aveva detto prima dello strumento.
-
-### T9 Plus, Intel N95 — l'appliance che è andata in produzione
-
-Un mini PC senza ventola a metà del tempo reale, su un cavo privato, svegliato dal
-decoder e spento da sé. `T9_HEARABLE_GO`. Mezz'ora di torture deliberate con
-quindici interventi: zero chunk persi, zero sottotitoli stantii. Diciannove guasti
-iniettati, diciannove riprese senza che nessuno toccasse una tastiera.
-
-### Ritardo A/V — CHIUSO
-
-Si poteva ritardare il televisore invece di affrettare i sottotitoli? L'idea:
-trattenere l'immagine di circa un secondo perché i sottotitoli la raggiungano,
-mentre HearAble continua a leggere il segnale live.
-
-**Il meccanismo funziona.** Con il timeshift attivo il tap resta a 0,072 s dal
-live mentre il decoder presenta un'immagine in buffer 51,36 s indietro, e il
-ritardo si può impostare dal plugin posizionandosi sul bordo live meno la
-quantità voluta.
-
-È stato chiuso lo stesso, da una misura presa su due minuti invece che su dieci
-secondi:
-
-| Quando | Ritardo |
+| condizione | RTF |
 |---|---:|
-| Subito dopo la seek (chiesti 2000 ms) | 0,577 s |
-| ~30 s dopo | 0,225 s |
-| ~1 min dopo | **0,065 s** — il bordo live |
+| governor `powersave` | 0,6741 |
+| governor `performance` | 0,4896 |
+| dieci minuti di televisione vera | 0,4962 |
+| trenta minuti di torture deliberate | 0,4848 |
 
-**Il ritardo si svuota da solo fino al live.** La tabella precedente, che lo dava
-«stabile a 48 ms», aveva misurato il *raggiungimento* del ritardo, non la sua
-*tenuta*: ogni riga era una finestra di dieci secondi.
+È il **27,6 %** del fattore di tempo reale, e vale più di `-march=native` e
+AVX-VNNI messi insieme di un fattore venti. Se stai tarando un carico di
+inferenza a raffiche, guarda il governor prima di leggere una riga di assembly.
 
-### L'abitudine che ha prodotto quasi tutte le scoperte
+### Il ritardo di pubblicazione è zero
 
-Ogni difetto che conta, in questo progetto, è stato trovato facendo la cosa vera e
-non la sua imitazione comoda. Staccare il cavo ha trovato un socket morto che
-`ip link down` non riproduceva. Premere il telecomando ha trovato due difetti che
-una matrice da diciannove casi aveva dichiarato verdi. Togliere la corrente ha
-risposto a una domanda sul Wake-on-LAN a cui mesi di spegnimenti via software non
-potevano rispondere. Le misure valgono quanto la cosa su cui sono prese.
+Il tap legge il flusso che entra nel ricevitore, quindi corre **64 ms davanti**
+all'immagine — misurato leggendo due orologi nello stesso istante,
+`AUDIO_GET_PTS` contro il PTS del pacchetto che il filtro PID sta consegnando.
+Non c'è niente da compensare, e infatti non si compensa niente.
 
----
+### La trascrizione è portabile
+
+Gli stessi sorgenti, compilati su un'architettura diversa con un compilatore
+diverso e kernel SIMD diversi, producono una trascrizione **identica bit per
+bit**: le stesse 74 parole, WER 0,00 %. Niente nella catena dipende dalla
+macchina su cui gira, ed è per questo che l'appliance si è potuta scegliere per
+consumo e prezzo invece che per compatibilità.
 
 ## 4. Come sta insieme
 
@@ -587,18 +542,16 @@ di misura non valido, e non è stata cambiata una riga per inseguirlo.
 
 ---
 
-## 9. Che cosa non è finito, e che cosa non è mai stato misurato
+## 9. Limiti noti, e che cosa non è mai stato misurato
 
-Scritto come lacuna invece che omesso in silenzio, perché una misura mancante che
+Scritti come lacune invece che omessi in silenzio, perché una misura mancante che
 sembra un risultato è la cosa più costosa di questo progetto.
 
 | Voce | Stato | Dettaglio |
 |---|---|---|
-| Prova sul campo | IN CORSO | Il sistema è in uso quotidiano. Resta un punto aperto, ancora da caratterizzare. |
-| Ritardi A/V grandi | NON MISURATO | 1,37 s e 7,56 s sono stati osservati per dieci secondi ciascuno. Se un ritardo grande regga per ore non si sa — e il ramo è chiuso comunque. |
-| Timeshift in RAM | INCONCLUSIVO | Il buffer è comparso in `tmpfs` e le scritture su flash non si sono fermate. Non un risultato negativo: una domanda senza risposta. |
+| Frasi senza punteggiatura | LIMITE NOTO | L'ultima parola trattenuta viene rilasciata quando il modello la punteggia. Dove non lo fa, aspetta la frase successiva. |
+| Audio da NVMe o disco interno | NON MISURATO | La riproduzione da file è stata misurata da storage USB. Per HearAble il percorso è lo stesso, che non è la stessa cosa di averlo provato. |
 | AVX-VNNI | DISPONIBILE | La CPU la dichiara e la build non la usa. Attesa piccola, accanto al governor. |
-| Indirizzo predefinito negli strumenti | PER SCELTA | Circa 33 strumenti puntano ancora al vecchio indirizzo del decoder. Non sostituito di proposito: un indirizzo cablato sarebbe di nuovo sbagliato al prossimo cambio. |
 | Riavvio completo all'installazione | OSSERVATO | Installare il plugin riavvia tutto il box, non il solo Enigma2 come dichiara il comando. Visto, non indagato. |
 
 ### Che cosa invece ha ricevuto risposta
@@ -607,33 +560,21 @@ sembra un risultato è la cosa più costosa di questo progetto.
   sapeva sul risveglio del mini PC era misurato da spento via software, con
   l'alimentatore che teneva viva la scheda di rete. Staccata fisicamente la
   corrente a entrambe le macchine, il mini PC si è acceso lo stesso 6,4 minuti
-  dopo il decoder — quando è stato premuto `F4` — con gli orologi delle due
-  macchine allineati entro un secondo e il pulsante di accensione mai toccato.
+  dopo il ricevitore — quando è stato premuto `F4` — con gli orologi delle due
+  macchine allineati entro un secondo e il pulsante mai toccato.
 - **Il tap sul demux non costa un sintonizzatore.** Trenta zap fra multiplex
   diversi, trenta successi, nessun servizio perso.
 - **La catena sopravvive a essere attaccata.** Diciannove guasti iniettati,
   diciannove riprese senza intervento; trenta minuti di disturbo deliberato con
   zero chunk persi e zero sottotitoli stantii.
 
-### L'avvio a freddo ha trovato un difetto, che è il motivo per cui si fa
-
-Il plugin dichiarava 78 minuti di vita su un decoder acceso da 12. Il box corregge
-il proprio orologio da parete *dopo* l'avvio di Enigma2 — 88 minuti di orologio
-consumati in due minuti reali, misurati direttamente — quindi ogni durata si
-portava dietro il salto. L'uptime era l'estremità innocua: lo stesso orologio
-reggeva anche i quattro secondi che il saluto deve restare sullo schermo, e la
-regola che toglie un sottotitolo vecchio. Ora tutte le durate stanno
-sull'orologio monotonic, con un test che vieta di misurarne una sul wall clock.
-
----
-
 ## 10. Come è stato costruito
 
-HearAble è stato **orchestrato da Nunzio Raciti e scritto da Claude** (il modello
-Opus di Anthropic) sotto la sua direzione. Lui ha posto l'obiettivo e i vincoli,
+HearAble è **di Nunzio Raciti**, costruito con **Claude** (il modello Opus di
+Anthropic) come assistente allo sviluppo. Lui ha posto l'obiettivo e i vincoli,
 ha preso ogni decisione di progetto, possiede l'hardware e ha fatto le prove che
-contavano di più. Claude è stato l'esecutore materiale: il codice, i test, gli
-strumenti di misura e questi rapporti.
+contavano di più; Claude ha scritto codice, test e strumenti di misura sotto la
+sua direzione.
 
 La divisione si vede nei risultati. Diversi difetti che contano non li ha trovati
 un test, ma la persona che usava la cosa vera:
@@ -663,15 +604,13 @@ il Wake-on-LAN, il timer di inattività, il lettore di file, una matrice di guas
 da diciannove casi. Ognuno produce un verdetto e un blocco leggibile a macchina,
 non un log che qualcuno deve interpretare.
 
-**Rapporti di campagna** sotto `benchmark/results/`, con ogni riga etichettata
-**MEASURED**, **DERIVED** o **NOT_MEASURED**, così una lacuna non può mai essere
-letta come un risultato.
+**Ogni cifra riportata è etichettata** **MEASURED**, **DERIVED** o
+**NOT_MEASURED**, così una lacuna non può mai essere letta come un risultato.
 
 **Verdetti a cui è permesso dire di no.** Due indagini sono state chiuse dai
-numeri che le hanno chiuse: alla UNO Q serve 7,33× e la banda di memoria ne
-concede 2,79×; il ritardo A/V si raggiunge ma si svuota fino al live in circa due
-minuti. Un gate che produce troppe poche prove dichiara `NON_MISURATO` invece di
-passare sul nulla.
+Un gate che produce troppe poche prove dichiara `NON_MISURATO` invece di
+passare sul nulla, e un limite che non si può togliere viene scritto come limite
+invece di essere lasciato scoprire a chi legge.
 
 **E quando una misura non era d'accordo con lo strumento, ha perso lo
 strumento.** Si credeva che il tap corresse 2,4 s davanti all'immagine, e la
@@ -683,6 +622,6 @@ peggiorava il prodotto.
 ---
 
 *HearAble 1.5.2 — sottotitolazione italiana in tempo reale per DVB-T2.
-Orchestrato da Nunzio Raciti, scritto da Claude (Opus) sotto la sua direzione.
+Di Nunzio Raciti, con Claude (Opus) come assistente allo sviluppo.
 Octagon SF8008 V3 Supreme Combo · T9 Plus Intel N95 · Nemotron 3.5 ASR Streaming
 0.6B su NeMo-Speech.cpp.*

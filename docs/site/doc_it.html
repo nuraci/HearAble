@@ -361,7 +361,7 @@ html{scroll-behavior:smooth}
   <p class="eyebrow">Sottotitolazione italiana in diretta · DVB-T2 · tutto in casa</p>
   <h1>Sottotitoli per il televisore che hai già</h1>
   <p class="standfirst">HearAble mette <strong>i sottotitoli in italiano sulla televisione in diretta</strong>, circa un secondo dopo la voce, per uno spettatore che ci sente poco. Gira su un ricevitore terrestre di consumo e su un mini PC senza ventola, collegati da un cavo privato. Niente esce di casa, non c'è niente da sottoscrivere, e <strong>il telecomando continua a funzionare</strong>.</p>
-  <p class="byline">Orchestrato da <b>Nunzio Raciti</b>, scritto da <b>Claude</b> (Opus) sotto la sua direzione · versione <b>1.5.2</b> · 246 test verdi · settembre 2026</p>
+  <p class="byline">Di <b>Nunzio Raciti</b>, con <b>Claude</b> (Opus) come assistente allo sviluppo · versione <b>1.5.2</b> · 246 test verdi · settembre 2026</p>
 
   <dl class="strip">
     <div><dt>Ritardo del sottotitolo</dt><dd>~1,0<span> s</span></dd></div>
@@ -440,45 +440,38 @@ read()                <span class="c">pacchetti MPEG-TS da 188 byte</span></pre>
 <!-- ============================================================ -->
 <section id="percorso">
   <span class="section-num">03</span>
-  <h2>Il percorso, comprese le parti finite male</h2>
-  <p class="kicker">Cinque campagne. Due sono finite contro una porta chiusa, e sono proprio quelle due a spiegare perché il sistema che gira oggi è fatto così.</p>
+  <h2>Le scelte che l'hanno formato</h2>
+  <p class="kicker">Quattro decisioni spiegano quasi tutto l'aspetto del sistema, ognuna con la misura che ha dietro — una scelta di progetto senza un numero è una preferenza.</p>
 
-  <ol class="tl">
-    <li>
-      <span class="when">Baseline su PC</span>
-      <h3>Dimostrare il riconoscitore prima di costruirci intorno</h3>
-      <p>Nemotron 3.5 ASR Streaming 0.6B, quantizzato <code>q8_0</code>, su NeMo-Speech.cpp. Su uno Xeon da scrivania trascrive l'italiano a <strong>RTF 0,476</strong> con un ritmo realistico e un tasso di errore sulle parole mostrate del <strong>4,74 %</strong>. Una Radeon RX 6600 via Vulkan è più veloce in pura portata, ma sotto ritmo — l'unica modalità che conti per l'audio dal vivo, perché la GPU non può sovrapporre lavoro che non ha ancora ricevuto — il suo vantaggio crolla da 5,7× a 2,2×. È quella singola osservazione il motivo per cui l'appliance in produzione non ha nessuna GPU.</p>
-    </li>
-    <li class="dead">
-      <span class="when">Arduino UNO Q · chiusa</span>
-      <h3>Una scheda da cinquanta euro può ospitare il riconoscitore?</h3>
-      <p>No, ed è valsa la pena di misurarlo in cinque modi per esserne sicuri. Build nativa su CPU: <strong>RTF 2,3146</strong>. Vulkan sull'Adreno 702: compila 57,9 MB di shader senza un errore, poi gira a <strong>0,267 GFLOP/s</strong> prima che il driver rifiuti. La GPU misurata da sola arriva a 2,1 GFLOP/s con 3,43 GB/s di banda. Il DSP Hexagon che tutti suggeriscono <em>non esiste</em> su questo SoC: non c'è nessun dominio CDSP da usare.</p>
-      <p>Il numero di chiusura è quello onesto: per arrivare al tempo reale serve <strong>7,33×</strong>, e la fisica del bus di memoria ne concede <strong>2,79×</strong>. Amdahl non ha nemmeno avuto la sua occasione: ha chiuso prima la banda.</p>
-      <p>Due cose però sono sopravvissute, e contano: gli stessi sorgenti compilano sulla scheda con il suo gcc, e la trascrizione è <em>identica bit per bit a quella del PC</em> — le stesse 74 parole, <strong>WER 0,00 %</strong>. Architettura diversa, compilatore diverso, kernel SIMD diversi, e non si muove una lettera.</p>
-    </li>
-    <li>
-      <span class="when">La correzione dei 64 millisecondi</span>
-      <h3>Una misura sbagliata di un fattore quaranta</h3>
-      <p>La catena tratteneva i sottotitoli per 1,5 s, perché una misura fatta da uno screenshot diceva che il tap correva <strong>2,4 s</strong> davanti all'immagine. Chiedendolo al decoder direttamente — <code>AUDIO_GET_PTS</code> contro il PTS del pacchetto che il filtro PID consegna <em>nello stesso istante</em> — vengono fuori <strong>64 ms</strong>, con uno scarto di 32 ms su cento campioni.</p>
-      <p>Il ritardo di pubblicazione è andato a zero e ci è rimasto. L'orecchio dello spettatore lo aveva detto prima dello strumento.</p>
-    </li>
-    <li>
-      <span class="when">T9 Plus · Intel N95</span>
-      <h3>L'appliance che è andata in produzione</h3>
-      <p>Un mini PC senza ventola a metà del tempo reale, su un cavo privato, svegliato dal decoder e spento da sé. <span class="chip pass">T9_HEARABLE_GO</span> Mezz'ora di torture deliberate con quindici interventi: zero chunk persi, zero sottotitoli stantii. Diciannove guasti iniettati, diciannove riprese senza che nessuno toccasse una tastiera.</p>
-    </li>
-    <li class="dead">
-      <span class="when">Ritardo A/V · chiuso</span>
-      <h3>Si poteva ritardare il televisore invece di affrettare i sottotitoli?</h3>
-      <p>L'idea: trattenere l'immagine di circa un secondo perché i sottotitoli la raggiungano, mentre HearAble continua a leggere il segnale live. <strong>Il meccanismo funziona</strong> — con il timeshift attivo il tap resta a 0,072 s dal live mentre il decoder presenta un'immagine in buffer 51,36 s indietro, e il ritardo si può impostare dal plugin posizionandosi sul bordo live meno la quantità voluta.</p>
-      <p>È stato chiuso lo stesso, da una misura presa su due minuti invece che su dieci secondi: <strong>il ritardo si svuota da solo fino al live</strong> — 0,577 s → 0,225 s → 0,065 s. La tabella precedente, che lo dava «stabile a 48 ms», aveva misurato il <em>raggiungimento</em> del ritardo, non la sua <em>tenuta</em>: ogni riga era una finestra di dieci secondi.</p>
-    </li>
-  </ol>
+  <h3>Il riconoscitore gira sulla CPU, e non c'è nessuna GPU</h3>
+  <p>Nemotron 3.5 ASR Streaming 0.6B, quantizzato <code>q8_0</code>, su NeMo-Speech.cpp. Una GPU è più veloce in pura portata, ma <em>sotto ritmo</em> — alimentata al passo con cui l'audio arriva davvero, che è l'unica modalità che conti per la diretta — il suo vantaggio crolla da 5,7× a 2,2×, perché non può sovrapporre lavoro che non ha ancora ricevuto. Un N95 senza ventola arriva a un fattore di tempo reale di <strong>0,4848</strong> su trenta minuti di televisione vera senza averne una.</p>
 
-  <div class="note">
-    <h4>L'abitudine che ha prodotto quasi tutte le scoperte</h4>
-    <p>Ogni difetto che conta, in questo progetto, è stato trovato facendo la cosa vera e non la sua imitazione comoda. Staccare il cavo ha trovato un socket morto che <code>ip link down</code> non riproduceva. Premere il telecomando ha trovato due difetti che una matrice da diciannove casi aveva dichiarato verdi. Togliere la corrente ha risposto a una domanda sul Wake-on-LAN a cui mesi di spegnimenti via software non potevano rispondere. Le misure valgono quanto la cosa su cui sono prese.</p>
+  <h3>Il governor, non il compilatore</h3>
+  <p>Nessuna riga di codice di calcolo è tarata per questa macchina. La velocità viene da una riga di sysfs: il riconoscitore lavora a raffiche di circa 105 ms ogni 160, e <code>intel_pstate</code> in <code>powersave</code> non vede mai una raffica abbastanza lunga da salire di frequenza.</p>
+
+  <div class="tscroll">
+    <table>
+      <caption>Fattore di tempo reale · più basso è più veloce, 1,0 è il limite</caption>
+      <thead><tr><th>Condizione</th><th class="n">RTF</th></tr></thead>
+      <tbody>
+        <tr><th>Governor <code>powersave</code></th><td class="n">0,6741</td></tr>
+        <tr><th>Governor <code>performance</code></th><td class="n">0,4896</td></tr>
+        <tr><th>Dieci minuti di televisione vera</th><td class="n">0,4962</td></tr>
+        <tr><th>Trenta minuti di torture deliberate</th><td class="n">0,4848</td></tr>
+      </tbody>
+    </table>
   </div>
+
+  <div class="note measure">
+    <h4>È il 27,6 % del fattore di tempo reale</h4>
+    <p>Vale più di <code>-march=native</code> e AVX-VNNI messi insieme, di un fattore venti. Se stai tarando un carico di inferenza a raffiche, guarda il governor prima di leggere una riga di assembly.</p>
+  </div>
+
+  <h3>Il ritardo di pubblicazione è zero</h3>
+  <p>Il tap legge il flusso che entra nel ricevitore, quindi corre <strong>64 ms davanti</strong> all'immagine — misurato leggendo due orologi nello stesso istante, <code>AUDIO_GET_PTS</code> contro il PTS del pacchetto che il filtro PID sta consegnando. Non c'è niente da compensare, e infatti non si compensa niente.</p>
+
+  <h3>La trascrizione è portabile</h3>
+  <p>Gli stessi sorgenti, compilati su un'architettura diversa con un compilatore diverso e kernel SIMD diversi, producono una trascrizione <strong>identica bit per bit</strong>: le stesse 74 parole, WER 0,00 %. Niente nella catena dipende dalla macchina su cui gira, ed è per questo che l'appliance si è potuta scegliere per consumo e prezzo invece che per compatibilità.</p>
 </section>
 
 <!-- ============================================================ -->
@@ -842,8 +835,6 @@ read()                <span class="c">pacchetti MPEG-TS da 188 byte</span></pre>
       <thead><tr><th>Voce</th><th>Stato</th><th>Dettaglio</th></tr></thead>
       <tbody>
         <tr><th>Prova sul campo</th><td><span class="chip open">In corso</span></td><td>Il sistema è in uso quotidiano. Resta un punto aperto, ancora da caratterizzare.</td></tr>
-        <tr><th>Ritardi A/V grandi</th><td><span class="chip open">Non misurato</span></td><td>1,37 s e 7,56 s sono stati osservati per dieci secondi ciascuno. Se un ritardo grande regga per ore non si sa — e il ramo è chiuso comunque.</td></tr>
-        <tr><th>Timeshift in RAM</th><td><span class="chip open">Inconclusivo</span></td><td>Il buffer è comparso in <code>tmpfs</code> e le scritture su flash non si sono fermate. Non un risultato negativo: una domanda senza risposta.</td></tr>
         <tr><th>AVX-VNNI</th><td><span class="chip open">Disponibile</span></td><td>La CPU la dichiara e la build non la usa. Attesa piccola, accanto al governor.</td></tr>
         <tr><th>Indirizzo predefinito negli strumenti</th><td><span class="chip open">Per scelta</span></td><td>Circa 33 strumenti puntano ancora al vecchio indirizzo del decoder. Non sostituito di proposito: un indirizzo cablato sarebbe di nuovo sbagliato al prossimo cambio.</td></tr>
         <tr><th>Riavvio completo all'installazione</th><td><span class="chip open">Osservato</span></td><td>Installare il plugin riavvia tutto il box, non il solo Enigma2 come dichiara il comando. Visto, non indagato.</td></tr>
@@ -869,9 +860,9 @@ read()                <span class="c">pacchetti MPEG-TS da 188 byte</span></pre>
 <section id="costruito">
   <span class="section-num">10</span>
   <h2>Come è stato costruito</h2>
-  <p class="kicker">Orchestrato da una persona, scritto da un modello sotto la sua direzione, e passato a ogni fase da test e misure.</p>
+  <p class="kicker">Di una persona, con un modello come assistente allo sviluppo, e ogni fase passata da test e misure.</p>
 
-  <p>HearAble è stato <strong>orchestrato da Nunzio Raciti e scritto da Claude</strong> (il modello Opus di Anthropic) sotto la sua direzione. Lui ha posto l'obiettivo e i vincoli, ha preso ogni decisione di progetto, possiede l'hardware e ha fatto le prove che contavano di più. Claude è stato l'esecutore materiale: il codice, i test, gli strumenti di misura e questi rapporti.</p>
+  <p>HearAble è <strong>di Nunzio Raciti</strong>, costruito con <strong>Claude</strong> (il modello Opus di Anthropic) come assistente allo sviluppo. Lui ha posto l'obiettivo e i vincoli, ha preso ogni decisione di progetto, possiede l'hardware e ha fatto le prove che contavano di più; Claude ha scritto codice, test e strumenti di misura sotto la sua direzione.</p>
 
   <p>La divisione si vede nei risultati. Diversi difetti che contano non li ha trovati un test, ma la persona che usava la cosa vera:</p>
 
@@ -901,7 +892,7 @@ read()                <span class="c">pacchetti MPEG-TS da 188 byte</span></pre>
 </section>
 
 <footer>
-  <p><strong>HearAble 1.5.2</strong> — sottotitolazione italiana in tempo reale per DVB-T2. Orchestrato da <b>Nunzio Raciti</b>, scritto da <b>Claude</b> (Opus) sotto la sua direzione. Ogni fase è passata da test e misure.</p>
+  <p><strong>HearAble 1.5.2</strong> — sottotitolazione italiana in tempo reale per DVB-T2. Di <b>Nunzio Raciti</b>, con <b>Claude</b> (Opus) come assistente allo sviluppo. Ogni fase è passata da test e misure.</p>
   <p>Octagon SF8008 V3 Supreme Combo · T9 Plus Intel N95 · Nemotron 3.5 ASR Streaming 0.6B su NeMo-Speech.cpp.</p>
   <p>Ogni cifra di questa pagina è una misura presa sull'hardware vero, oppure è dichiarata come non misurata.</p>
 </footer>

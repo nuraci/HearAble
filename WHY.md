@@ -59,10 +59,9 @@ measurements I would most like back are the ones from *your* box: how long until
 the first byte comes out of `DMX_OUT_TSDEMUX_TAP`, and how far ahead of
 `AUDIO_GET_PTS` it runs. On mine: 0.03 s and 64 ms.
 
-**Take the failures too.** Two lines of investigation are closed in here, with
-the numbers that closed them. If you were about to put a speech model on a €50
-single-board computer, `docs/hearable_project.md` will save you a month. A
-measured dead end is a gift; it is just an unpopular one.
+**Tell me what it costs you.** This was built against one receiver and one mini
+PC, and every number here is from those two. What it takes on different hardware
+is the thing I cannot find out on my own.
 
 ## What this is not
 
@@ -76,4 +75,4 @@ out to do.
 
 ---
 
-*Orchestrated by Nunzio Raciti. Written by Claude (Opus) to his direction.*
+*By Nunzio Raciti, with Claude (Opus) as development assistant.*

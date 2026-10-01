@@ -1,75 +1,73 @@
-# T9 Plus — di che cosa ha bisogno l'appliance
+# What the mini PC needs
 
-Debian 13 netinst è spartana di proposito, e ogni pacchetto qui sotto è stato
-installato perché qualcosa si è rotto senza. L'elenco è diviso per quello che
-serve davvero a far comparire i sottotitoli, quello che serve solo a compilare,
-e quello che serve solo a misurare.
+A Debian netinst is deliberately spartan, and every package below is here
+because something broke without it. The list is split by what is needed to put
+subtitles on the screen, what is only needed to build, and what is only needed
+to measure.
 
-## REQUIRED_RUNTIME — senza questi non ci sono sottotitoli
+## Required at runtime — without these there are no subtitles
 
 ```bash
 sudo apt install -y ffmpeg python3-numpy python3-aiohttp curl
 ```
 
-| pacchetto | perché |
+| package | why |
 |---|---|
-| **`ffmpeg`** | decodifica l'AAC del transport stream in PCM. Senza, il tap del decoder apre la connessione, manda 4,5 KB e si prende un *broken pipe*: il sintomo non nomina mai la causa, ed è costato un giro di diagnosi |
-| `python3-numpy` | i chunk audio della catena |
-| `python3-aiohttp` | il server di `hearable.realtime_server` |
-| `curl` | il lanciatore accende HearAble sul decoder; senza, falliva in silenzio perché la chiamata era protetta da `|| true` |
+| **`ffmpeg`** | decodes the transport stream's audio into PCM. Without it the receiver's tap opens the connection, sends 4.5 kB and gets a *broken pipe* — a symptom that never names its cause, and cost a round of diagnosis |
+| `python3-numpy` | the pipeline's audio chunks |
+| `python3-aiohttp` | the server in `hearable.realtime_server` |
+| `curl` | the launcher switches HearAble on at the receiver; without it that call failed silently, because it was guarded by `\|\| true` |
 
-## REQUIRED_RUNTIME per la rete privata e l'accensione
+## Required for the private link and for waking
 
 ```bash
 sudo apt install -y ethtool
 ```
 
-`ethtool` riapplica il Wake-on-LAN a ogni avvio: il driver `r8169` lo riazzera, e
-senza questa riga il magic packet smette di funzionare al primo riavvio.
+`ethtool` re-applies Wake-on-LAN at every boot: the `r8169` driver clears it, and
+without that line the magic packet stops working after the first reboot.
 
-## REQUIRED_RUNTIME per il ring RGB (accessorio)
+## Required for the status ring (optional hardware)
 
 ```bash
 sudo apt install -y python3-serial
 ```
 
-Se manca, `hearable-rgb` lo dice una volta nel journal e continua senza ring. I
-sottotitoli non se ne accorgono: è la condizione che il mandato chiede
-esplicitamente.
+If it is missing, `hearable-rgb` says so once in the journal and carries on
+without a ring. The subtitles never notice, which is the point.
 
-## REQUIRED_BUILD — solo per compilare il runtime ASR
+## Required to build the ASR runtime
 
 ```bash
 sudo apt install -y build-essential cmake ninja-build pkg-config git
 ```
 
-Su questa macchina c'erano già tutti tranne nessuno: l'immagine installata li
-aveva. `libsentencepiece-dev` **non** serve: `scripts/build_t9_n95_cpu.sh`
-compila sentencepiece dal commit fissato, come fa il PC.
+`libsentencepiece-dev` is **not** needed: `scripts/build_t9_n95_cpu.sh` builds
+sentencepiece from a pinned commit, as the reference host does.
 
-## OPTIONAL_DIAGNOSTICS — utili a misurare, inutili a funzionare
+## Optional — useful for measuring, useless for working
 
 ```bash
 sudo apt install -y rsync time linux-perf lm-sensors
 ```
 
-| pacchetto | perché |
+| package | why |
 |---|---|
-| `rsync` | trasferire sorgenti e modello dal PC |
-| `time` | `/usr/bin/time -v` per RSS di picco e CPU% nelle campagne |
-| `linux-perf`, `lm-sensors` | profilazione e temperature; `sensors` era già presente |
+| `rsync` | moving sources and the model from a workstation |
+| `time` | `/usr/bin/time -v` for peak RSS and CPU% |
+| `linux-perf`, `lm-sensors` | profiling and temperatures |
 
-## Installato e poi rimosso
+## Installed and then removed
 
-`dnsmasq` è servito **due minuti**, per rimettere in piedi il decoder quando il
-cavo spostato lo aveva lasciato senza rete e il suo Wi-Fi non era ancora buono:
-la sua `eth0` era in DHCP, gli è stato dato `10.77.0.1` e da lì si è potuto
-configurare in statico. Poi è stato fermato e la configurazione rimossa. **Sul
-percorso critico non c'è DHCP**, che è quello che il mandato chiede.
+`dnsmasq` was useful for **two minutes**, to bring the receiver back when a moved
+cable had left it with no network and its Wi-Fi was not yet configured: its
+`eth0` was on DHCP, it was given `10.77.0.1`, and from there it could be
+configured statically. Then it was stopped and the configuration removed.
+**There is no DHCP on the critical path**, deliberately.
 
-## Verifica rapida
+## Quick check
 
 ```bash
-for p in ffmpeg curl ethtool; do command -v $p >/dev/null || echo "manca $p"; done
-python3 -c "import numpy, aiohttp, serial" || echo "manca un modulo python"
+for p in ffmpeg curl ethtool; do command -v $p >/dev/null || echo "missing $p"; done
+python3 -c "import numpy, aiohttp, serial" || echo "a python module is missing"
 ```

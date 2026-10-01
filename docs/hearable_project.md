@@ -1,7 +1,7 @@
 # HearAble — Subtitles for the television you already own
 
 *Italian live subtitling · DVB-T2 · on-device. Version 1.5.2, September 2026.
-Orchestrated by Nunzio Raciti; written by Claude (Opus) to his direction. See
+By Nunzio Raciti, with Claude (Opus) as development assistant. See
 [How this was built](#10-how-this-was-built).*
 
 HearAble puts **Italian subtitles on live broadcast television**, about a second
@@ -106,96 +106,52 @@ picture's path at all.
 
 ---
 
-## 3. The road, including the parts that failed
+## 3. The choices that shaped it
 
-Five campaigns. Two of them ended in a closed door, and those two are the reason
-the shipped design looks the way it does.
+Four decisions explain most of what the system looks like. Each is stated with
+the measurement behind it, because a design choice without a number is a
+preference.
 
-### PC baseline — prove the recogniser before building anything around it
+### The recogniser runs on the CPU, and there is no GPU
 
-Nemotron 3.5 ASR Streaming 0.6B, quantised `q8_0`, running on NeMo-Speech.cpp. On
-a desktop Xeon it transcribes Italian at **RTF 0.476** under realistic pacing with
-a display word error rate of **4.74 %**.
+Nemotron 3.5 ASR Streaming 0.6B, quantised `q8_0`, on NeMo-Speech.cpp. A GPU is
+faster in raw throughput, but under *pacing* — feeding it audio at the rate audio
+actually arrives, which is the only mode that matters for live — the advantage
+collapses from 5.7× to 2.2×, because a GPU cannot overlap work it has not been
+given yet. A fanless N95 reaches a real-time factor of **0.4848** over thirty
+minutes of live television without one.
 
-A Radeon RX 6600 over Vulkan is faster in raw throughput, but under pacing — the
-only mode that matters for live audio, because the GPU cannot overlap work it has
-not received yet — its advantage collapses from 5.7× to 2.2×. That single
-observation is why the shipped appliance has no GPU.
+### The governor, not the compiler
 
-### Arduino UNO Q — CLOSED
+No compute code is tuned for this machine. The speed comes from one line of
+sysfs: the recogniser works in bursts of roughly 105 ms every 160, and
+`intel_pstate` in `powersave` never sees a burst long enough to clock up.
 
-Can a €50 board host the recogniser? No, and it was worth five measured attempts
-to be sure.
-
-| Path | Result | Decisive number |
-|---|---|---|
-| CPU, native build | NO-GO | RTF 2.3146 |
-| Vulkan, capability and build | PASS | 57.9 MB of shaders, zero errors |
-| Vulkan, execution | blocked | 0.267 GFLOP/s, then driver refusal |
-| GPU measured on its own | POOR | 2.1 GFLOP/s, 3.43 GB/s bandwidth |
-| DSP / Hexagon / QNN | does not exist | no CDSP domain in the SoC |
-| CPU, taken to the end | insufficient margin | needs 7.33×, physics allows 2.79× |
-
-The closing number is the honest one: reaching real time needs **7.33×**, and the
-physics of the memory bus allows **2.79×**. Amdahl never got a chance; bandwidth
-closed the door first.
-
-Two things did survive, and they matter: the same sources compile on the board
-with its own gcc, and the transcript is *bit-identical to the PC's* — the same 74
-words, **WER 0.00 %**. Different architecture, different compiler, different SIMD
-kernels, not one letter moved.
-
-### The 64-millisecond correction
-
-The pipeline had been holding its subtitles back by 1.5 s, because a
-screenshot-based measurement said the tap ran **2.4 s** ahead of the picture.
-Asking the decoder directly — `AUDIO_GET_PTS` against the PTS of the packet the
-PID filter is handing over *in the same instant* — gives **64 ms**, spread 32 ms
-over a hundred samples.
-
-The publication delay went to zero and stayed there. The viewer's own ear had
-said so before the instrument did.
-
-### T9 Plus, Intel N95 — the appliance that shipped
-
-A fanless mini PC at half of real time, on a private cable, woken by the decoder
-and switched off by itself. `T9_HEARABLE_GO`. Thirty minutes of deliberate abuse
-with fifteen interventions: zero lost chunks, zero stale subtitles. Nineteen
-injected faults, nineteen unattended recoveries.
-
-### A/V delay — CLOSED
-
-Could we delay the television instead of hurrying the subtitles? The idea: hold
-the picture back by about a second so the subtitles catch up, while HearAble
-keeps reading the live signal.
-
-**The mechanism works.** With timeshift running, the tap stays 0.072 s from live
-while the decoder presents a buffered picture 51.36 s behind, and the delay can be
-set from the plugin by seeking to the live edge minus the amount wanted.
-
-It was closed anyway, by a measurement taken over two minutes instead of ten
-seconds:
-
-| When | Delay |
+| condition | RTF |
 |---|---:|
-| Straight after the seek (2000 ms asked) | 0.577 s |
-| ~30 s later | 0.225 s |
-| ~1 min later | **0.065 s** — the live edge |
+| governor `powersave` | 0.6741 |
+| governor `performance` | 0.4896 |
+| ten minutes of real television | 0.4962 |
+| thirty minutes of deliberate abuse | 0.4848 |
 
-**The delay drains back to live on its own.** The earlier table calling it "stable
-to 48 ms" had measured *reaching* the delay, not *holding* it — every row was a
-ten-second window.
+That is **27.6 %** of the real-time factor, worth more than `-march=native` and
+AVX-VNNI together by a factor of twenty. If you are tuning a bursty inference
+workload, check the governor before reading a line of assembly.
 
-### The habit that produced most of the findings
+### The publication delay is zero
 
-Every defect of consequence in this project was found by doing the real thing, not
-the convenient imitation of it. Unplugging the cable found a dead socket that
-`ip link down` could not reproduce. Pressing the remote found two defects a
-nineteen-case matrix had passed. Cutting mains power answered a Wake-on-LAN
-question that months of software-off testing could not. The measurements are only
-as good as the thing they are taken on.
+The tap reads the stream entering the receiver, so it runs **64 ms ahead** of the
+picture — measured by reading two clocks in the same instant, `AUDIO_GET_PTS`
+against the PTS of the packet the PID filter is handing over. There is nothing to
+compensate for, so nothing is compensated.
 
----
+### The transcript is portable
+
+The same sources, built on a different architecture with a different compiler and
+different SIMD kernels, produce a **bit-identical transcript**: the same 74
+words, WER 0.00 %. Nothing in the chain depends on the machine it runs on, which
+is why the appliance could be chosen on power and price rather than on
+compatibility.
 
 ## 4. How it fits together
 
@@ -576,53 +532,38 @@ and no code was changed to chase it.
 
 ---
 
-## 9. What is not finished, and what was never measured
+## 9. Known limits, and what was never measured
 
 Recorded as gaps rather than quietly omitted, because a missing measurement that
 looks like a result is the most expensive thing in this project.
 
 | Item | State | Detail |
 |---|---|---|
-| Field testing | IN PROGRESS | The system is in daily use. One issue is outstanding and still to be characterised. |
-| Long A/V delays | NOT MEASURED | 1.37 s and 7.56 s were each observed for ten seconds only. Whether a large delay holds for hours is unknown — and the branch is closed regardless. |
-| Timeshift in RAM | INCONCLUSIVE | The buffer appeared in `tmpfs` and flash writes did not stop. Not a negative result; an unanswered question. |
+| Unpunctuated sentences | KNOWN LIMIT | The held last word is released when the model punctuates it. Where it does not, the word waits for the next sentence. |
+| Audio on an NVMe or internal drive | NOT MEASURED | File playback was measured from USB storage. The path is the same as far as HearAble is concerned, and that is not the same as having been tried. |
 | AVX-VNNI | AVAILABLE | The CPU advertises it and the build does not use it. Expected to be small next to the governor. |
-| Tool default address | BY DECISION | About 33 tools still default to the decoder's old address. Deliberately not replaced: a hard-coded address would be wrong again at the next change. |
 | Full reboot on install | OBSERVED | Installing the plugin restarts the whole box, not just Enigma2 as the command claims. Seen, not investigated. |
 
 ### What has been answered
 
-- **Wake-on-LAN survives a mains cut.** Everything previously known about waking
-  the mini PC was measured from soft-off, with the power supply keeping the
-  network card alive. With the power physically pulled from both machines, the
-  mini PC still came up 6.4 minutes after the decoder — when `F4` was pressed —
-  with the clocks of the two machines agreeing to within a second and the power
+- **Wake-on-LAN survives a mains cut.** Everything known about waking the mini
+  PC had been measured from soft-off, with the power supply keeping the network
+  card alive. With the power physically pulled from both machines, the mini PC
+  still came up 6.4 minutes after the receiver — when `F4` was pressed — with
+  the clocks of the two machines agreeing to within a second and the power
   button untouched.
 - **The demux tap does not cost a tuner.** Thirty cross-multiplex zaps, thirty
   successes, no lost services.
 - **The pipeline survives being attacked.** Nineteen injected faults, nineteen
-  unattended recoveries; thirty minutes of deliberate interference with zero lost
-  chunks and zero stale subtitles.
-
-### The cold start found a defect, which is what cold starts are for
-
-The plugin reported an uptime of 78 minutes on a decoder that had been on for 12.
-The box sets its wall clock *after* Enigma2 starts — 88 minutes of wall clock
-consumed in two minutes of real time, measured directly — so every elapsed time
-carried the jump. Uptime was the harmless end of it; the same clock also held the
-four seconds the greeting is supposed to stand for, and the rule that takes a
-stale subtitle down. All durations now run on the monotonic clock, with a test
-that refuses to let any duration be measured on the wall clock again.
-
----
+  unattended recoveries; thirty minutes of deliberate interference with zero
+  lost chunks and zero stale subtitles.
 
 ## 10. How this was built
 
-HearAble was **orchestrated by Nunzio Raciti and written by Claude** (Anthropic's
-Opus model) working to his direction. He set the goal and the constraints, made
-every design decision, owned the hardware, and did the testing that mattered
-most. Claude was the material executor: the code, the tests, the measurement
-tools and these reports.
+HearAble is **by Nunzio Raciti**, built with **Claude** (Anthropic's Opus) as a
+development assistant. He set the goal and the constraints, made every design
+decision, owns the hardware, and did the testing that mattered most; Claude
+wrote code, tests and measurement tools to his direction.
 
 The division is visible in the findings. Several defects of consequence were
 found not by a test but by the person using the real thing:
@@ -650,15 +591,13 @@ the live session, the UI lifecycle, boot cycles, Wake-on-LAN, the idle timer, th
 file player, a nineteen-case failure matrix. Each produces a verdict and a
 machine-readable block rather than a log someone has to interpret.
 
-**Campaign reports** under `benchmark/results/`, every line labelled
-**MEASURED**, **DERIVED** or **NOT_MEASURED**, so a gap can never be read as a
-result.
+**Every reported figure labelled** **MEASURED**, **DERIVED** or
+**NOT_MEASURED**, so a gap can never be read as a result.
 
-**Verdicts that are allowed to say no.** Two investigations were closed by the
-numbers that closed them: the UNO Q needs 7.33× and the memory bandwidth allows
-2.79×; the A/V delay is reachable but drains back to live in about two minutes.
-A gate that produces too little evidence reports `NON_MISURATO` rather than
-passing on nothing.
+**Verdicts that are allowed to say no.** A gate that produces too little
+evidence reports `NON_MISURATO` rather than passing on nothing, and a limit that
+cannot be removed is written down as a limit rather than left for a reader to
+find.
 
 **And when a measurement disagreed with the instrument, the instrument lost.**
 The tap was believed to run 2.4 s ahead of the picture, and the pipeline was
@@ -668,6 +607,6 @@ in the direction that made the product worse.
 
 ---
 
-*HearAble 1.5.2 — Italian realtime subtitling for DVB-T2. Orchestrated by Nunzio
-Raciti, written by Claude (Opus) to his direction. Octagon SF8008 V3 Supreme
+*HearAble 1.5.2 — Italian realtime subtitling for DVB-T2. By Nunzio Raciti,
+with Claude (Opus) as development assistant. Octagon SF8008 V3 Supreme
 Combo · T9 Plus Intel N95 · Nemotron 3.5 ASR Streaming 0.6B on NeMo-Speech.cpp.*

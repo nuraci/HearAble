@@ -19,7 +19,7 @@ BOX="${BOX:-10.77.0.1}"
 LIB_DIR="${LIB_DIR:-$ROOT/upstream/NeMo-Speech.cpp/build/t9_cpu_baseline/bin}"
 LABEL="${LABEL:-live}"
 DURATION="${DURATION:-0}"
-OUTPUT_DIR="${OUTPUT_DIR:-$ROOT/benchmark/results/T9_N95_cpu}"
+OUTPUT_DIR="${OUTPUT_DIR:-$ROOT/runs}"
 GOVERNOR="${GOVERNOR:-performance}"
 ON="${ON:-1}"
 

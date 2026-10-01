@@ -1,6 +1,6 @@
 [Unit]
 Description=HearAble: CPU governor performance
-Documentation=file:///opt/devel/hearable_dvb-t/benchmark/results/T9_N95_cpu.md
+Documentation=file:///home/hearable/hearable/README.md
 DefaultDependencies=no
 After=sysinit.target
 Before=hearable-t9.service
