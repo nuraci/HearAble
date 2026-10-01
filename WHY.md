@@ -42,8 +42,11 @@ somebody else to take.
 ## What you might do with it
 
 **Use it.** If you have an Enigma2 receiver and a spare mini PC, `DEPLOY.md`
-will get you there. It will not be effortless — it was built for two specific
-machines — but nothing in it is exotic.
+will get you most of the way there. It will not be effortless: it was built for
+two specific machines, and that procedure has never been run from scratch — it
+is the history of building these two, written down afterwards. Expect gaps, and
+tell me where they are. Nothing in it is exotic; it is just not yet proven on a
+third machine.
 
 **Use it for more than live television.** The same chain subtitles a film
 played from the receiver's own storage — measured, eight checks, all passing.

@@ -90,6 +90,13 @@ Only compressed audio goes out, and only two lines of text come back.
 **[DEPLOY.md](DEPLOY.md)** has the full procedure: first-time setup of both
 machines, the routine update, verification and rollback.
 
+It comes with a caveat worth reading before you buy anything: that procedure has
+**never been run from scratch**. Both machines here were built incrementally,
+and the document is that history reconstructed afterwards. It is probably
+incomplete, and the gaps will be things that were done by hand once and never
+written down. If you hit one, open an issue — that is the only way it gets
+written down.
+
 Before anything else, tell the repository where your machines are:
 
 ```bash

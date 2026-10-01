@@ -20,6 +20,12 @@ control still works**.
 Every figure in this document is a measurement taken on the real hardware, or is
 labelled as not measured.
 
+One caveat applies to all of it: this describes **two machines**, built
+incrementally. Where it reads like a procedure, that is this history
+reconstructed afterwards and never executed from nothing on a third machine. It
+is probably incomplete — `DEPLOY.md` says so where it matters most, and an issue
+on the repository is the only way a missing step gets written down.
+
 ---
 
 ## 1. What it is for

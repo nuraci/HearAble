@@ -129,6 +129,27 @@ script, no kernel module.
 
 ---
 
+## Before you start: this procedure has never been run from scratch
+
+It is worth knowing exactly what you are holding. Both machines here were built
+**incrementally**, over weeks, by someone who already knew what the previous step
+had done. This procedure is that history reconstructed afterwards — not a
+sequence anyone has executed from nothing on a third machine.
+
+So it is probably incomplete, and the gaps will not be the interesting parts.
+They will be the things that were done by hand once and never written down: a
+BIOS option, a permission, a file merged into another file. Every gap found so
+far has had that shape, and they were only found by someone actually hitting
+them.
+
+**If you get stuck, say so** — open an issue on this repository. A step that is
+missing is worth more to the next person than a step that is elegant, and the
+only way it gets written down is if whoever hits it says what happened. The same
+goes for a step that is wrong on hardware different from the two machines here,
+which is most hardware.
+
+---
+
 ## First-time setup
 
 ### Mini PC

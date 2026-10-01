@@ -20,6 +20,12 @@ telecomando continua a funzionare**.
 Ogni cifra di questo documento è una misura presa sull'hardware vero, oppure è
 dichiarata come non misurata.
 
+Un'avvertenza vale per tutto: qui si descrivono **due macchine**, costruite in
+modo incrementale. Dove il testo somiglia a una procedura, è quella storia
+ricostruita dopo, e **non è mai stata eseguita da zero** su una terza macchina.
+È probabilmente incompleta — `DEPLOY.md` lo dice dove conta di più, e una issue
+sul repository è l'unico modo in cui un passo mancante viene scritto.
+
 ---
 
 ## 1. A che cosa serve
