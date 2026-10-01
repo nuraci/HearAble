@@ -135,6 +135,11 @@ script, no kernel module.
 
 Debian 13 netinst, then in order:
 
+**Before the operating system.** Enable **Wake-on-LAN in the BIOS**, and the
+option that powers the machine on again after a mains failure if your BIOS has
+one. `ethtool` arms the adapter at every boot, but it cannot arm what the
+firmware has switched off, and that is only discoverable by cutting the power.
+
 ```bash
 # 1. packages — see docs/t9_appliance_prerequisites.md for why each one
 sudo apt install -y ffmpeg python3-numpy python3-aiohttp curl ethtool python3-serial
@@ -143,13 +148,18 @@ sudo apt install -y ffmpeg python3-numpy python3-aiohttp curl ethtool python3-se
 sudo adduser --disabled-password --gecos '' hearable
 sudo -u hearable git clone <this repo> /home/hearable/hearable
 
-# 3. the model — copy it, do not re-download: the checksum must match.
+# 3. tell the tree where the two machines are
+sudo -u hearable cp /home/hearable/hearable/config/site.example.json \
+                    /home/hearable/hearable/config/site.json
+# then fill it in: the receiver's address, this machine's address and MAC
+
+# 4. the model — copy it, do not re-download: the checksum must match.
 #    -L is not optional: models/ here is a symlink to a directory outside the
 #    repository, and without it you transfer a dangling link, not 707 MB.
 rsync -PL models/nemotron-3.5-asr-streaming-0.6b.q8_0.gguf \
       hearable@<mini pc>:/home/hearable/hearable/models/
 
-# 4. build the ASR runtime on the machine itself
+# 5. build the ASR runtime on the machine itself
 ssh hearable@<mini pc> 'cd hearable && scripts/build_t9_n95_cpu.sh'
 ```
 
@@ -166,8 +176,11 @@ Anaconda does this. Use the system Python, or preload the system library:
 LD_PRELOAD=/usr/lib/x86_64-linux-gnu/libstdc++.so.6 python3 -m hearable.realtime_server ...
 ```
 
-Verify the model before going further — a truncated copy fails much later and
-much less clearly:
+**Where the model comes from.** It is NVIDIA's Nemotron 3.5 ASR Streaming 0.6B,
+converted to GGUF and quantised `q8_0` by the conversion tooling in
+NeMo-Speech.cpp. It is not redistributed here and `models/README.md` says so.
+Whatever route you take to it, verify before going further — a truncated copy
+fails much later and much less clearly:
 
 ```
 sha256  a5c435f294eea8f88ce68dd27b8c3bfea7f777cb2fbba04fcd30eaa555f429ae
@@ -201,17 +214,60 @@ sudo systemctl enable --now hearable-governor hearable-t9 \
 to doing nothing if the hardware or `pyserial` is absent.
 
 **Passwordless sudo** for the `hearable` user, so the deploy script can restart
-the service and the launcher can set the CPU governor.
+the service and the launcher can set the CPU governor:
+
+```bash
+echo 'hearable ALL=(ALL) NOPASSWD: ALL' | sudo tee /etc/sudoers.d/hearable
+sudo chmod 0440 /etc/sudoers.d/hearable
+```
+
+**An SSH key from wherever you deploy**, because `tools/t9_deploy.sh` runs with
+`BatchMode=yes` and will never prompt:
+
+```bash
+ssh-copy-id hearable@<mini pc>
+ssh -o BatchMode=yes hearable@<mini pc> true && echo ok
+```
 
 ### Receiver
 
-Enigma2 with root SSH access, then:
+An Enigma2 image with root SSH access — this was built against openATV 7.5.1 on
+an Octagon SF8008, and nothing in the plugin is specific to either.
+
+**1. The private link.** This is the step that is easy to skip and impossible to
+work without: no link, and the relay has nowhere to send audio while the magic
+packet goes nowhere. Enigma2 writes `/etc/network/interfaces` itself and says
+not to edit it, but its own network screen cannot express an interface with an
+address and no gateway, so the stanza in
+[`systemd/hearable-private-link-receiver.conf`](systemd/hearable-private-link-receiver.conf)
+has to be merged in by hand:
+
+```bash
+scp systemd/hearable-private-link-receiver.conf root@<receiver>:/tmp/
+ssh root@<receiver> 'cat /tmp/hearable-private-link-receiver.conf >> /etc/network/interfaces && ifup eth0'
+ssh root@<receiver> 'ip -brief addr show eth0'      # expect 10.77.0.1/24, state UP
+```
+
+Keep the `wlan0` lines Enigma2 generated. The two interfaces coexist and the
+default route stays on Wi-Fi — which is also how you reach the box to deploy,
+once `eth0` belongs to the mini PC.
+
+**2. The plugin.**
 
 ```bash
 tools/sf8008_install_plugin.sh <its address>
 ```
 
-That is all. The plugin creates its own settings files on first use.
+It copies six files plus the shared protocol module, restarts Enigma2 — the
+picture goes for a few seconds — and provisions
+`/etc/enigma2/hearable_wol.json` from `config/site.json` so `F4` can wake the
+mini PC. It refuses a version mismatch and refuses to report success unless a
+different Enigma2 process comes back reporting the version it just installed.
+
+**3. Nothing else.** The plugin creates its remaining settings files on first
+use, takes three remote-control keys and no others, and opens no tuner. To
+return the box to stock: `tools/sf8008_remove_plugin.sh`, then delete the three
+`/etc/enigma2/hearable_*.json` files and the stanza above.
 
 ---
 
