@@ -9,7 +9,6 @@ private page on claude.ai; publishing the same file again keeps the same URL.
 | `doc_it.html` | Italiano | https://claude.ai/artifact/MHaf6vWcULqndMzb7bqfuj |
 | `article_already_inside_the_box.html` | English | https://claude.ai/artifact/YEshLrBb78V4sdsV7NjqGW |
 | `internals.html` | English | https://claude.ai/artifact/V7MwjpRWDJEN7NA6tPdn5d |
-| `linkedin_post.md` | Both | not published — text to paste into LinkedIn |
 
 Every page carries the same stylesheet: tokens on `:root`, a dark variant, and
 the project's own subtitle band (white on black at 85 %) used as a motif. Change
