@@ -15,12 +15,12 @@ python3 docs/site/build.py _site           # build
 python3 -m http.server -d _site 8000       # preview on http://localhost:8000
 ```
 
-| Source | On the website | Also on claude.ai |
-|---|---|---|
-| `doc_en.html` | `documentation.html` | https://claude.ai/artifact/JaPMgmrootuRfFqxzSkPe4 |
-| `doc_it.html` | `documentazione.html` | https://claude.ai/artifact/MHaf6vWcULqndMzb7bqfuj |
-| `article_already_inside_the_box.html` | `article.html` | https://claude.ai/artifact/YEshLrBb78V4sdsV7NjqGW |
-| `internals.html` | `internals.html` | https://claude.ai/artifact/V7MwjpRWDJEN7NA6tPdn5d |
+| Source | On the website |
+|---|---|
+| `doc_en.html` | [documentation.html](https://nuraci.github.io/HearAble/documentation.html) |
+| `doc_it.html` | [documentazione.html](https://nuraci.github.io/HearAble/documentazione.html) |
+| `article_already_inside_the_box.html` | [article.html](https://nuraci.github.io/HearAble/article.html) |
+| `internals.html` | [internals.html](https://nuraci.github.io/HearAble/internals.html) |
 
 Every page carries the same stylesheet: tokens on `:root`, a dark variant, and
 the project's own subtitle band (white on black at 85 %) used as a motif. Change
