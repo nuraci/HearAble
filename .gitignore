@@ -63,3 +63,6 @@ benchmark/results/**/*_events.jsonl
 # This installation: household addresses and the mini PC MAC.
 # The tracked file is config/site.example.json, with placeholders.
 config/site.json
+
+# The website build output (docs/site/build.py).
+_site/

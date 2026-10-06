@@ -1,0 +1,44 @@
+# Publish docs/site as the project's website on GitHub Pages.
+#
+# The pages are fragments written for a host that wraps them in its own
+# document; docs/site/build.py wraps them for GitHub instead and writes the
+# result to _site, which is what gets deployed. The sources are never edited by
+# the build, so they keep publishing in both places.
+#
+# One-time setup in the repository: Settings -> Pages -> Source: GitHub Actions.
+
+name: Website
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "docs/site/**"
+      - ".github/workflows/pages.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build the site
+        run: python3 docs/site/build.py _site
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+      - id: deployment
+        uses: actions/deploy-pages@v4
