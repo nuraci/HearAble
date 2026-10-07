@@ -31,6 +31,12 @@ PAGES = {
     "doc_it.html": ("documentazione.html", "it", "Italiano"),
 }
 
+# Pages served but never linked from the site: reachable only by their address,
+# for example from a post somewhere else. Same shape as PAGES.
+UNLISTED = {
+    "live-subtitles.html": ("live-subtitles.html", "en", None),
+}
+
 BAR_STYLE = """<style>
 .site-bar{background:#141d2b;color:#e7edf3;font:500 13px/1.4 system-ui,-apple-system,"Segoe UI",sans-serif;
   padding-block:8px;padding-inline:16px;display:flex;flex-wrap:wrap;gap:4px 16px;align-items:center}
@@ -118,6 +124,9 @@ def main() -> int:
     for source, (name, lang, _) in PAGES.items():
         (out / name).write_text(wrap((HERE / source).read_text(), lang, name), encoding="utf-8")
         print(f"  {source:42s} -> {name}")
+    for source, (name, lang, _) in UNLISTED.items():
+        (out / name).write_text(wrap((HERE / source).read_text(), lang, None), encoding="utf-8")
+        print(f"  {source:42s} -> {name}  (unlisted)")
     (out / "index.html").write_text(landing(), encoding="utf-8")
     print(f"  {'(landing page)':42s} -> index.html")
     # Plain HTML: tell GitHub Pages not to run Jekyll over it.
