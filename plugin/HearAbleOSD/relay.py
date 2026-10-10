@@ -142,6 +142,13 @@ def source_kind(reference: str | None) -> str:
     The first field of a service reference is its type: `1` is a broadcast
     service, `4097` is servicemp3 — which covers both a file on the stick and a
     URL, told apart by what follows.
+
+    A type is not enough on its own. A recording played back is type `1` too —
+    Enigma2 plays its own `.ts` files through the same DVB service as a
+    channel — and is told apart only by the path in its eleventh field:
+    `1:0:0:0:0:0:0:0:0:0:/media/hdd/movie/<name>.ts:<title>`. Read as a channel,
+    it sent the relay to the tuner for an audio PID that only exists in the
+    file, and the subtitles stayed blank for the whole recording.
     """
     if not reference:
         return "unknown"
@@ -149,8 +156,21 @@ def source_kind(reference: str | None) -> str:
     if head == "4097":
         return "stream" if "http" in rest.lower() else "file"
     if head == "1":
-        return "dvb"
+        return "file" if recording_path(reference) else "dvb"
     return "unknown"
+
+
+def recording_path(reference: str | None) -> str:
+    """The file behind a type-1 reference, or "" for a live channel.
+
+    The path is the eleventh field, and a title may follow it. Enigma2 writes a
+    colon inside a field as `%3a`, so a title with a colon in it cannot be
+    mistaken for the end of the path.
+    """
+    fields = (reference or "").split(":")
+    if len(fields) > 10 and fields[0] == "1" and fields[10].startswith("/"):
+        return fields[10].replace("%3a", ":").replace("%3A", ":")
+    return ""
 
 
 def live_without_a_reference(info: dict) -> bool:
@@ -320,8 +340,9 @@ class AudioRelay:
 
     # -- the process --------------------------------------------------------
     def _media_path(self, reference: str) -> str:
-        # A 4097: reference carries the path as its last field.
-        return reference.split(":")[-1] if reference else ""
+        # A 4097: reference carries the path as its last field; a recording
+        # carries it in the eleventh, with its title after it.
+        return recording_path(reference) or (reference.split(":")[-1] if reference else "")
 
     def release(self, reason: str) -> None:
         """Let go of the stream now, without waiting for anything.
@@ -436,7 +457,15 @@ class AudioRelay:
             # Paced at playback speed: the relay must not race ahead of the
             # viewer, and a stalled consumer must show up as backpressure rather
             # than as a growing buffer somewhere.
-            "-re", "-copyts", "-ss", f"{start_at:.3f}",
+            "-re", "-copyts",
+            # The stamps must count from the start of the file, because that is
+            # what the position they are compared with counts from. A film does
+            # already; a recording does not — it carries the broadcast's clock,
+            # and one starting at 43 560 s looked twelve hours ahead of the
+            # picture, so the receiver held every sample and nothing was ever
+            # recognised. A no-op for a file that already starts at zero.
+            "-start_at_zero",
+            "-ss", f"{start_at:.3f}",
             "-i", media,
             "-map", f"0:a:{track}",
             "-c", "copy", "-f", "mpegts", url,
