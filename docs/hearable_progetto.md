@@ -1,7 +1,7 @@
 # HearAble — sottotitoli per il televisore che hai già
 
-*Sottotitolazione italiana in diretta · DVB-T2 · tutto in casa. Versione 1.5.2,
-settembre 2026. Di Nunzio Raciti, con Claude (Opus) come assistente allo
+*Sottotitolazione italiana in diretta · DVB-T2 · tutto in casa. Versione 1.5.3,
+ottobre 2026. Di Nunzio Raciti, con Claude (Opus) come assistente allo
 sviluppo — vedi [Come è stato costruito](#10--come-è-stato-costruito).*
 
 HearAble mette **i sottotitoli in italiano sulla televisione in diretta**, circa
@@ -271,7 +271,7 @@ disegnando sullo schermo è un box che ha deciso al posto dello spettatore.
 
 ```
 ┌────────────────────────────────┐
-│        HearAble 1.5.2          │
+│        HearAble 1.5.3          │
 │          Arrivederci           │
 └────────────────────────────────┘
 ```
@@ -627,7 +627,7 @@ peggiorava il prodotto.
 
 ---
 
-*HearAble 1.5.2 — sottotitolazione italiana in tempo reale per DVB-T2.
+*HearAble 1.5.3 — sottotitolazione italiana in tempo reale per DVB-T2.
 Di Nunzio Raciti, con Claude (Opus) come assistente allo sviluppo.
 Octagon SF8008 V3 Supreme Combo · T9 Plus Intel N95 · Nemotron 3.5 ASR Streaming
 0.6B su NeMo-Speech.cpp.*

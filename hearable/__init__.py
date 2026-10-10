@@ -12,4 +12,4 @@
 # It is not derived from `git describe` on purpose. The decoder has no git, and
 # a version that only resolves where the repository is checked out is missing
 # exactly where the question gets asked.
-__version__ = "1.5.2"
+__version__ = "1.5.3"

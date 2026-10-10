@@ -1,6 +1,6 @@
 # HearAble — Subtitles for the television you already own
 
-*Italian live subtitling · DVB-T2 · on-device. Version 1.5.2, September 2026.
+*Italian live subtitling · DVB-T2 · on-device. Version 1.5.3, October 2026.
 By Nunzio Raciti, with Claude (Opus) as development assistant. See
 [How this was built](#10-how-this-was-built).*
 
@@ -266,7 +266,7 @@ them.
 
 ```
 ┌────────────────────────────────┐
-│        HearAble 1.5.2          │
+│        HearAble 1.5.3          │
 │          Arrivederci           │
 └────────────────────────────────┘
 ```
@@ -613,6 +613,6 @@ in the direction that made the product worse.
 
 ---
 
-*HearAble 1.5.2 — Italian realtime subtitling for DVB-T2. By Nunzio Raciti,
+*HearAble 1.5.3 — Italian realtime subtitling for DVB-T2. By Nunzio Raciti,
 with Claude (Opus) as development assistant. Octagon SF8008 V3 Supreme
 Combo · T9 Plus Intel N95 · Nemotron 3.5 ASR Streaming 0.6B on NeMo-Speech.cpp.*

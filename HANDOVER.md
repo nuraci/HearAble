@@ -12,7 +12,7 @@ says how to keep working on it.
 ## 1. Where things stand
 
 ```text
-version          1.5.2
+version          1.5.3
 tests            254 in the source repository
                  179 pass / 23 skip / 0 fail on a fresh clone of this one
 in service       yes — daily, on live broadcast television
@@ -227,7 +227,7 @@ example, that file, and the environment. Do not write one into a file again.
 
 ## 7. How this repository relates to the original
 
-This is a copy of the working tree at 1.5.2. The **full history — 116 commits,
+This is a copy of the working tree at 1.5.3. The **full history — 125 commits,
 each explaining why a decision was made — exists only in the original working
 copy**, not here. If that history matters to you, it has to come from there; it
 was a deliberate choice not to bring it, and the original is currently its only

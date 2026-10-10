@@ -13,9 +13,9 @@ fanless mini PC. No cloud service, no account, no subscription, and nothing
 about what someone watches leaves their living room. The viewer presses one
 button on the remote they already had.
 
-It subtitles **live broadcast television and films played from the receiver's
-own storage** — a USB stick, an internal drive — through the same chain, with no
-second code path.
+It subtitles **live broadcast television, the receiver's own recordings, and
+films played from its storage** — a USB stick, an internal drive — through the
+same chain, with no second code path.
 
 **Website:** https://nuraci.github.io/HearAble/
 
@@ -214,7 +214,7 @@ by asking the decoder directly instead of correlating screenshots.
 
 ## Status
 
-Version 1.5.2. In daily use on real broadcast television.
+Version 1.5.3. In daily use on real broadcast television.
 
 Known limits, stated rather than discovered: the last word of a sentence
 reaches the screen when the model punctuates it, and sentences it does not
